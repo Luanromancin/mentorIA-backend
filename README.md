@@ -73,18 +73,13 @@ src/
 Desenvolvido por Luan Romancini
 Disciplina de Engenharia de Software – CIn/UFPE
 
-yaml
-Copiar
-Editar
 
----
 
-### ✅ O que fazer agora:
 
-1. Copie esse conteúdo para o arquivo `README.md` do seu projeto
-2. Salve e execute:
 
-```bash
-git add README.md
-git commit -m "Adiciona README inicial com descrição do projeto"
-git push
+
+
+
+
+
+
