@@ -69,9 +69,7 @@ src/
 ├── routes/
 ├── services/
 └── utils/
-👨‍💻 Autoria
-Desenvolvido por Luan Romancini
-Disciplina de Engenharia de Software – CIn/UFPE
+
 
 
 
