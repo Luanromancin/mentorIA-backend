@@ -1,85 +1,104 @@
 # MentorIA – Backend Node.js
 
-Este projeto é o backend da aplicação **MentorIA**, uma ferramenta de apoio aos estudos para o ENEM. Desenvolvido como parte da disciplina de Engenharia de Software, utiliza tecnologias modernas para fornecer uma base sólida para funcionalidades futuras.
+Backend da aplicação **MentorIA**, uma plataforma de apoio aos estudos para o ENEM. Este projeto foi desenvolvido como parte da disciplina de **Engenharia de Software**, utilizando tecnologias modernas e uma arquitetura escalável.
+
+---
 
 ## ✨ Objetivo
 
-Criar uma API que forneça recursos como:
-- Cadastro e gerenciamento de testes/simulados
-- Consulta de questões por matéria/tema
-- Histórico de desempenho
-- Recomendação personalizada com base em performance
+Desenvolver uma API REST que permita:
 
-## 🚀 Tecnologias utilizadas
+- Cadastro e gerenciamento de testes e simulados
+- Consulta de questões por matéria, tema e subtema
+- Histórico de desempenho dos usuários
+- Sistema de recomendação personalizado, baseado na performance
 
-- [Node.js](https://nodejs.org/)
-- [Express](https://expressjs.com/)
-- [TypeScript](https://www.typescriptlang.org/)
-- [Jest](https://jestjs.io/) para testes
-- [Pino](https://getpino.io/) para logging
-- [env-cmd](https://www.npmjs.com/package/env-cmd) para gerenciamento de ambiente
+---
 
-## 📦 Como executar o projeto localmente
+## 🚀 Tecnologias
+
+- Node.js
+- Express
+- TypeScript
+- PostgreSQL
+- Prisma ORM
+- Jest (testes unitários)
+- Pino (logging)
+- env-cmd (gerenciamento de variáveis de ambiente)
+
+---
+
+## 📦 Instalação e Execução Local
 
 ### Pré-requisitos
 
-- Node.js (v18+)
+- Node.js (v18 ou superior)
 - npm
+- PostgreSQL
 
-### Instalação
+## Passos
 
-1. Clone o repositório:
+### 1. Clone o repositório:
 
 ```bash
 git clone https://github.com/Luanromancin/mentorIA.git
 cd mentorIA
-Instale as dependências:
+```
 
-bash
-Copiar
-Editar
+### 2. Instale as dependências:
 npm install
-Crie um arquivo .env.dev com base no .env.example.
 
-Inicie o servidor:
+### 3. Configure as variáveis de ambiente. Crie um arquivo .env.dev com base no .env.example.
+4. Configure o banco de dados PostgreSQL:
 
-bash
-Copiar
-Editar
-npm run start
-A API estará disponível em: http://localhost:5001/api
+Crie um banco chamado mentorAI.
 
-🧪 Testes
-Execute os testes com:
+Atualize a variável DATABASE_URL no .env.dev com suas credenciais. Exemplo:
 
-bash
-Copiar
-Editar
+DATABASE_URL="postgresql://usuario:senha@localhost:5432/mentoria?schema=public"
+### 5. Execute as migrations para criar as tabelas:
+npx prisma migrate dev
+
+### 6. Rode o servidor em ambiente de desenvolvimento:
+   npm run start
+### 7. A API estará disponível em:
+   http://localhost:5001/api
+
+## 🧪 Testes
 npm run test
-🗂 Estrutura de pastas
-css
-Copiar
-Editar
+
+## 🗂 Estrutura de Pastas
 src/
-├── controllers/
-├── database/
-├── entities/
-├── models/
-├── repositories/
-├── routes/
-├── services/
-└── utils/
-👨‍💻 Autoria
-Desenvolvido por Luan Romancini
-Disciplina de Engenharia de Software – CIn/UFPE
+├── controllers/   # Lógica das rotas
+├── database/      # Configurações do banco e Prisma Client
+├── entities/      # Modelos de domínio (caso use além do Prisma)
+├── models/        # DTOs, interfaces, tipos auxiliares
+├── repositories/  # Camada de persistência (abstração sobre Prisma)
+├── routes/        # Definição das rotas da API
+├── services/      # Regras de negócio e orquestração
+└── utils/         # Helpers, middlewares e funções utilitárias
 
+🔗 Referências
+Node.js
 
+Express
 
+TypeScript
 
+Prisma ORM
 
+PostgreSQL
 
+Jest
 
+Pino
 
+env-cmd
 
+### ⚠️ Observações
+Este projeto utiliza Prisma ORM com PostgreSQL.
 
+As migrations devem ser executadas sempre que houver alteração no schema:
+npx prisma migrate dev
 
+Arquitetura baseada em Clean Architecture + Repository Pattern, separando regras de negócio, dados e exposição (API).
