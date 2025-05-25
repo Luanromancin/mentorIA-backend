@@ -1,80 +1,90 @@
-# ESS Back-end Node.js
+# MentorIA – Backend Node.js
 
-This is the Back-end base project in Node.js for the Software and Systems Engineering discipline, offered by the Informatics Center (CIn) of the Federal University of Pernambuco (UFPE).
+Este projeto é o backend da aplicação **MentorIA**, uma ferramenta de apoio aos estudos para o ENEM. Desenvolvido como parte da disciplina de Engenharia de Software, utiliza tecnologias modernas para fornecer uma base sólida para funcionalidades futuras.
 
-## Table of Contents
+## ✨ Objetivo
 
-1. [Getting Started](##getting-started)
-2. [Scripts](#scripts)
-3. [Dependencies](#dependencies)
-4. [Architecture](#architecture)
+Criar uma API que forneça recursos como:
+- Cadastro e gerenciamento de testes/simulados
+- Consulta de questões por matéria/tema
+- Histórico de desempenho
+- Recomendação personalizada com base em performance
 
-## Getting Started
+## 🚀 Tecnologias utilizadas
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
+- [Node.js](https://nodejs.org/)
+- [Express](https://expressjs.com/)
+- [TypeScript](https://www.typescriptlang.org/)
+- [Jest](https://jestjs.io/) para testes
+- [Pino](https://getpino.io/) para logging
+- [env-cmd](https://www.npmjs.com/package/env-cmd) para gerenciamento de ambiente
 
-### Prerequisites
+## 📦 Como executar o projeto localmente
 
-To run this project, you'll need to have the following software installed on your system:
+### Pré-requisitos
 
-- Node.js
-- npm (Node Package Manager)
+- Node.js (v18+)
+- npm
 
-### Installing
+### Instalação
 
-Clone the repository and install the dependencies by running the following command in the project directory:
+1. Clone o repositório:
 
-```
+```bash
+git clone https://github.com/Luanromancin/mentorIA.git
+cd mentorIA
+Instale as dependências:
+
+bash
+Copiar
+Editar
 npm install
-```
+Crie um arquivo .env.dev com base no .env.example.
 
-### First time running ?
+Inicie o servidor:
 
-Run the follow scripts
+bash
+Copiar
+Editar
+npm run start
+A API estará disponível em: http://localhost:5001/api
 
-```
-chmod +x .husky/pre-commit
-chmod +x .husky/pre-push
-```
+🧪 Testes
+Execute os testes com:
 
-```
-npm run
-```
+bash
+Copiar
+Editar
+npm run test
+🗂 Estrutura de pastas
+css
+Copiar
+Editar
+src/
+├── controllers/
+├── database/
+├── entities/
+├── models/
+├── repositories/
+├── routes/
+├── services/
+└── utils/
+👨‍💻 Autoria
+Desenvolvido por Luan Romancini
+Disciplina de Engenharia de Software – CIn/UFPE
 
-### Environment
+yaml
+Copiar
+Editar
 
-This project uses `.env` files to manage environment variables. You can create a `.env.dev` file in the project directory and set the environment variables in the file (iou can create it from .`env.example`). The `env` script in the `package.json` file uses the `env-cmd` package to load the environment variables from the `.env.dev` file.
+---
 
-### Running the Server
+### ✅ O que fazer agora:
 
-To start the server, run the following command:
+1. Copie esse conteúdo para o arquivo `README.md` do seu projeto
+2. Salve e execute:
 
-```
-env=dev npm run start
-```
-
-This command will run the TypeScript compiler in watch mode and start the server using nodemon.
-
-## Scripts
-
-The following scripts are available in the `package.json` file:
-
-- `start`: Runs the TypeScript compiler in watch mode and starts the server using nodemon.
-- `build`: Compiles the TypeScript code.
-- `test`: Runs the Jest tests for the project.
-- `prettier`: Formats the code using Prettier.
-- `lint`: Lints the code using ESLint.
-
-## Dependencies
-
-The following dependencies are used in the project:
-
-- [env-cmd](https://github.com/toddbluhm/env-cmd): A simple way to manage your environment variables in npm scripts.
-- [express](https://github.com/expressjs/express): Fast, unopinionated, minimalist web framework for Node.js.
-- [typescript](https://github.com/microsoft/TypeScript): A typed superset of JavaScript that compiles to plain JavaScript.
-- [jest](https://github.com/microsoft/TypeScript): Jest is a delightful JavaScript Testing Framework with a focus on simplicity.
-- [pino](https://github.com/pinojs/pino): Very low overhead Node.js logger.
-
-## Architecture
-
-To understand and learn more details about the structure of the project, click [here](./docs/architecture-pattern.md) to be redirected to the README that contains this information.
+```bash
+git add README.md
+git commit -m "Adiciona README inicial com descrição do projeto"
+git push
