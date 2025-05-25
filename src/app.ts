@@ -5,7 +5,7 @@ import logger from './logger';
 import setupRoutes from './routes/index';
 import { HttpError } from './utils/errors/http.error';
 import { FailureResult } from './utils/result';
-import Database from './database';
+import { initDatabase } from './database';
 
 const app: express.Express = express();
 app.use(express.json());
@@ -16,14 +16,21 @@ app.use(
   })
 );
 
+// Inicializa o banco de dados
+initDatabase().catch((error) => {
+  logger.error('Erro ao inicializar o banco de dados:', error);
+  process.exit(1);
+});
+
 setupRoutes(app);
 
+// Middleware de erro
 app.use(
   (
     error: HttpError,
-    req: express.Request,
+    _req: express.Request,
     res: express.Response,
-    next: express.NextFunction
+    _next: express.NextFunction
   ) => {
     if (error.status >= 500) {
       logger.error(error.toString());
@@ -36,8 +43,5 @@ app.use(
     }).handle(res);
   }
 );
-
-// e.g. Seed database with initial data;
-Database.seed();
 
 export default app;
