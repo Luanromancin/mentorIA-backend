@@ -56,12 +56,12 @@ Crie um banco chamado mentorAI.
 Atualize a variável DATABASE_URL no .env.dev com suas credenciais. Exemplo:
 
 DATABASE_URL="postgresql://usuario:senha@localhost:5432/mentoria?schema=public"
-5. Execute as migrations para criar as tabelas:
+### 5. Execute as migrations para criar as tabelas:
 npx prisma migrate dev
 
-6. Rode o servidor em ambiente de desenvolvimento:
+### 6. Rode o servidor em ambiente de desenvolvimento:
    npm run start
-7. A API estará disponível em:
+### 7. A API estará disponível em:
    http://localhost:5001/api
 
 ## 🧪 Testes
