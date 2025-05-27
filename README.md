@@ -101,10 +101,10 @@ src/
 
 ## 👥 Equipe
 
-Gabriela Lima Sotero [Github] https://github.com/gabrielalimasotero
-Luan Romancini [Github] https://github.com/Luanromancin
-Antonio Gabriel [Github] https://github.com/gabrielclemnt
-Wilton Sales [Github] https://github.com/WilSales
+Gabriela Lima Sotero [Github](https://github.com/gabrielalimasotero)
+Luan Romancini [Github](https://github.com/Luanromancin)
+Antonio Gabriel [Github](https://github.com/gabrielclemnt)
+Wilton Sales [Github](https://github.com/WilSales)
 
 ---
 
@@ -112,6 +112,6 @@ Wilton Sales [Github] https://github.com/WilSales
 
 https://mentor-ia-learn.lovable.app/
 
-[Prompts] https://docs.google.com/document/d/1vQBVSXb1nNO8Fk_R4xubxmScVkbGHsDdypeyhnjqInc/edit?usp=sharing
+[Prompts](https://docs.google.com/document/d/1vQBVSXb1nNO8Fk_R4xubxmScVkbGHsDdypeyhnjqInc/edit?usp=sharing)
 
 
