@@ -66,7 +66,7 @@ A proposta é transformar a forma como estudantes identificam seus pontos fortes
 
 1. Clone o repositório:
 
-```bash
+bash
 git clone https://github.com/Luanromancin/mentorIA-backend.git
 cd mentorIA-backend
 Instale as dependências:
@@ -101,10 +101,10 @@ src/
 
 ## 👥 Equipe
 
-# Antonio Gabriel [Github](https://github.com/gabrielclemnt)
-# Gabriela Lima Sotero [Github](https://github.com/gabrielalimasotero)
-# Luan Romancini [Github](https://github.com/Luanromancin)
-# Wilton Sales [Github](https://github.com/WilSales)
+### Antonio Gabriel [Github](https://github.com/gabrielclemnt)
+### Gabriela Lima Sotero [Github](https://github.com/gabrielalimasotero)
+### Luan Romancini [Github](https://github.com/Luanromancin)
+### Wilton Sales [Github](https://github.com/WilSales)
 
 ---
 
