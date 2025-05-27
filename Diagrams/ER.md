@@ -10,12 +10,12 @@ erDiagram
         STRING nome
         STRING email UNIQUE
         STRING senha_hash
-        DATE data_criacao
+        STRING data_criacao
     }
     SIMULADO {
         INT id PK
         STRING titulo
-        DATE data_criacao
+        STRING data_criacao
         INT usuario_id FK
     }
     QUESTAO {
@@ -37,12 +37,12 @@ erDiagram
         INT simulado_id FK
         INT acertos
         INT erros
-        DATE data_execucao
+        STRING data_execucao
     }
 
-    USUARIO ||--o{ SIMULADO : possui
-    SIMULADO ||--o{ SIMULADO_QUESTAO : contem
-    QUESTAO ||--o{ SIMULADO_QUESTAO : esta_em
-    USUARIO ||--o{ HISTORICO : gera
-    SIMULADO ||--o{ HISTORICO : registrado_em
+    USUARIO ||--o{ SIMULADO : "possui"
+    SIMULADO ||--o{ SIMULADO_QUESTAO : "contem"
+    QUESTAO ||--o{ SIMULADO_QUESTAO : "esta_em"
+    USUARIO ||--o{ HISTORICO : "gera"
+    SIMULADO ||--o{ HISTORICO : "registrado_em"
 ```
