@@ -5,47 +5,44 @@ Ele define como os usuários, questões, respostas, habilidades e progresso est�
 
 ```mermaid
 erDiagram
-    USERS {
-        int id PK "ID do usuário"
-        string name "Nome"
-        string email "Email"
-        string password "Senha"
-        string role "Role: aluno, admin, professor"
+    USUARIO {
+        int id PK
+        string nome
+        string email UNIQUE
+        string senha_hash
+        date data_criacao
     }
-    QUESTIONS {
-        int id PK "ID da questão"
-        string subject "Matéria"
-        string topic "Tema"
-        string subtopic "Subtema"
-        string content "Enunciado da questão"
-        string correct_answer "Resposta correta"
-        string difficulty "Fácil, médio, difícil"
+    SIMULADO {
+        int id PK
+        string titulo
+        date data_criacao
+        int usuario_id FK
     }
-    ANSWERS {
-        int id PK "ID da resposta"
-        int user_id FK "Usuário que respondeu"
-        int question_id FK "Questão respondida"
-        boolean is_correct "Se acertou ou não"
-        datetime created_at "Data da resposta"
+    QUESTAO {
+        int id PK
+        string enunciado
+        string alternativa_correta
+        string materia
+        string tema
+        int dificuldade
     }
-    SKILLS {
-        int id PK "ID da habilidade"
-        string name "Nome da skill"
-        string subject "Matéria relacionada"
-        string description "Descrição da skill"
+    SIMULADO_QUESTAO {
+        int id PK
+        int simulado_id FK
+        int questao_id FK
     }
-    PROGRESS {
-        int id PK "ID do progresso"
-        int user_id FK "Usuário"
-        int skill_id FK "Habilidade"
-        string mastery_level "Nível de maestria (ex.: 0 a 100)"
-        datetime last_reviewed "Última revisão"
-        string status "Dominado, Em desenvolvimento, Crítico"
+    HISTORICO {
+        int id PK
+        int usuario_id FK
+        int simulado_id FK
+        int acertos
+        int erros
+        date data_execucao
     }
 
-    USERS ||--o{ ANSWERS : responde
-    QUESTIONS ||--o{ ANSWERS : contem
-    USERS ||--o{ PROGRESS : possui
-    SKILLS ||--o{ PROGRESS : monitora
+    USUARIO ||--o{ SIMULADO : "possui"
+    SIMULADO ||--o{ SIMULADO_QUESTAO : "contem"
+    QUESTAO ||--o{ SIMULADO_QUESTAO : "esta_em"
+    USUARIO ||--o{ HISTORICO : "gera"
+    SIMULADO ||--o{ HISTORICO : "registrado_em"
 ```
-
