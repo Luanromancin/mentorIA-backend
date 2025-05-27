@@ -3,7 +3,7 @@
 Este diagrama representa o modelo relacional do banco de dados do MentorIA.  
 Ele define como os usuários, questões, respostas, habilidades e progresso estão relacionados.
 
-        ```mermaid
+```mermaid
 erDiagram
     USUARIO {
         INT id PK
@@ -39,9 +39,10 @@ erDiagram
         INT erros
         DATE data_execucao
     }
+
     USUARIO ||--o{ SIMULADO : possui
     SIMULADO ||--o{ SIMULADO_QUESTAO : contem
     QUESTAO ||--o{ SIMULADO_QUESTAO : esta_em
     USUARIO ||--o{ HISTORICO : gera
     SIMULADO ||--o{ HISTORICO : registrado_em
-    ```
+```
