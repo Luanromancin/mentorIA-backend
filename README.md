@@ -101,10 +101,10 @@ src/
 
 ## 👥 Equipe
 
-Gabriela Lima Sotero [Github](https://github.com/gabrielalimasotero)
-Luan Romancini [Github](https://github.com/Luanromancin)
-Antonio Gabriel [Github](https://github.com/gabrielclemnt)
-Wilton Sales [Github](https://github.com/WilSales)
+# Antonio Gabriel [Github](https://github.com/gabrielclemnt)
+# Gabriela Lima Sotero [Github](https://github.com/gabrielalimasotero)
+# Luan Romancini [Github](https://github.com/Luanromancin)
+# Wilton Sales [Github](https://github.com/WilSales)
 
 ---
 
