@@ -14,7 +14,7 @@ Antes de começar, certifique-se de ter instalado em sua máquina:
 
 1. Clone o repositório para sua máquina local:
    ```bash
-   git clone [URL_DO_REPOSITÓRIO]
+   git clone [https://github.com/Luanromancin/mentorIA-backend]
    cd mentorIA-backend
    ```
 
