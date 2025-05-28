@@ -4,9 +4,9 @@
 
 Backend da plataforma MentorIA, um tutor digital que identifica dificuldades, gera trilhas de treino personalizadas e guia estudantes até o domínio completo das competências para ENEM, podendo ser expandido para trilhas diferentes como ITA, IME, concursos e aprendizados variados, como computação.
 
-> ✅ Este repositório corresponde **ao backend.** O frontend está disponível [aqui](https://github.com/gabrielalimasotero/MentorIA-Frontend).
-> ✅ Build [aqui](https://github.com/Luanromancin/mentorIA-backend/blob/main/BUILD.md)
-> ✅ Contributing [aqui](https://github.com/Luanromancin/mentorIA-backend/blob/main/CONTRIBUTING.md)
+### ✅ Este repositório corresponde **ao backend.** O frontend está disponível [aqui](https://github.com/gabrielalimasotero/MentorIA-Frontend).
+### ✅ Build [aqui](https://github.com/Luanromancin/mentorIA-backend/blob/main/BUILD.md)
+### ✅ Contributing [aqui](https://github.com/Luanromancin/mentorIA-backend/blob/main/CONTRIBUTING.md)
 
 ## 🎯 Objetivos e Funcionalidades
 
@@ -26,9 +26,6 @@ Backend da plataforma MentorIA, um tutor digital que identifica dificuldades, ge
 - 🚀 Revisão inteligente (spaced repetition) para retenção eficiente
 
 ## 🏗️ Arquitetura e Estrutura
-
-### Diagrama C4
-![Diagrama C4](diagrams/c4-diagram.png)
 
 ### Estrutura do Código
 ```plaintext
@@ -135,6 +132,11 @@ Por favor, leia nosso [guia de contribuição](CONTRIBUTING.md) para detalhes so
 - [Ferramenta de Revisão de Código](https://github.com/Luanromancin/mentorIA-backend/pulls)
 - [Rastreador de Problemas](https://github.com/Luanromancin/mentorIA-backend/issues)
 
+## 🔗 Links Úteis
+
+- [MockUp Lovable e PitchDeck](https://mentor-ia-learn.lovable.app/)
+- [Documentação de Prompts](https://docs.google.com/document/d/1vQBVSXb1nNO8Fk_R4xubxmScVkbGHsDdypeyhnjqInc/edit?usp=sharing)
+
 ## 👥 Equipe
 
 - Antonio Gabriel - [GitHub](https://github.com/gabrielclemnt)
@@ -144,11 +146,6 @@ Por favor, leia nosso [guia de contribuição](CONTRIBUTING.md) para detalhes so
 
 ## 📝 Licença
 
-Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
-
-## 🔗 Links Úteis
-
-- [MockUp e PitchDeck](https://mentor-ia-learn.lovable.app/)
-- [Documentação de Prompts](https://docs.google.com/document/d/1vQBVSXb1nNO8Fk_R4xubxmScVkbGHsDdypeyhnjqInc/edit?usp=sharing)
+- Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
 
 
