@@ -4,7 +4,7 @@ import TestService from '../services/test.service';
 import TestEntity from '../entities/test.entity';
 
 class TestController {
-  private prefix: string = '/tests';
+  private prefix = '/tests';
   public router: Router;
   private testService: TestService;
 

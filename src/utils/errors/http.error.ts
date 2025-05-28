@@ -1,7 +1,9 @@
+export type ErrorMessageCode = string | number | symbol;
+
 export abstract class HttpError extends Error {
   msg: string;
   status: number;
-  msgCode: any;
+  msgCode: ErrorMessageCode;
   slug: string;
 
   constructor({
@@ -12,7 +14,7 @@ export abstract class HttpError extends Error {
   }: {
     status: number;
     msg: string;
-    msgCode?: any;
+    msgCode?: ErrorMessageCode;
     slug?: string;
   }) {
     super(msg);
@@ -28,31 +30,31 @@ export abstract class HttpError extends Error {
 }
 
 export class HttpBadRequestError extends HttpError {
-  constructor({ msg, msgCode }: { msg: string; msgCode?: any }) {
+  constructor({ msg, msgCode }: { msg: string; msgCode?: ErrorMessageCode }) {
     super({ status: 400, msg, msgCode, slug: 'bad-request' });
   }
 }
 
 export class HttpUnauthorizedError extends HttpError {
-  constructor({ msg, msgCode }: { msg: string; msgCode?: any }) {
+  constructor({ msg, msgCode }: { msg: string; msgCode?: ErrorMessageCode }) {
     super({ status: 401, msg, msgCode, slug: 'unauthorized' });
   }
 }
 
 export class HttpForbiddenError extends HttpError {
-  constructor({ msg, msgCode }: { msg: string; msgCode?: any }) {
+  constructor({ msg, msgCode }: { msg: string; msgCode?: ErrorMessageCode }) {
     super({ status: 403, msg, msgCode, slug: 'forbidden' });
   }
 }
 
 export class HttpNotFoundError extends HttpError {
-  constructor({ msg, msgCode }: { msg: string; msgCode?: any }) {
+  constructor({ msg, msgCode }: { msg: string; msgCode?: ErrorMessageCode }) {
     super({ status: 404, msg, msgCode, slug: 'not-found' });
   }
 }
 
 export class HttpInternalServerError extends HttpError {
-  constructor({ msg, msgCode }: { msg?: string; msgCode?: any } = {}) {
+  constructor({ msg, msgCode }: { msg?: string; msgCode?: ErrorMessageCode } = {}) {
     super({
       status: 500,
       msg: msg || 'Internal Server Error',
@@ -63,7 +65,7 @@ export class HttpInternalServerError extends HttpError {
 }
 
 export class HttpNotImplementedError extends HttpError {
-  constructor({ msg, msgCode }: { msg?: string; msgCode?: any } = {}) {
+  constructor({ msg, msgCode }: { msg?: string; msgCode?: ErrorMessageCode } = {}) {
     super({
       status: 501,
       msg: msg || 'Not Implemented Error',
