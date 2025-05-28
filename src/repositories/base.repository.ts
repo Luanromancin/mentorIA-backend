@@ -38,7 +38,7 @@ export default class BaseRepository<T extends BaseEntity> {
       if (!this.db.data[this.prefix]) {
         return null;
       }
-      const item = this.db.data[this.prefix].find(filter);
+      const item = (this.db.data[this.prefix] as T[]).find(filter);
       if (item) {
         delete data.id;
         Object.assign(item, data);
@@ -55,7 +55,7 @@ export default class BaseRepository<T extends BaseEntity> {
       if (!this.db.data[this.prefix]) {
         return null;
       }
-      return this.db.data[this.prefix].find(filter) || null;
+      return (this.db.data[this.prefix] as T[]).find(filter) || null;
     } catch (e) {
       throw new HttpInternalServerError();
     }
@@ -67,8 +67,8 @@ export default class BaseRepository<T extends BaseEntity> {
         return [];
       }
       return filter
-        ? this.db.data[this.prefix].filter(filter)
-        : this.db.data[this.prefix];
+        ? (this.db.data[this.prefix] as T[]).filter(filter)
+        : (this.db.data[this.prefix] as T[]);
     } catch (e) {
       throw new HttpInternalServerError();
     }
@@ -80,7 +80,7 @@ export default class BaseRepository<T extends BaseEntity> {
         return;
       }
 
-      this.db.data[this.prefix] = this.db.data[this.prefix].filter(filter);
+      this.db.data[this.prefix] = (this.db.data[this.prefix] as T[]).filter(filter);
     } catch (e) {
       throw new HttpInternalServerError();
     }

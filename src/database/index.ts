@@ -1,7 +1,7 @@
 import TestEntity from '../entities/test.entity';
 
 export default class Database {
-  data: { [key: string]: unknown[] };
+  data: { [key: string]: any[] };
   private static instance: Database;
 
   private constructor() {

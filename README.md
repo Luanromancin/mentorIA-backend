@@ -97,6 +97,16 @@ npm run test        # Executa todos os testes
 npm run test:watch  # Executa testes em modo watch
 npm run test:coverage # Executa testes com cobertura
 ```
+🧩 Issues Iniciais
+
+| Issue | Título                                | Labels                      |
+| ----- | ------------------------------------- | --------------------------- |
+| #1    | Setup do Prisma + Banco no Railway    | `good first issue`, `setup` |
+| #2    | Criação de rota de autenticação OAuth | `backend`, `auth`           |
+| #3    | Integração com API Gemini para trilha | `intelligence`, `api`       |
+| #4    | Estrutura inicial de testes unitários | `testing`, `infra`          |
+
+
 
 ## 🤝 Como Contribuir
 
