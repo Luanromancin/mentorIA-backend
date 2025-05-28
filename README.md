@@ -5,6 +5,8 @@
 Backend da plataforma MentorIA, um tutor digital que identifica dificuldades, gera trilhas de treino personalizadas e guia estudantes até o domínio completo das competências para ENEM, podendo ser expandido para trilhas diferentes como ITA, IME, concursos e aprendizados variados, como computação.
 
 > ✅ Este repositório corresponde **ao backend.** O frontend está disponível [aqui](https://github.com/gabrielalimasotero/MentorIA-Frontend).
+> ✅ Build [aqui](https://github.com/Luanromancin/mentorIA-backend/blob/main/BUILD.md)
+> ✅ Contributing [aqui](https://github.com/Luanromancin/mentorIA-backend/blob/main/CONTRIBUTING.md)
 
 ## 🎯 Objetivos e Funcionalidades
 
