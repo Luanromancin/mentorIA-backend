@@ -134,8 +134,8 @@ Por favor, leia nosso [guia de contribuição](CONTRIBUTING.md) para detalhes so
 
 ## 🔗 Links Úteis
 
-- [MockUp Lovable e PitchDeck](https://mentor-ia-learn.lovable.app/)
-- [Documentação de Prompts](https://docs.google.com/document/d/1vQBVSXb1nNO8Fk_R4xubxmScVkbGHsDdypeyhnjqInc/edit?usp=sharing)
+- [MockUp Lovable](https://mentor-ia-learn.lovable.app/](https://enem-inteligente-trilhas.lovable.app)
+- [Documentação de Prompts](https://docs.google.com/document/d/1UBrHngoffLZ_rZ41sQmcjgG_E-nV7RGi3b3HwKDuhQk/edit?usp=sharing)
 
 ## 👥 Equipe
 
