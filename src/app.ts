@@ -22,8 +22,7 @@ app.use(
   (
     error: HttpError,
     req: express.Request,
-    res: express.Response,
-    next: express.NextFunction
+    res: express.Response
   ) => {
     if (error.status >= 500) {
       logger.error(error.toString());

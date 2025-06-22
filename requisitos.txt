@@ -1,0 +1,130 @@
+
+Requisitos Funcionais (Histórias de Usuário)
+Diagnóstico Inicial
+Como um aluno, eu quero responder a um teste diagnóstico para que eu possa entender meus pontos fortes e fracos.
+Trilhas Personalizadas
+Como um aluno, eu quero receber uma trilha de questões personalizada para que eu possa focar exatamente nos meus pontos fracos.
+Feedback Imediato
+Como um aluno, eu quero receber feedbacks após resolver questões para que eu possa aprender com meus erros e ajustar meu foco.
+Dashboard de Domínio
+Como um aluno, eu quero visualizar meu domínio por matéria/tema para que eu possa acompanhar meu progresso.
+Revisão Inteligente
+Como um aluno, eu quero receber sugestões de revisão baseadas na curva do esquecimento para que eu possa reforçar os conteúdos no momento ideal.
+Simulados Personalizados
+Como um aluno, eu quero realizar simulados adaptados ao meu nível para que eu possa me preparar melhor para a prova real.
+Gamificação
+Como um aluno, eu quero ganhar XP e conquistas por completar tarefas para que eu possa me sentir motivado a continuar estudando.
+
+🧱 Requisitos Não Funcionais
+Tipo
+Requisito
+Usabilidade
+Interface responsiva, clara e adaptada a daltonismo.
+Segurança
+Dados do usuário criptografados; autenticação segura (OAuth via Google).
+Desempenho
+Dashboard deve carregar em menos de 2 segundos.
+Escalabilidade
+Sistema deve suportar aumento de usuários com estrutura em nuvem.
+Privacidade
+Nenhum dado compartilhado com terceiros.
+Acessibilidade
+Compatível com leitores de tela e navegação via teclado.
+
+
+
+
+
+Requisitos Funcionais Detalhados:
+Cadastro de Usuário
+Como um estudante,
+eu quero me cadastrar no sistema,
+para que eu possa acessar as funcionalidades de estudo personalizado.
+Detalhamento:
+O cadastro deve coletar os seguintes dados obrigatórios:
+Nome completo
+E-mail (deve ser válido e único no sistema)
+Senha (mínimo 8 caracteres, contendo letras e números)
+Data de nascimento
+Nível de escolaridade atual
+Objetivo de estudo (ENEM, ITA, IME, Concursos)
+O sistema deve validar o e-mail através de um código de confirmação
+O sistema deve permitir upload de foto de perfil (opcional)
+O sistema deve armazenar a data e hora do cadastro
+Teste Diagnóstico
+Como um estudante,
+eu quero realizar um teste diagnóstico,
+para que o sistema possa identificar meus pontos fortes e fracos.
+Detalhamento:
+O teste deve conter:
+20 questões por área do conhecimento
+Tempo máximo de 3 horas para conclusão
+Questões de múltipla escolha com 5 alternativas
+Nível de dificuldade variando entre fácil, médio e difícil
+O sistema deve:
+Salvar o progresso automaticamente a cada 5 minutos
+Permitir pausar e retomar o teste
+Mostrar tempo restante
+Bloquear navegação para outras páginas durante o teste
+Gerar relatório detalhado após conclusão
+Trilhas de Estudo
+Como um estudante,
+eu quero receber trilhas de estudo personalizadas,
+para que eu possa focar nos tópicos que preciso melhorar.
+Detalhamento:
+Cada trilha deve conter:
+Lista de tópicos ordenados por prioridade
+Estimativa de tempo para cada tópico
+Nível de dificuldade
+Recursos de estudo (vídeos, textos, exercícios)
+Objetivos de aprendizado
+O sistema deve:
+Atualizar a trilha semanalmente baseado no desempenho
+Permitir marcar tópicos como concluídos
+Mostrar progresso percentual da trilha
+Sugerir revisões baseadas no desempenho
+Sistema de Gamificação
+Como um estudante,
+eu quero ganhar XP e conquistas ao completar atividades,
+para que eu possa me manter motivado.
+Detalhamento:
+O sistema deve oferecer:
+XP por:
+Completar exercícios (10-50 XP)
+Acertar questões difíceis (20 XP)
+Completar trilhas (100 XP)
+Manter sequência de estudos (50 XP/dia)
+Conquistas por:
+Primeira trilha concluída
+7 dias seguidos de estudo
+1000 XP acumulados
+90% de acerto em uma área
+O sistema deve:
+Mostrar progresso para próxima conquista
+Notificar quando uma conquista for desbloqueada
+Manter histórico de conquistas
+Exibir ranking semanal e mensal
+Dashboard de Desempenho
+Como um estudante,
+eu quero visualizar meu dashboard de desempenho,
+para que eu possa acompanhar meu progresso geral.
+Detalhamento:
+O dashboard deve exibir:
+Gráfico de desempenho por área do conhecimento
+Estatísticas de acertos/erros
+Tempo de estudo diário/semanal
+XP acumulado
+Conquistas desbloqueadas
+Próximos objetivos
+Ranking comparativo
+O sistema deve:
+Atualizar dados em tempo real
+Permitir filtrar por período
+Exportar relatórios em PDF
+Mostrar tendências de progresso
+Este nível de detalhamento é importante porque:
+Ajuda a equipe de desenvolvimento a entender exatamente o que precisa ser implementado
+Reduz ambiguidades e mal-entendidos
+Facilita a estimativa de esforço
+Serve como base para testes
+Ajuda a identificar possíveis problemas ou inconsistências antes da implementação

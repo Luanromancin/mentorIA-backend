@@ -1,8 +1,11 @@
 import { Request, Response } from 'express';
 
+export type ResultMessageCode = string | number | symbol;
+export type ResultData = unknown;
+
 export abstract class Result {
   msg: string;
-  msgCode: any;
+  msgCode: ResultMessageCode;
   code: number;
 
   constructor({
@@ -11,7 +14,7 @@ export abstract class Result {
     code,
   }: {
     msg: string;
-    msgCode: any;
+    msgCode: ResultMessageCode;
     code: number;
   }) {
     this.msg = msg;
@@ -19,13 +22,13 @@ export abstract class Result {
     this.code = code;
   }
 
-  static transformRequestOnMsg(req: Request) {
+  static transformRequestOnMsg(req: Request): string {
     return `${req.method} ${req?.originalUrl}`;
   }
 }
 
 export class SuccessResult extends Result {
-  data?: any;
+  data?: ResultData;
 
   constructor({
     msg,
@@ -34,15 +37,15 @@ export class SuccessResult extends Result {
     data,
   }: {
     msg: string;
-    msgCode?: any;
+    msgCode?: ResultMessageCode;
     code?: number;
-    data?: any;
+    data?: ResultData;
   }) {
     super({ msg, msgCode: msgCode || 'success', code: code || 200 });
     this.data = data;
   }
 
-  handle(res: Response) {
+  handle(res: Response): Response {
     return res.status(this.code).send(this);
   }
 }
@@ -54,13 +57,13 @@ export class FailureResult extends Result {
     code,
   }: {
     msg: string;
-    msgCode?: any;
+    msgCode?: ResultMessageCode;
     code?: number;
   }) {
     super({ msg, msgCode: msgCode || 'failure', code: code || 500 });
   }
 
-  handle(res: Response) {
+  handle(res: Response): Response {
     return res.status(this.code).send(this);
   }
 }

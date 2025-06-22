@@ -1,21 +1,21 @@
-# 🚀 MentorIA – Frontend
+# 🚀 MentorIA – Backend
 
 ## Projeto desenvolvido para Disciplina de Engenharia de Software da Universidade Federal de Pernambuco.
 
-Backend da plataforma MentorIA, um tutor digital que identifica suas dificuldades, gera trilhas de treino personalizadas e te guia até o domínio completo das competências para ENEM, podendo ser expandido para trilhas diferentes como ITA, IME, concursos e aprendizados variados, como computação.
+Backend da plataforma MentorIA, um tutor digital que identifica dificuldades, gera trilhas de treino personalizadas e guia estudantes até o domínio completo das competências para ENEM, podendo ser expandido para trilhas diferentes como ITA, IME, concursos e aprendizados variados, como computação.
 
-Nossa demonstração almeja fazer uma prova de conceito a partir das questões de matemática do enem.
+### ✅ Este repositório corresponde **ao backend.** O frontend está disponível [aqui](https://github.com/gabrielalimasotero/MentorIA-Frontend).
+### ✅ Build [aqui](https://github.com/Luanromancin/mentorIA-backend/blob/main/BUILD.md)
+### ✅ Contributing [aqui](https://github.com/Luanromancin/mentorIA-backend/blob/main/CONTRIBUTING.md)
 
-> ✅ Este repositório corresponde **ao backend.** O frontend está disponível [aqui](https://github.com/gabrielalimasotero/MentorIA-Frontend).
+## 🎯 Objetivos e Funcionalidades
 
----
+### Objetivos Principais
+- Transformar a forma como estudantes identificam seus pontos fortes e fracos
+- Utilizar tecnologia, IA e gamificação para acelerar o progresso do aprendizado
+- Criar uma experiência personalizada e adaptativa para cada estudante
 
-## 📄 Descrição Geral
-
-A proposta é transformar a forma como estudantes identificam seus pontos fortes e fracos, utilizando tecnologia, IA e gamificação para acelerar seu progresso.
-
-## 🎯 Funcionalidades Principais Almejadas
-
+### Funcionalidades Principais
 - 📊 Dashboard de desempenho
 - 🧠 Teste diagnóstico com análise de domínio
 - 🎯 Trilhas inteligentes de estudo
@@ -23,95 +23,129 @@ A proposta é transformar a forma como estudantes identificam seus pontos fortes
 - 🔐 Sistema de autenticação e perfis
 - 📱 Design responsivo e acessível
 - 🏆 Gamificação com XP, conquistas e rankings
-- 🚀  ⁠Aplica revisão inteligente (spaced repetition) para retenção eficiente.
+- 🚀 Revisão inteligente (spaced repetition) para retenção eficiente
 
----
+## 🏗️ Arquitetura e Estrutura
 
-## 🗂️ Estrutura do Código
-
+### Estrutura do Código
 ```plaintext
-├── app/                # Rotas e páginas (App Router Next.js)
-├── components/         # Componentes reutilizáveis
-├── lib/                # Hooks, funções auxiliares e integrações
-├── public/             # Arquivos públicos (imagens, favicon, etc.)
-├── styles/             # Estilos globais e temas
-├── types/              # Tipagens TypeScript
-├── .env.example        # Template de variáveis de ambiente
-├── README.md           # Documentação principal
-├── BUILD.md            # Guia de execução local e deploy
-├── CONTRIBUTING.md     # Guia para contribuição no projeto
-└── package.json        # Dependências e scripts
+src/
+├── controllers/    # Controladores da API
+├── database/       # Configurações e migrações do banco de dados
+├── entities/       # Entidades do domínio
+├── models/         # Modelos de dados
+├── repositories/   # Camada de acesso a dados
+├── routes/         # Definição de rotas
+├── services/       # Lógica de negócio
+└── utils/          # Utilitários e helpers
 ```
 
-## 🏗️ Stack de Tecnologias
+## 🛠️ Tecnologias Utilizadas
 
 | Camada       | Tecnologias                              |
 |----------------|-------------------------------------------|
-| *Frontend*  | Node.js + TypeScript (Framework como Next.js ou Vite) |
+| *Frontend*  | Next.js + React + TypeScript + TailwindCSS + shadcn/ui |
 | *Backend*   | Node.js + Express + Prisma + TypeScript  |
 | *Banco*     | PostgreSQL (Hospedado na nuvem — Railway ou Neon) |
 | *Infraestrutura* | Railway (Backend + DB) + Vercel (Frontend) ou outro |
 | *Gestão*    | GitHub Projects (Kanban e gestão ágil)   |
 
----
-
-## 📦 Como executar o projeto localmente
+## 🚀 Guia de Build Local
 
 ### Pré-requisitos
-
 - Node.js (v18+)
 - npm
+- PostgreSQL
 
 ### Instalação
 
 1. Clone o repositório:
-
-bash
+```bash
 git clone https://github.com/Luanromancin/mentorIA-backend.git
 cd mentorIA-backend
-Instale as dependências:
+```
 
-bash
-
+2. Instale as dependências:
+```bash
 npm install
-Crie um arquivo .env.dev com base no .env.example.
+```
 
-Inicie o servidor:
+3. Configure o ambiente:
+```bash
+cp .env.example .env.dev
+# Edite o arquivo .env.dev com suas configurações
+```
 
-bash
-npm run start
+4. Execute as migrações do banco de dados:
+```bash
+npm run prisma:migrate
+```
+
+5. Inicie o servidor:
+```bash
+npm run start:dev
+```
+
 A API estará disponível em: http://localhost:5001/api
 
-🧪 Testes
-Execute os testes com:
+### Testes
+```bash
+npm run test        # Executa todos os testes
+npm run test:watch  # Executa testes em modo watch
+npm run test:coverage # Executa testes com cobertura
+```
+🧩 Issues Iniciais
 
-bash
-npm run test
+| Issue | Título                                | Labels                      |
+| ----- | ------------------------------------- | --------------------------- |
+| #1    | Setup do Prisma + Banco no Railway    | `good first issue`, `setup` |
+| #2    | Criação de rota de autenticação OAuth | `backend`, `auth`           |
+| #3    | Integração com API Gemini para trilha | `intelligence`, `api`       |
+| #4    | Estrutura inicial de testes unitários | `testing`, `infra`          |
 
-🗂 Estrutura de pastas
-src/
-├── controllers/
-├── database/
-├── entities/
-├── models/
-├── repositories/
-├── routes/
-├── services/
-└── utils/
+
+
+## 🤝 Como Contribuir
+
+🤝 Como Contribuir
+Faça um fork do repositório
+
+Crie uma branch: git checkout -b feature/nome-da-feature
+
+Faça commit das mudanças: git commit -m 'feat: minha nova funcionalidade'
+
+Envie a branch: git push origin feature/nome-da-feature
+
+Crie um Pull Request com uma descrição clara
+
+
+Por favor, leia nosso [guia de contribuição](CONTRIBUTING.md) para detalhes sobre nosso código de conduta e o processo para enviar pull requests.
+
+### Issues
+- [Lista de Issues](https://github.com/Luanromancin/mentorIA-backend/issues)
+- [Good First Issues](https://github.com/Luanromancin/mentorIA-backend/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22)
+
+## 📚 Recursos Importantes
+
+- [Documentação da API](docs/api.md)
+- [Workspace do Projeto](https://github.com/orgs/mentorIA/projects/1)
+- [Ferramenta de Revisão de Código](https://github.com/Luanromancin/mentorIA-backend/pulls)
+- [Rastreador de Problemas](https://github.com/Luanromancin/mentorIA-backend/issues)
+
+## 🔗 Links Úteis
+
+- [MockUp Lovable](https://enem-inteligente-trilhas.lovable.app)
+- [Documentação de Prompts](https://docs.google.com/document/d/1UBrHngoffLZ_rZ41sQmcjgG_E-nV7RGi3b3HwKDuhQk/edit?usp=sharing)
 
 ## 👥 Equipe
 
-### Antonio Gabriel [Github](https://github.com/gabrielclemnt)
-### Gabriela Lima Sotero [Github](https://github.com/gabrielalimasotero)
-### Luan Romancini [Github](https://github.com/Luanromancin)
-### Wilton Sales [Github](https://github.com/WilSales)
+- Antonio Gabriel - [GitHub](https://github.com/gabrielclemnt)
+- Gabriela Lima Sotero - [GitHub](https://github.com/gabrielalimasotero)
+- Luan Romancini - [GitHub](https://github.com/Luanromancin)
+- Wilton Sales - [GitHub](https://github.com/WilSales)
 
----
+## 📝 Licença
 
-## 🔗 MockUp and PitchDeck
-
-https://mentor-ia-learn.lovable.app/
-
-[Prompts](https://docs.google.com/document/d/1vQBVSXb1nNO8Fk_R4xubxmScVkbGHsDdypeyhnjqInc/edit?usp=sharing)
+- Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
 
 

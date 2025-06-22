@@ -1,6 +1,6 @@
 export default class Injector {
-  private services: Map<Function, any> = new Map();
-  private repositories: Map<Function, any> = new Map();
+  private services: Map<new (...args: any[]) => unknown, unknown> = new Map();
+  private repositories: Map<new (...args: any[]) => unknown, unknown> = new Map();
 
   public registerService<T>(
     serviceType: new (...args: any[]) => T,
@@ -10,7 +10,11 @@ export default class Injector {
   }
 
   public getService<T>(serviceType: new (...args: any[]) => T): T {
-    return this.services.get(serviceType) as T;
+    const service = this.services.get(serviceType);
+    if (!service) {
+      throw new Error(`Service ${serviceType.name} not found`);
+    }
+    return service as T;
   }
 
   public registerRepository<T>(
@@ -21,6 +25,10 @@ export default class Injector {
   }
 
   public getRepository<T>(repositoryType: new (...args: any[]) => T): T {
-    return this.repositories.get(repositoryType) as T;
+    const repository = this.repositories.get(repositoryType);
+    if (!repository) {
+      throw new Error(`Repository ${repositoryType.name} not found`);
+    }
+    return repository as T;
   }
 }
