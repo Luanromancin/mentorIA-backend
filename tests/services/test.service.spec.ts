@@ -1,8 +1,7 @@
-import TestEntity from '../../src/entities/test.entity';
-import TestModel from '../../src/models/test.model';
-import OtherRepository from '../../src/repositories/other.repository';
-import TestRepository from '../../src/repositories/test.repository';
 import TestService from '../../src/services/test.service';
+import TestRepository from '../../src/repositories/test.repository';
+import TestEntity from '../../src/entities/test.entity';
+import OtherRepository from '../../src/repositories/other.repository';
 import { HttpNotFoundError } from '../../src/utils/errors/http.error';
 
 describe('TestService', () => {
@@ -10,12 +9,9 @@ describe('TestService', () => {
   let mockOtherRepository: OtherRepository;
   let service: TestService;
 
-  let mockTestEntity: TestEntity = new TestEntity({
-    id: '123',
-    name: 'test',
-  });
+  const mockTestEntity = new TestEntity({ id: '123', name: 'test' });
 
-  let mockTestModel: TestModel = new TestModel(mockTestEntity);
+  const mockTestModel = { findAll: jest.fn(), findByPk: jest.fn() };
 
   beforeEach(() => {
     mockTestRepository = {

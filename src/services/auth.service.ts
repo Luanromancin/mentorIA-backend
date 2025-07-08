@@ -23,47 +23,87 @@ interface AuthResponse {
   token: string;
 }
 
+interface RefreshTokenResponse {
+  token: string;
+}
+
 interface JwtPayload {
-  id: string;
+  id: number;
   email: string;
 }
 
 export class AuthService {
   async register(data: RegisterData): Promise<AuthResponse> {
-    const existingUser = await User.findOne({ where: { email: data.email } });
-    if (existingUser) {
-      throw new HttpError(400, 'Email já está em uso');
+    try {
+      console.log('Iniciando registro com dados:', {
+        ...data,
+        password: '***',
+        birthDate: data.birthDate,
+      });
+
+      // Validação explícita do password
+      if (!data.password || data.password.length < 6) {
+        throw new HttpError(400, 'Senha deve ter pelo menos 6 caracteres');
+      }
+
+      const existingUser = await User.findOne({ where: { email: data.email } });
+      if (existingUser) {
+        throw new HttpError(400, 'Email já está em uso');
+      }
+
+      // Criando usuário com os campos corretos
+      const user = await User.create({
+        email: data.email,
+        password: data.password, // O setter virtual irá processar isso
+        name: data.name,
+        birth_date: new Date(data.birthDate),
+        institution: data.institution,
+      }).catch((error) => {
+        console.error('Erro ao criar usuário:', error);
+        throw error;
+      });
+
+      console.log('Usuário criado com sucesso:', {
+        id: user.id,
+        email: user.email,
+        birth_date: user.birth_date,
+      });
+
+      const { password_hash: _, ...userWithoutPassword } = user.toJSON();
+      const token = this.generateToken(user);
+      return { user: userWithoutPassword, token };
+    } catch (error) {
+      console.error('Erro detalhado no registro:', error);
+      if (error instanceof HttpError) {
+        throw error;
+      }
+      if (error.name === 'SequelizeValidationError') {
+        throw new HttpError(400, 'Dados inválidos: ' + error.message);
+      }
+      if (error.name === 'SequelizeUniqueConstraintError') {
+        throw new HttpError(400, 'Email já está em uso');
+      }
+      throw new HttpError(500, 'Erro ao registrar usuário: ' + error.message);
     }
-
-    const user = await User.create({
-      email: data.email,
-      password: data.password,
-      name: data.name,
-      birthDate: data.birthDate,
-      institution: data.institution,
-    });
-
-    const token = this.generateToken(user);
-    return { user, token };
   }
 
   async login(data: LoginData): Promise<AuthResponse> {
     const user = await User.findOne({ where: { email: data.email } });
-    console.log('Usuário encontrado:', user);
     if (!user) {
-      throw new HttpError(401, 'Credenciais inválidas');
+      throw new HttpError(401, 'Email ou senha incorretos');
     }
 
-    console.log('Senha recebida:', data.password);
-    console.log('Senha no banco:', user.password);
-    const isValidPassword = await bcrypt.compare(data.password, user.password);
-    console.log('Resultado comparação:', isValidPassword);
+    const isValidPassword = await bcrypt.compare(
+      data.password,
+      user.password_hash
+    );
     if (!isValidPassword) {
-      throw new HttpError(401, 'Credenciais inválidas');
+      throw new HttpError(401, 'Email ou senha incorretos');
     }
 
+    const { password_hash: _, ...userWithoutPassword } = user.toJSON();
     const token = this.generateToken(user);
-    return { user, token };
+    return { user: userWithoutPassword, token };
   }
 
   private generateToken(user: User): string {
@@ -77,9 +117,11 @@ export class AuthService {
     };
 
     try {
-      // @ts-ignore - Ignorando erro de tipagem do JWT
-      return jwt.sign(payload, env.JWT_SECRET, { expiresIn: env.JWT_EXPIRES_IN });
-    } catch (error) {
+      // @ts-expect-error - Ignorando erro de tipagem do JWT
+      return jwt.sign(payload, env.JWT_SECRET, {
+        expiresIn: env.JWT_EXPIRES_IN,
+      });
+    } catch {
       throw new HttpError(500, 'Erro ao gerar token');
     }
   }
@@ -96,7 +138,7 @@ export class AuthService {
         throw new HttpError(401, 'Usuário não encontrado');
       }
       return user;
-    } catch (error) {
+    } catch {
       throw new HttpError(401, 'Token inválido');
     }
   }
@@ -138,4 +180,22 @@ export class AuthService {
     }
     await resetToken.destroy();
   }
-} 
+
+  async refreshToken(userId: number): Promise<RefreshTokenResponse> {
+    const user = await User.findByPk(userId);
+    if (!user) {
+      throw new HttpError(401, 'Usuário não encontrado');
+    }
+
+    const token = this.generateToken(user);
+    return { token };
+  }
+
+  async getUserProfile(userId: number): Promise<User> {
+    const user = await User.findByPk(userId);
+    if (!user) {
+      throw new HttpError(404, 'Usuário não encontrado');
+    }
+    return user;
+  }
+}

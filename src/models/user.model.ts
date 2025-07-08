@@ -3,25 +3,26 @@ import sequelize from '../config/database';
 import bcrypt from 'bcryptjs';
 
 class User extends Model {
-  public id!: string;
+  public id!: number;
   public email!: string;
-  public password!: string;
+  public password_hash!: string;
+  public password?: string;
   public name!: string;
-  public birthDate!: Date;
+  public birth_date!: Date;
   public institution!: string;
-  public readonly createdAt!: Date;
-  public readonly updatedAt!: Date;
+  public readonly created_at!: Date;
+  public readonly updated_at!: Date;
 
   public async validatePassword(password: string): Promise<boolean> {
-    return bcrypt.compare(password, this.password);
+    return bcrypt.compare(password, this.password_hash);
   }
 }
 
 User.init(
   {
     id: {
-      type: DataTypes.UUID,
-      defaultValue: DataTypes.UUIDV4,
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
       primaryKey: true,
     },
     email: {
@@ -33,6 +34,23 @@ User.init(
       },
     },
     password: {
+      type: DataTypes.VIRTUAL,
+      allowNull: true,
+      validate: {
+        len: {
+          args: [6, 100],
+          msg: 'Password must be between 6 and 100 characters',
+        },
+      },
+      set(value: string) {
+        if (value) {
+          const salt = bcrypt.genSaltSync(10);
+          const hash = bcrypt.hashSync(value, salt);
+          this.setDataValue('password_hash', hash);
+        }
+      },
+    },
+    password_hash: {
       type: DataTypes.STRING,
       allowNull: false,
     },
@@ -40,28 +58,23 @@ User.init(
       type: DataTypes.STRING,
       allowNull: false,
     },
-    birthDate: {
+    birth_date: {
       type: DataTypes.DATE,
-      allowNull: false,
+      allowNull: true,
     },
     institution: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
     },
   },
   {
     sequelize,
     modelName: 'User',
     tableName: 'users',
-    hooks: {
-      beforeSave: async (user: User) => {
-        if (user.changed('password')) {
-          const salt = await bcrypt.genSalt(10);
-          user.password = await bcrypt.hash(user.password, salt);
-        }
-      },
-    },
+    timestamps: true,
+    createdAt: 'created_at',
+    updatedAt: 'updated_at',
   }
 );
 
-export default User; 
+export default User;

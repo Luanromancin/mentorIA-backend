@@ -1,27 +1,34 @@
 import { Request, Response, NextFunction } from 'express';
-import { validate, ValidationError } from 'class-validator';
+import { validate as classValidate, ValidationError } from 'class-validator';
 import { plainToClass } from 'class-transformer';
 
 export const validate = (dtoClass: any) => {
-  return async (req: Request, res: Response, next: NextFunction) => {
+  return async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
     const dtoObject = plainToClass(dtoClass, req.body);
-    const errors = await validate(dtoObject);
+    const errors: ValidationError[] = await classValidate(dtoObject);
 
     if (errors.length > 0) {
-      const errorMessages = errors.map((error: ValidationError) => {
-        if (error.constraints) {
-          return Object.values(error.constraints);
-        }
-        return [];
-      }).flat();
+      const errorMessages: string[] = errors
+        .map((error: ValidationError) => {
+          if (error.constraints) {
+            return Object.values(error.constraints);
+          }
+          return [];
+        })
+        .flat();
 
-      return res.status(400).json({
+      res.status(400).json({
         message: 'Erro de validação',
         errors: errorMessages,
       });
+      return;
     }
 
     req.body = dtoObject;
     next();
   };
-}; 
+};

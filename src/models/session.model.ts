@@ -2,16 +2,15 @@ import { Model, DataTypes } from 'sequelize';
 import sequelize from '../config/database';
 import User from './user.model';
 
-class PasswordResetToken extends Model {
+class Session extends Model {
   public id!: number;
   public userId!: number;
   public token!: string;
   public expiresAt!: Date;
   public readonly createdAt!: Date;
-  public readonly updatedAt!: Date;
 }
 
-PasswordResetToken.init(
+Session.init(
   {
     id: {
       type: DataTypes.INTEGER,
@@ -30,7 +29,6 @@ PasswordResetToken.init(
     token: {
       type: DataTypes.STRING,
       allowNull: false,
-      unique: true,
     },
     expiresAt: {
       type: DataTypes.DATE,
@@ -40,15 +38,16 @@ PasswordResetToken.init(
   },
   {
     sequelize,
-    modelName: 'PasswordResetToken',
-    tableName: 'password_reset_tokens',
+    modelName: 'Session',
+    tableName: 'sessions',
     underscored: true,
     timestamps: true,
+    updatedAt: false,
   }
 );
 
 // Relacionamento com User
-PasswordResetToken.belongsTo(User, { foreignKey: 'userId' });
-User.hasMany(PasswordResetToken, { foreignKey: 'userId' });
+Session.belongsTo(User, { foreignKey: 'userId' });
+User.hasMany(Session, { foreignKey: 'userId' });
 
-export default PasswordResetToken;
+export default Session;

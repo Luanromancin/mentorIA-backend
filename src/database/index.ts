@@ -2,6 +2,7 @@ import TestEntity from '../entities/test.entity';
 import sequelize from '../config/database';
 import User from '../models/user.model';
 import PasswordResetToken from '../models/password-reset-token.model';
+import Session from '../models/session.model';
 
 export default class Database {
   data: { [key: string]: any[] };
@@ -39,8 +40,8 @@ export async function initDatabase() {
     await sequelize.authenticate();
     console.log('Database connection has been established successfully.');
 
-    // Sincroniza os modelos com o banco de dados
-    await sequelize.sync({ alter: true });
+    // Força a recriação das tabelas
+    await sequelize.sync({ force: false });
     console.log('Database synchronized successfully.');
 
     return true;
@@ -59,4 +60,4 @@ export async function closeDatabase() {
   }
 }
 
-export { User, PasswordResetToken };
+export { User, PasswordResetToken, Session };

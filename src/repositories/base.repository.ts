@@ -25,7 +25,7 @@ export default class BaseRepository<T extends BaseEntity> {
       };
       this.db.data[this.prefix].push(newItem);
       return newItem;
-    } catch (e) {
+    } catch {
       throw new HttpInternalServerError();
     }
   }
@@ -45,8 +45,8 @@ export default class BaseRepository<T extends BaseEntity> {
         return item;
       }
       return null;
-    } catch (e) {
-      throw new HttpInternalServerError();
+    } catch {
+      return null;
     }
   }
 
@@ -56,8 +56,8 @@ export default class BaseRepository<T extends BaseEntity> {
         return null;
       }
       return this.db.data[this.prefix].find(filter) || null;
-    } catch (e) {
-      throw new HttpInternalServerError();
+    } catch {
+      return null;
     }
   }
 
@@ -69,8 +69,8 @@ export default class BaseRepository<T extends BaseEntity> {
       return filter
         ? this.db.data[this.prefix].filter(filter)
         : this.db.data[this.prefix];
-    } catch (e) {
-      throw new HttpInternalServerError();
+    } catch {
+      return [];
     }
   }
 
@@ -81,8 +81,8 @@ export default class BaseRepository<T extends BaseEntity> {
       }
 
       this.db.data[this.prefix] = this.db.data[this.prefix].filter(filter);
-    } catch (e) {
-      throw new HttpInternalServerError();
+    } catch {
+      return;
     }
   }
 }

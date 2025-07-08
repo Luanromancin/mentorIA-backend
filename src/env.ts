@@ -1,28 +1,24 @@
-// Removendo a importação não utilizada
-// import env from 'env-cmd';
+import dotenv from 'dotenv';
+import * as path from 'path';
 
-interface Env {
-  NODE_ENV: string;
-  PORT: string;
-  DB_HOST: string;
-  DB_PORT: string;
-  DB_USER: string;
-  DB_PASSWORD: string;
-  DB_NAME: string;
-  JWT_SECRET: string;
-  JWT_EXPIRES_IN: string;
-}
+// Carrega o arquivo .env da raiz do projeto
+dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
-const environment: Env = {
-  NODE_ENV: process.env.NODE_ENV || 'development',
+// Log para debug
+console.log('Variáveis de ambiente carregadas:', {
+  DB_HOST: process.env.DB_HOST,
+  DB_PORT: process.env.DB_PORT,
+  DB_NAME: process.env.DB_NAME,
+  DB_USER: process.env.DB_USER,
+});
+
+export default {
   PORT: process.env.PORT || '3000',
   DB_HOST: process.env.DB_HOST || 'localhost',
   DB_PORT: process.env.DB_PORT || '5432',
+  DB_NAME: process.env.DB_NAME || 'mentorIA',
   DB_USER: process.env.DB_USER || 'postgres',
-  DB_PASSWORD: process.env.DB_PASSWORD || 'postgres',
-  DB_NAME: process.env.DB_NAME || 'backend_nodejs_ess',
-  JWT_SECRET: process.env.JWT_SECRET || 'your-secret-key',
-  JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN || '1h',
+  DB_PASSWORD: process.env.DB_PASSWORD || 'post1',
+  JWT_SECRET: process.env.JWT_SECRET || 'secret',
+  JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN || '1d',
 };
-
-export default environment;

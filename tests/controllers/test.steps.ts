@@ -17,11 +17,11 @@ defineFeature(feature, (test) => {
   });
 
   test('Create a test', ({ given, when, then, and }) => {
-    given(/^o TestRepository não tem um test com nome "(.*)"$/, async (testId, testName) => {
+    given(/^o TestRepository não tem um test com nome "(.*)"$/, async (_testId, _testName) => {
       // Check if the test does not exist in the repository and delete it if it exists
-      const existingTest = await mockTestRepository.getTest(testId);
+      const existingTest = await mockTestRepository.getTest(_testId);
       if (existingTest) {
-        await mockTestRepository.deleteTest(testId);
+        await mockTestRepository.deleteTest(_testId);
       }
     });
 

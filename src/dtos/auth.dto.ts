@@ -1,4 +1,10 @@
-import { IsEmail, IsString, IsDate, MinLength, IsNotEmpty } from 'class-validator';
+import {
+  IsEmail,
+  IsString,
+  IsDate,
+  MinLength,
+  IsNotEmpty,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class RegisterDto {
@@ -50,4 +56,4 @@ export class ResetPasswordDto {
   @MinLength(6)
   @IsNotEmpty()
   newPassword: string;
-} 
+}
