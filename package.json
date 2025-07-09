@@ -11,6 +11,9 @@
     "test:coverage": "env-cmd -f .env.test jest --coverage --config ./jest.config.js",
     "test:integration": "env-cmd -f .env.test jest --testPathPattern=integration --config ./jest.config.js",
     "test:supabase": "node test-supabase.js",
+    "test:auth-complete": "node test-auth-complete.js",
+    "test:auth-basic": "node test-auth-basic.js",
+    "test:auth-local": "node test-auth-local.js",
     "prettier": "prettier --write \"src/**/*.{ts,js}\"",
     "prettier:check": "prettier --check \"src/**/*.{ts,js}\"",
     "lint": "eslint \"**/*.ts\" --report-unused-disable-directives --max-warnings 0 --fix",
@@ -26,6 +29,7 @@
   "dependencies": {
     "@supabase/supabase-js": "^2.50.3",
     "@types/sqlite3": "^3.1.11",
+    "axios": "^1.10.0",
     "bcryptjs": "^3.0.2",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.2",
@@ -66,6 +70,7 @@
     "prettier": "^2.8.4",
     "sequelize-cli": "^6.6.3",
     "sqlite3": "^5.1.7",
+    "supabase": "^2.30.4",
     "supertest": "^6.3.3",
     "ts-jest": "^29.1.0",
     "ts-node": "^10.9.1"
