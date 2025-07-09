@@ -20,9 +20,10 @@ describe('Auth Integration Tests', () => {
 
   describe('POST /api/auth/register', () => {
     it('should register a new user successfully', async () => {
+      const uniqueEmail = `test-${Date.now()}@example.com`;
       const userData = {
         name: 'Test User',
-        email: 'test@example.com',
+        email: uniqueEmail,
         password: 'password123'
       };
 
@@ -40,9 +41,10 @@ describe('Auth Integration Tests', () => {
     });
 
     it('should return error for duplicate email', async () => {
+      const uniqueEmail = `test-${Date.now()}@example.com`;
       const userData = {
         name: 'Test User',
-        email: 'test@example.com',
+        email: uniqueEmail,
         password: 'password123'
       };
 
@@ -78,20 +80,22 @@ describe('Auth Integration Tests', () => {
   });
 
   describe('POST /api/auth/login', () => {
+    let uniqueEmail: string;
     beforeEach(async () => {
+      uniqueEmail = `test-${Date.now()}@example.com`;
       // Criar usuário para teste de login
       await request(app)
         .post('/api/auth/register')
         .send({
           name: 'Test User',
-          email: 'test@example.com',
+          email: uniqueEmail,
           password: 'password123'
         });
     });
 
     it('should login successfully with valid credentials', async () => {
       const loginData = {
-        email: 'test@example.com',
+        email: uniqueEmail,
         password: 'password123'
       };
 
@@ -107,7 +111,7 @@ describe('Auth Integration Tests', () => {
 
     it('should return error for invalid password', async () => {
       const loginData = {
-        email: 'test@example.com',
+        email: uniqueEmail,
         password: 'wrongpassword'
       };
 
@@ -121,7 +125,7 @@ describe('Auth Integration Tests', () => {
 
     it('should return error for non-existent email', async () => {
       const loginData = {
-        email: 'nonexistent@example.com',
+        email: `nonexistent-${Date.now()}@example.com`,
         password: 'password123'
       };
 
@@ -136,21 +140,23 @@ describe('Auth Integration Tests', () => {
 
   describe('GET /api/auth/me', () => {
     let authToken: string;
+    let uniqueEmail: string;
 
     beforeEach(async () => {
+      uniqueEmail = `test-${Date.now()}@example.com`;
       // Registrar e fazer login para obter token
       await request(app)
         .post('/api/auth/register')
         .send({
           name: 'Test User',
-          email: 'test@example.com',
+          email: uniqueEmail,
           password: 'password123'
         });
 
       const loginResponse = await request(app)
         .post('/api/auth/login')
         .send({
-          email: 'test@example.com',
+          email: uniqueEmail,
           password: 'password123'
         });
 
@@ -163,7 +169,7 @@ describe('Auth Integration Tests', () => {
         .set('Authorization', `Bearer ${authToken}`)
         .expect(200);
 
-      expect(response.body).toHaveProperty('email', 'test@example.com');
+      expect(response.body).toHaveProperty('email', uniqueEmail);
     });
 
     it('should return error for invalid token', async () => {

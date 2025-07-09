@@ -1,8 +1,6 @@
 import TestEntity from '../entities/test.entity';
 import sequelize from '../config/database';
-import User from '../models/user.model';
-import PasswordResetToken from '../models/password-reset-token.model';
-import Session from '../models/session.model';
+import Profile from '../models/profile.model';
 
 export default class Database {
   data: { [key: string]: any[] };
@@ -39,18 +37,18 @@ export async function initDatabase() {
   try {
     await sequelize.authenticate();
     if (process.env.NODE_ENV !== 'test') {
-      console.log('Database connection has been established successfully.');
+      console.log('✅ Database connection has been established successfully.');
     }
 
-    // Força a recriação das tabelas
+    // Sincronizar as tabelas
     await sequelize.sync({ force: false });
     if (process.env.NODE_ENV !== 'test') {
-      console.log('Database synchronized successfully.');
+      console.log('✅ Database synchronized successfully.');
     }
 
     return true;
   } catch (error) {
-    console.error('Unable to connect to the database:', error);
+    console.error('❌ Unable to connect to the database:', error);
     return false;
   }
 }
@@ -59,11 +57,11 @@ export async function closeDatabase() {
   try {
     await sequelize.close();
     if (process.env.NODE_ENV !== 'test') {
-      console.log('Database connection closed successfully.');
+      console.log('✅ Database connection closed successfully.');
     }
   } catch (error) {
-    console.error('Error closing database connection:', error);
+    console.error('❌ Error closing database connection:', error);
   }
 }
 
-export { User, PasswordResetToken, Session };
+export { Profile };

@@ -1,11 +1,11 @@
 import { Request, Response } from 'express';
 import { AuthService } from '../services/auth.service';
 import { HttpError } from '../utils/http-error';
-import User from '../models/user.model';
+import Profile from '../models/profile.model';
 
 // Extensão da interface Request
 interface AuthenticatedRequest extends Request {
-  user?: User;
+  user?: Profile;
 }
 
 export class AuthController {
@@ -179,10 +179,9 @@ export class AuthController {
         res.status(401).json({ message: 'Usuário não autenticado' });
         return;
       }
-      const user = await this.authService.getUserProfile(userId);
-      // Remove a senha do objeto de resposta
-      const { password_hash: _, ...userWithoutPassword } = user.toJSON();
-      res.json(userWithoutPassword);
+      const profile = await this.authService.getUserProfile(userId);
+      // Profile não tem password_hash, então retornamos diretamente
+      res.json(profile);
     } catch (_error) {
       if (_error instanceof HttpError) {
         res.status(_error.statusCode).json({ message: _error.message });
@@ -192,10 +191,54 @@ export class AuthController {
     }
   }
 
-  // Método temporário para debug - listar todos os usuários
-  async listUsers(_req: Request, res: Response): Promise<void> {
+  async updateProfile(req: AuthenticatedRequest, res: Response): Promise<void> {
     try {
-      const users = await User.findAll({
+      const userId = req.user?.id;
+      if (!userId) {
+        res.status(401).json({ message: 'Usuário não autenticado' });
+        return;
+      }
+
+      const { name, birth_date, institution } = req.body;
+      const profile = await this.authService.updateProfile(userId, {
+        name,
+        birth_date,
+        institution,
+      });
+
+      res.json(profile);
+    } catch (_error) {
+      if (_error instanceof HttpError) {
+        res.status(_error.statusCode).json({ message: _error.message });
+      } else {
+        res.status(500).json({ message: 'Erro interno do servidor' });
+      }
+    }
+  }
+
+  async deleteAccount(req: AuthenticatedRequest, res: Response): Promise<void> {
+    try {
+      const userId = req.user?.id;
+      if (!userId) {
+        res.status(401).json({ message: 'Usuário não autenticado' });
+        return;
+      }
+
+      await this.authService.deleteUser(userId);
+      res.json({ message: 'Conta deletada com sucesso' });
+    } catch (_error) {
+      if (_error instanceof HttpError) {
+        res.status(_error.statusCode).json({ message: _error.message });
+      } else {
+        res.status(500).json({ message: 'Erro interno do servidor' });
+      }
+    }
+  }
+
+  // Método temporário para debug - listar todos os perfis
+  async listProfiles(_req: Request, res: Response): Promise<void> {
+    try {
+      const profiles = await Profile.findAll({
         attributes: [
           'id',
           'email',
@@ -205,20 +248,40 @@ export class AuthController {
           'created_at',
           'updated_at',
         ],
+        order: [['created_at', 'DESC']],
       });
 
-      console.log('Usuários encontrados no banco:', users.length);
+      res.json(profiles);
+    } catch (error) {
+      console.error('Erro ao listar perfis:', error);
+      res.status(500).json({ message: 'Erro interno do servidor' });
+    }
+  }
+
+  async syncUser(req: Request, res: Response): Promise<void> {
+    try {
+      const { email } = req.body;
+
+      if (!email) {
+        throw new HttpError(400, 'Email é obrigatório');
+      }
+
+      console.log('Sincronizando usuário:', email);
+
+      // Usar método público do AuthService para sincronizar
+      const result = await this.authService.syncUserFromSupabase(email);
 
       res.json({
-        count: users.length,
-        users: users.map((user) => user.toJSON()),
+        message: result.message,
+        user: result.user,
       });
-    } catch (_error) {
-      console.error('Erro ao listar usuários:', _error);
-      res.status(500).json({
-        message: 'Erro ao listar usuários',
-        details: _error instanceof Error ? _error.message : 'Erro desconhecido',
-      });
+    } catch (error) {
+      console.error('Erro na sincronização:', error);
+      if (error instanceof HttpError) {
+        res.status(error.statusCode).json({ message: error.message });
+      } else {
+        res.status(500).json({ message: 'Erro ao sincronizar usuário' });
+      }
     }
   }
 }

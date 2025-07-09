@@ -1,10 +1,10 @@
 import { Request, Response, NextFunction } from 'express';
 import { AuthService } from '../services/auth.service';
-import User from '../models/user.model';
+import Profile from '../models/profile.model';
 
 // Extensão da interface Request
 interface AuthenticatedRequest extends Request {
-  user?: User;
+  user?: Profile;
 }
 
 export const authMiddleware = async (
@@ -26,10 +26,10 @@ export const authMiddleware = async (
     }
 
     const authService = new AuthService();
-    const user = await authService.validateToken(token);
+    const profile = await authService.validateToken(token);
 
-    // Adiciona o usuário ao objeto request para uso posterior
-    req.user = user;
+    // Adiciona o perfil ao objeto request para uso posterior
+    req.user = profile;
     next();
   } catch {
     res.status(401).json({

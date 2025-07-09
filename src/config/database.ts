@@ -1,39 +1,38 @@
 import { Sequelize } from 'sequelize';
 import env from '../env';
 
-// Log para debug
-console.log('Configurações do banco:', {
-  host: env.DB_HOST,
-  port: env.DB_PORT,
-  database: env.DB_NAME,
-  username: env.DB_USER,
-  // Não logamos a senha por segurança
-});
+// Função para criar configuração do banco
+const createDatabaseConfig = () => {
+  // Usar SQLite em memória para testes
+  if (env.NODE_ENV === 'test') {
+    console.log('🔧 Usando SQLite em memória para testes');
+    return {
+      dialect: 'sqlite' as const,
+      storage: ':memory:',
+      logging: false,
+      define: {
+        timestamps: true,
+        underscored: true,
+      },
+    };
+  }
 
-// Usar SQLite em memória para testes
-const sequelize =
-  env.NODE_ENV === 'test'
-    ? new Sequelize({
-        dialect: 'sqlite',
-        storage: ':memory:',
-        logging: false,
-        define: {
-          timestamps: true,
-          underscored: true,
-        },
-      })
-    : new Sequelize({
-        dialect: 'postgres',
-        host: env.DB_HOST || 'localhost',
-        port: env.DB_PORT,
-        database: env.DB_NAME,
-        username: env.DB_USER,
-        password: env.DB_PASSWORD,
-        logging: false,
-        define: {
-          timestamps: true,
-          underscored: true,
-        },
-      });
+  // Para desenvolvimento e produção, usar SQLite local
+  // O Supabase será usado apenas via API para autenticação e operações específicas
+  console.log('🔧 Usando SQLite local para dados da aplicação');
+  console.log('🔧 Supabase será usado apenas via API para autenticação');
+
+  return {
+    dialect: 'sqlite' as const,
+    storage: './dev.sqlite',
+    logging: false,
+    define: {
+      timestamps: true,
+      underscored: true,
+    },
+  };
+};
+
+const sequelize = new Sequelize(createDatabaseConfig());
 
 export default sequelize;

@@ -1,7 +1,7 @@
-import User from '../models/user.model';
-import PasswordResetToken from '../models/password-reset-token.model';
+import Profile from '../models/profile.model';
+import ProfileRepository from '../repositories/profile.repository';
+import SupabaseService from './supabase.service';
 import jwt from 'jsonwebtoken';
-import bcrypt from 'bcryptjs';
 import env from '../env';
 import { HttpError } from '../utils/http-error';
 
@@ -19,7 +19,7 @@ interface LoginData {
 }
 
 interface AuthResponse {
-  user: User;
+  user: Profile;
   token: string;
 }
 
@@ -28,11 +28,19 @@ interface RefreshTokenResponse {
 }
 
 interface JwtPayload {
-  id: number;
+  id: string;
   email: string;
 }
 
 export class AuthService {
+  private profileRepository: typeof ProfileRepository;
+  private supabaseService: typeof SupabaseService;
+
+  constructor() {
+    this.profileRepository = ProfileRepository;
+    this.supabaseService = SupabaseService;
+  }
+
   async register(data: RegisterData): Promise<AuthResponse> {
     try {
       console.log('Iniciando registro com dados:', {
@@ -46,36 +54,57 @@ export class AuthService {
         throw new HttpError(400, 'Senha deve ter pelo menos 6 caracteres');
       }
 
-      const existingUser = await User.findOne({ where: { email: data.email } });
-      if (existingUser) {
+      // Verificar se email já existe no perfil
+      const existingProfile = await this.profileRepository.findByEmail(
+        data.email
+      );
+      if (existingProfile) {
         throw new HttpError(400, 'Email já está em uso');
       }
 
-      // Criando usuário com os campos corretos
-      const user = await User.create({
+      // 1. Criar usuário no Supabase Auth
+      console.log('Criando usuário no Supabase Auth...');
+      const supabaseUser = await this.supabaseService.createUser(
+        data.email,
+        data.password
+      );
+
+      console.log('Usuário criado no Supabase Auth:', {
+        id: supabaseUser.id,
+        email: supabaseUser.email,
+      });
+
+      // 2. Criar perfil na tabela profiles
+      console.log('Criando perfil na tabela profiles...');
+      const profile = await this.profileRepository.createProfile({
+        id: supabaseUser.id, // Usar o mesmo ID do Supabase Auth
         email: data.email,
-        password: data.password, // O setter virtual irá processar isso
         name: data.name,
         birth_date: new Date(data.birthDate),
         institution: data.institution,
-      }).catch((error) => {
-        console.error('Erro ao criar usuário:', error);
-        throw error;
       });
 
-      console.log('Usuário criado com sucesso:', {
-        id: user.id,
-        email: user.email,
-        birth_date: user.birth_date,
+      console.log('Perfil criado com sucesso:', {
+        id: profile.id,
+        email: profile.email,
+        name: profile.name,
       });
 
-      const { password_hash: _, ...userWithoutPassword } = user.toJSON();
-      const token = this.generateToken(user);
-      return { user: userWithoutPassword, token };
+      // 3. Gerar token JWT
+      const token = this.generateToken(profile);
+
+      return { user: profile, token };
     } catch (error) {
       console.error('Erro detalhado no registro:', error);
       if (error instanceof HttpError) {
         throw error;
+      }
+      // Verificar se é um erro de email já em uso
+      if (error.message.includes('Email já está em uso')) {
+        throw new HttpError(400, 'Email já está em uso');
+      }
+      if (error.message.includes('Supabase')) {
+        throw new HttpError(400, error.message);
       }
       if (error.name === 'SequelizeValidationError') {
         throw new HttpError(400, 'Dados inválidos: ' + error.message);
@@ -88,32 +117,81 @@ export class AuthService {
   }
 
   async login(data: LoginData): Promise<AuthResponse> {
-    const user = await User.findOne({ where: { email: data.email } });
-    if (!user) {
-      throw new HttpError(401, 'Email ou senha incorretos');
-    }
+    try {
+      // 1. Fazer login no Supabase Auth
+      console.log('Fazendo login no Supabase Auth...');
+      const supabaseUser = await this.supabaseService.loginUser(
+        data.email,
+        data.password
+      );
 
-    const isValidPassword = await bcrypt.compare(
-      data.password,
-      user.password_hash
-    );
-    if (!isValidPassword) {
-      throw new HttpError(401, 'Email ou senha incorretos');
-    }
+      // 2. Buscar perfil por email
+      let profile = await this.profileRepository.findByEmail(data.email);
 
-    const { password_hash: _, ...userWithoutPassword } = user.toJSON();
-    const token = this.generateToken(user);
-    return { user: userWithoutPassword, token };
+      // 3. Se o perfil não existir no banco local, mas o usuário existe no Supabase,
+      // criar o perfil automaticamente
+      if (!profile && supabaseUser) {
+        console.log(
+          'Perfil não encontrado no banco local, criando automaticamente...'
+        );
+
+        // Buscar dados do usuário no Supabase
+        const userData = await this.supabaseService.getUserById(
+          supabaseUser.id
+        );
+
+        if (userData) {
+          profile = await this.profileRepository.createProfile({
+            id: supabaseUser.id,
+            email: supabaseUser.email,
+            name: userData.name || 'Usuário',
+            birth_date: userData.birth_date
+              ? new Date(userData.birth_date)
+              : new Date(),
+            institution: userData.institution || '',
+          });
+
+          console.log('Perfil criado automaticamente:', {
+            id: profile.id,
+            email: profile.email,
+          });
+        }
+      }
+
+      if (!profile) {
+        throw new HttpError(401, 'Perfil não encontrado');
+      }
+
+      console.log('Usuário autenticado:', {
+        id: profile.id,
+        email: profile.email,
+      });
+
+      // 4. Gerar token JWT
+      const token = this.generateToken(profile);
+
+      return { user: profile, token };
+    } catch (error) {
+      console.error('Erro no login:', error);
+      if (error instanceof HttpError) {
+        throw error;
+      }
+      // Verificar se é um erro de credenciais inválidas
+      if (error.message.includes('Email ou senha incorretos')) {
+        throw new HttpError(401, 'Email ou senha incorretos');
+      }
+      throw new HttpError(500, 'Erro ao fazer login: ' + error.message);
+    }
   }
 
-  private generateToken(user: User): string {
+  private generateToken(profile: Profile): string {
     if (!env.JWT_SECRET) {
       throw new HttpError(500, 'JWT_SECRET não configurado');
     }
 
     const payload: JwtPayload = {
-      id: user.id,
-      email: user.email,
+      id: profile.id,
+      email: profile.email,
     };
 
     try {
@@ -126,76 +204,145 @@ export class AuthService {
     }
   }
 
-  async validateToken(token: string): Promise<User> {
+  async validateToken(token: string): Promise<Profile> {
     if (!env.JWT_SECRET) {
       throw new HttpError(500, 'JWT_SECRET não configurado');
     }
 
     try {
       const decoded = jwt.verify(token, env.JWT_SECRET) as JwtPayload;
-      const user = await User.findByPk(decoded.id);
-      if (!user) {
+      const profile = await this.profileRepository.findById(decoded.id);
+      if (!profile) {
         throw new HttpError(401, 'Usuário não encontrado');
       }
-      return user;
+      return profile;
     } catch {
       throw new HttpError(401, 'Token inválido');
     }
   }
 
+  /**
+   * Sincroniza um usuário do Supabase com o banco local
+   */
+  async syncUserFromSupabase(
+    email: string
+  ): Promise<{ message: string; user: any }> {
+    console.log('Sincronizando usuário do Supabase:', email);
+
+    // 1. Verificar se o usuário existe no Supabase
+    const supabaseUser = await this.supabaseService.getUserByEmail(email);
+
+    if (!supabaseUser) {
+      throw new HttpError(404, 'Usuário não encontrado no Supabase');
+    }
+
+    // 2. Verificar se já existe no banco local
+    const existingProfile = await this.profileRepository.findByEmail(email);
+
+    if (existingProfile) {
+      return {
+        message: 'Usuário já está sincronizado',
+        user: existingProfile,
+      };
+    }
+
+    // 3. Criar perfil no banco local
+    const profile = await this.profileRepository.createProfile({
+      id: supabaseUser.id,
+      email: supabaseUser.email,
+      name: supabaseUser.name || 'Usuário',
+      birth_date: supabaseUser.birth_date
+        ? new Date(supabaseUser.birth_date)
+        : new Date(),
+      institution: supabaseUser.institution || '',
+    });
+
+    console.log('Usuário sincronizado com sucesso:', {
+      id: profile.id,
+      email: profile.email,
+    });
+
+    return {
+      message: 'Usuário sincronizado com sucesso',
+      user: profile,
+    };
+  }
+
   async requestPasswordReset(email: string): Promise<void> {
-    const user = await User.findOne({ where: { email } });
-    if (!user) {
+    const profile = await this.profileRepository.findByEmail(email);
+    if (!profile) {
       // Por segurança, não revelamos se o email existe ou não
       return;
     }
 
-    // Remove tokens antigos
-    await PasswordResetToken.destroy({ where: { userId: user.id } });
+    // Verificar se usuário existe no Supabase Auth
+    await this.supabaseService.getUserById(profile.id);
 
-    // Cria novo token
-    const token = await PasswordResetToken.create({
-      userId: user.id,
-      token: Math.random().toString(36).substring(2),
-      expiresAt: new Date(Date.now() + 3600000), // 1 hora
-    });
-
-    // TODO: Implementar envio de email com o token
-    console.log(`Token de reset para ${email}: ${token.token}`);
+    // TODO: Implementar reset de senha via Supabase Auth
+    console.log(`Solicitação de reset de senha para ${email}`);
   }
 
-  async resetPassword(token: string, newPassword: string): Promise<void> {
-    const resetToken = await PasswordResetToken.findOne({
-      where: { token },
-    });
-
-    if (!resetToken || resetToken.expiresAt < new Date()) {
-      throw new HttpError(400, 'Token inválido ou expirado');
-    }
-
-    const user = await User.findByPk(resetToken.userId);
-    if (user) {
-      const hashedPassword = await bcrypt.hash(newPassword, 10);
-      await user.update({ password: hashedPassword });
-    }
-    await resetToken.destroy();
+  async resetPassword(_token: string, _newPassword: string): Promise<void> {
+    // TODO: Implementar reset de senha via Supabase Auth
+    throw new HttpError(501, 'Reset de senha não implementado ainda');
   }
 
-  async refreshToken(userId: number): Promise<RefreshTokenResponse> {
-    const user = await User.findByPk(userId);
-    if (!user) {
+  async refreshToken(userId: string): Promise<RefreshTokenResponse> {
+    const profile = await this.profileRepository.findById(userId);
+    if (!profile) {
       throw new HttpError(401, 'Usuário não encontrado');
     }
 
-    const token = this.generateToken(user);
+    const token = this.generateToken(profile);
     return { token };
   }
 
-  async getUserProfile(userId: number): Promise<User> {
-    const user = await User.findByPk(userId);
-    if (!user) {
+  async getUserProfile(userId: string): Promise<Profile> {
+    const profile = await this.profileRepository.findById(userId);
+    if (!profile) {
       throw new HttpError(404, 'Usuário não encontrado');
     }
-    return user;
+    return profile;
+  }
+
+  async updateProfile(
+    userId: string,
+    data: {
+      name?: string;
+      birth_date?: string;
+      institution?: string;
+    }
+  ): Promise<Profile> {
+    const updateData: any = {};
+
+    if (data.name) updateData.name = data.name;
+    if (data.birth_date) updateData.birth_date = new Date(data.birth_date);
+    if (data.institution) updateData.institution = data.institution;
+
+    const profile = await this.profileRepository.updateProfile(
+      userId,
+      updateData
+    );
+    if (!profile) {
+      throw new HttpError(404, 'Usuário não encontrado');
+    }
+
+    return profile;
+  }
+
+  async deleteUser(userId: string): Promise<void> {
+    try {
+      // 1. Deletar perfil
+      const deleted = await this.profileRepository.deleteProfile(userId);
+      if (!deleted) {
+        throw new HttpError(404, 'Usuário não encontrado');
+      }
+
+      // 2. Deletar usuário do Supabase Auth
+      await this.supabaseService.deleteUser(userId);
+    } catch (error) {
+      console.error('Erro ao deletar usuário:', error);
+      throw new HttpError(500, 'Erro ao deletar usuário: ' + error.message);
+    }
   }
 }

@@ -1,11 +1,11 @@
 import {
   IsEmail,
   IsString,
-  IsDate,
   MinLength,
   IsNotEmpty,
+  IsOptional,
+  IsDateString,
 } from 'class-validator';
-import { Type } from 'class-transformer';
 
 export class RegisterDto {
   @IsEmail()
@@ -21,10 +21,9 @@ export class RegisterDto {
   @IsNotEmpty()
   name: string;
 
-  @Type(() => Date)
-  @IsDate()
+  @IsDateString()
   @IsNotEmpty()
-  birthDate: Date;
+  birthDate: string;
 
   @IsString()
   @IsNotEmpty()
@@ -56,4 +55,18 @@ export class ResetPasswordDto {
   @MinLength(6)
   @IsNotEmpty()
   newPassword: string;
+}
+
+export class UpdateProfileDto {
+  @IsString()
+  @IsOptional()
+  name?: string;
+
+  @IsDateString()
+  @IsOptional()
+  birth_date?: string;
+
+  @IsString()
+  @IsOptional()
+  institution?: string;
 }
