@@ -38,11 +38,15 @@ export default class Database {
 export async function initDatabase() {
   try {
     await sequelize.authenticate();
-    console.log('Database connection has been established successfully.');
+    if (process.env.NODE_ENV !== 'test') {
+      console.log('Database connection has been established successfully.');
+    }
 
     // Força a recriação das tabelas
     await sequelize.sync({ force: false });
-    console.log('Database synchronized successfully.');
+    if (process.env.NODE_ENV !== 'test') {
+      console.log('Database synchronized successfully.');
+    }
 
     return true;
   } catch (error) {
@@ -54,7 +58,9 @@ export async function initDatabase() {
 export async function closeDatabase() {
   try {
     await sequelize.close();
-    console.log('Database connection closed successfully.');
+    if (process.env.NODE_ENV !== 'test') {
+      console.log('Database connection closed successfully.');
+    }
   } catch (error) {
     console.error('Error closing database connection:', error);
   }

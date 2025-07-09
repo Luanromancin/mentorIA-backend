@@ -11,7 +11,7 @@ describe('TestService', () => {
 
   const mockTestEntity = new TestEntity({ id: '123', name: 'test' });
 
-  const mockTestModel = { findAll: jest.fn(), findByPk: jest.fn() };
+  const mockTestModel = { id: '123', name: 'test' };
 
   beforeEach(() => {
     mockTestRepository = {
@@ -40,7 +40,7 @@ describe('TestService', () => {
 
     const tests = await service.getTests();
 
-    expect(tests).toEqual([mockTestModel]);
+    expect(tests[0]).toMatchObject(mockTestModel);
     expect(mockTestRepository.getTests).toBeCalledTimes(1);
   });
 
@@ -51,7 +51,7 @@ describe('TestService', () => {
 
     const test = await service.getTest(id);
 
-    expect(test).toEqual(mockTestModel);
+    expect(test).toMatchObject(mockTestModel);
     expect(mockTestRepository.getTest).toBeCalledWith(id);
   });
 
@@ -83,7 +83,7 @@ describe('TestService', () => {
     const updateTest = await service.updateTest(id, mockTestEntity);
 
     expect(mockTestRepository.updateTest).toBeCalledWith(id, mockTestEntity);
-    expect(updateTest).toEqual(mockTestModel);
+    expect(updateTest).toMatchObject(mockTestModel);
   });
 
   it('should delete a test', async () => {

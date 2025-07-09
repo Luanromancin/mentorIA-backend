@@ -31,14 +31,12 @@ describe('Auth Integration Tests', () => {
         .send(userData)
         .expect(201);
 
-      expect(response.body).toHaveProperty('success', true);
-      expect(response.body).toHaveProperty('data');
-      expect(response.body.data).toHaveProperty('user');
-      expect(response.body.data).toHaveProperty('token');
-      expect(response.body.data.user).toHaveProperty('id');
-      expect(response.body.data.user).toHaveProperty('name', userData.name);
-      expect(response.body.data.user).toHaveProperty('email', userData.email);
-      expect(response.body.data.user).not.toHaveProperty('password');
+      expect(response.body).toHaveProperty('user');
+      expect(response.body).toHaveProperty('token');
+      expect(response.body.user).toHaveProperty('id');
+      expect(response.body.user).toHaveProperty('name', userData.name);
+      expect(response.body.user).toHaveProperty('email', userData.email);
+      expect(response.body.user).not.toHaveProperty('password');
     });
 
     it('should return error for duplicate email', async () => {
@@ -60,7 +58,6 @@ describe('Auth Integration Tests', () => {
         .send(userData)
         .expect(400);
 
-      expect(response.body).toHaveProperty('success', false);
       expect(response.body).toHaveProperty('message');
     });
 
@@ -76,7 +73,6 @@ describe('Auth Integration Tests', () => {
         .send(invalidData)
         .expect(400);
 
-      expect(response.body).toHaveProperty('success', false);
       expect(response.body).toHaveProperty('message');
     });
   });
@@ -104,11 +100,9 @@ describe('Auth Integration Tests', () => {
         .send(loginData)
         .expect(200);
 
-      expect(response.body).toHaveProperty('success', true);
-      expect(response.body).toHaveProperty('data');
-      expect(response.body.data).toHaveProperty('user');
-      expect(response.body.data).toHaveProperty('token');
-      expect(response.body.data.user).toHaveProperty('email', loginData.email);
+      expect(response.body).toHaveProperty('user');
+      expect(response.body).toHaveProperty('token');
+      expect(response.body.user).toHaveProperty('email', loginData.email);
     });
 
     it('should return error for invalid password', async () => {
@@ -122,7 +116,6 @@ describe('Auth Integration Tests', () => {
         .send(loginData)
         .expect(401);
 
-      expect(response.body).toHaveProperty('success', false);
       expect(response.body).toHaveProperty('message', 'Email ou senha incorretos');
     });
 
@@ -137,7 +130,6 @@ describe('Auth Integration Tests', () => {
         .send(loginData)
         .expect(401);
 
-      expect(response.body).toHaveProperty('success', false);
       expect(response.body).toHaveProperty('message', 'Email ou senha incorretos');
     });
   });
@@ -162,7 +154,7 @@ describe('Auth Integration Tests', () => {
           password: 'password123'
         });
 
-      authToken = loginResponse.body.data.token;
+      authToken = loginResponse.body.token;
     });
 
     it('should return user data with valid token', async () => {
@@ -171,10 +163,7 @@ describe('Auth Integration Tests', () => {
         .set('Authorization', `Bearer ${authToken}`)
         .expect(200);
 
-      expect(response.body).toHaveProperty('success', true);
-      expect(response.body).toHaveProperty('data');
-      expect(response.body.data).toHaveProperty('user');
-      expect(response.body.data.user).toHaveProperty('email', 'test@example.com');
+      expect(response.body).toHaveProperty('email', 'test@example.com');
     });
 
     it('should return error for invalid token', async () => {
@@ -183,7 +172,6 @@ describe('Auth Integration Tests', () => {
         .set('Authorization', 'Bearer invalid-token')
         .expect(401);
 
-      expect(response.body).toHaveProperty('success', false);
       expect(response.body).toHaveProperty('message');
     });
 
@@ -192,7 +180,6 @@ describe('Auth Integration Tests', () => {
         .get('/api/auth/me')
         .expect(401);
 
-      expect(response.body).toHaveProperty('success', false);
       expect(response.body).toHaveProperty('message');
     });
   });

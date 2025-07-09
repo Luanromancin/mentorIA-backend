@@ -10,18 +10,30 @@ console.log('Configurações do banco:', {
   // Não logamos a senha por segurança
 });
 
-const sequelize = new Sequelize({
-  dialect: 'postgres',
-  host: env.DB_HOST || 'localhost',
-  port: env.DB_PORT,
-  database: env.DB_NAME,
-  username: env.DB_USER,
-  password: env.DB_PASSWORD,
-  logging: false,
-  define: {
-    timestamps: true,
-    underscored: true,
-  },
-});
+// Usar SQLite em memória para testes
+const sequelize =
+  env.NODE_ENV === 'test'
+    ? new Sequelize({
+        dialect: 'sqlite',
+        storage: ':memory:',
+        logging: false,
+        define: {
+          timestamps: true,
+          underscored: true,
+        },
+      })
+    : new Sequelize({
+        dialect: 'postgres',
+        host: env.DB_HOST || 'localhost',
+        port: env.DB_PORT,
+        database: env.DB_NAME,
+        username: env.DB_USER,
+        password: env.DB_PASSWORD,
+        logging: false,
+        define: {
+          timestamps: true,
+          underscored: true,
+        },
+      });
 
 export default sequelize;

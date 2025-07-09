@@ -61,11 +61,13 @@ export class AuthController {
       });
 
       res.status(201).json(result);
-    } catch {
-      console.error('Erro no registro');
-      res.status(500).json({
-        message: 'Erro ao registrar usuário',
-      });
+    } catch (error) {
+      console.error('Erro no registro', error);
+      if (error instanceof HttpError) {
+        res.status(error.statusCode).json({ message: error.message });
+      } else {
+        res.status(500).json({ message: 'Erro ao registrar usuário' });
+      }
     }
   }
 

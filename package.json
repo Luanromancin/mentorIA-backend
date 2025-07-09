@@ -40,7 +40,6 @@
     "pg-hstore": "^2.3.4",
     "pino": "^8.10.0",
     "sequelize": "^6.37.7",
-    "sqlite3": "^5.1.7",
     "typescript": "^4.9.5",
     "uuid": "^9.0.0"
   },
@@ -66,6 +65,7 @@
     "nodemon": "^2.0.20",
     "prettier": "^2.8.4",
     "sequelize-cli": "^6.6.3",
+    "sqlite3": "^5.1.7",
     "supertest": "^6.3.3",
     "ts-jest": "^29.1.0",
     "ts-node": "^10.9.1"
