@@ -13,7 +13,7 @@ console.log('Configurações do banco:', {
 const sequelize = new Sequelize({
   dialect: 'postgres',
   host: env.DB_HOST || 'localhost',
-  port: parseInt(env.DB_PORT || '5432'),
+  port: env.DB_PORT,
   database: env.DB_NAME,
   username: env.DB_USER,
   password: env.DB_PASSWORD,
