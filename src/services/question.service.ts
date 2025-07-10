@@ -1,7 +1,6 @@
 import { Question } from '../entities/question.entity';
 import { CompetencyRepository } from '../repositories/competency.repository';
 import { QuestionRepository } from '../repositories/question.repository';
-import { Competency } from '../entities/competency.entity';
 
 export class QuestionService {
   constructor(

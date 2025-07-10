@@ -56,7 +56,7 @@ export default class BaseRepository<T extends BaseEntity> {
         return null;
       }
       return (this.db.data[this.prefix] as T[]).find(filter) || null;
-    } catch (e) {
+    } catch {
       throw new HttpInternalServerError();
     }
   }
@@ -69,7 +69,7 @@ export default class BaseRepository<T extends BaseEntity> {
       return filter
         ? (this.db.data[this.prefix] as T[]).filter(filter)
         : (this.db.data[this.prefix] as T[]);
-    } catch (e) {
+    } catch {
       throw new HttpInternalServerError();
     }
   }
@@ -81,7 +81,7 @@ export default class BaseRepository<T extends BaseEntity> {
       }
 
       this.db.data[this.prefix] = (this.db.data[this.prefix] as T[]).filter(filter);
-    } catch (e) {
+    } catch {
       throw new HttpInternalServerError();
     }
   }
