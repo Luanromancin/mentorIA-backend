@@ -1,7 +1,9 @@
 import app from './app';
+import env from './env';
 import logger from './logger';
-import Env from './env';
 
-app.listen(Env.PORT, () => {
-  logger.info(`Server started on http://localhost:${Env.PORT}/api`);
+const port = env.PORT;
+
+app.listen(port, () => {
+  logger.info(`Servidor rodando na porta ${port}`);
 });

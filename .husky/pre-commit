@@ -1,4 +1,18 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
-npm run lint 
+echo "🔍 Executando validações pré-commit..."
+
+# Verificar se há arquivos TypeScript modificados
+if git diff --cached --name-only | grep -E '\.(ts|js)$' > /dev/null; then
+  echo "📝 Verificando formatação do código..."
+  npm run prettier:check || (echo "❌ Prettier check falhou. Execute 'npm run validate:fix' para corrigir." && exit 1)
+  
+  echo "🔧 Verificando linting..."
+  npm run lint:check || (echo "❌ Lint check falhou. Execute 'npm run validate:fix' para corrigir." && exit 1)
+  
+  echo "📋 Verificando tipos TypeScript..."
+  npm run type-check || (echo "❌ Type check falhou." && exit 1)
+fi
+
+echo "✅ Validações pré-commit concluídas com sucesso!" 

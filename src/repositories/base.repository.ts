@@ -25,7 +25,7 @@ export default class BaseRepository<T extends BaseEntity> {
       };
       this.db.data[this.prefix].push(newItem);
       return newItem;
-    } catch (e) {
+    } catch {
       throw new HttpInternalServerError();
     }
   }
@@ -45,8 +45,8 @@ export default class BaseRepository<T extends BaseEntity> {
         return item;
       }
       return null;
-    } catch (e) {
-      throw new HttpInternalServerError();
+    } catch {
+      return null;
     }
   }
 

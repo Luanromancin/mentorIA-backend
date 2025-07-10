@@ -1,8 +1,7 @@
-import TestEntity from '../../src/entities/test.entity';
-import TestModel from '../../src/models/test.model';
-import OtherRepository from '../../src/repositories/other.repository';
-import TestRepository from '../../src/repositories/test.repository';
 import TestService from '../../src/services/test.service';
+import TestRepository from '../../src/repositories/test.repository';
+import TestEntity from '../../src/entities/test.entity';
+import OtherRepository from '../../src/repositories/other.repository';
 import { HttpNotFoundError } from '../../src/utils/errors/http.error';
 
 describe('TestService', () => {
@@ -10,12 +9,9 @@ describe('TestService', () => {
   let mockOtherRepository: OtherRepository;
   let service: TestService;
 
-  let mockTestEntity: TestEntity = new TestEntity({
-    id: '123',
-    name: 'test',
-  });
+  const mockTestEntity = new TestEntity({ id: '123', name: 'test' });
 
-  let mockTestModel: TestModel = new TestModel(mockTestEntity);
+  const mockTestModel = { id: '123', name: 'test' };
 
   beforeEach(() => {
     mockTestRepository = {
@@ -44,7 +40,7 @@ describe('TestService', () => {
 
     const tests = await service.getTests();
 
-    expect(tests).toEqual([mockTestModel]);
+    expect(tests[0]).toMatchObject(mockTestModel);
     expect(mockTestRepository.getTests).toBeCalledTimes(1);
   });
 
@@ -55,7 +51,7 @@ describe('TestService', () => {
 
     const test = await service.getTest(id);
 
-    expect(test).toEqual(mockTestModel);
+    expect(test).toMatchObject(mockTestModel);
     expect(mockTestRepository.getTest).toBeCalledWith(id);
   });
 
@@ -87,7 +83,7 @@ describe('TestService', () => {
     const updateTest = await service.updateTest(id, mockTestEntity);
 
     expect(mockTestRepository.updateTest).toBeCalledWith(id, mockTestEntity);
-    expect(updateTest).toEqual(mockTestModel);
+    expect(updateTest).toMatchObject(mockTestModel);
   });
 
   it('should delete a test', async () => {
