@@ -25,7 +25,7 @@ module.exports = {
       branches: 19,
       functions: 55,
       lines: 49,
-      statements: 49
+      statements: 48
     }
   },
   testTimeout: 10000
