@@ -14,6 +14,7 @@
     "test:auth-complete": "node test-auth-complete.js",
     "test:auth-basic": "node test-auth-basic.js",
     "test:auth-local": "node test-auth-local.js",
+    "pretest": "node scripts/delete-test-supabase-users.js",
     "prettier": "prettier --write \"src/**/*.{ts,js}\"",
     "prettier:check": "prettier --check \"src/**/*.{ts,js}\"",
     "lint": "eslint \"**/*.ts\" --report-unused-disable-directives --max-warnings 0 --fix",

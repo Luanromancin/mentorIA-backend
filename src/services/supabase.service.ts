@@ -62,7 +62,6 @@ class SupabaseService {
   async createUser(email: string, password: string): Promise<SupabaseUser> {
     console.log('🔧 Tentando criar usuário no Supabase Auth...');
     console.log('🔧 Email:', email);
-
     const { data, error } = await this.client.auth.signUp({
       email,
       password,
@@ -73,6 +72,15 @@ class SupabaseService {
 
     if (error) {
       console.error('❌ Erro do Supabase:', error);
+      // Log detalhado para depuração
+      console.error(
+        '❌ Erro detalhado do Supabase (registro):',
+        error,
+        error?.message,
+        (error as any)?.error_description,
+        error?.status,
+        error?.code
+      );
       // Verificar se é um erro de usuário já existente
       if (
         error.message.includes('User already registered') ||

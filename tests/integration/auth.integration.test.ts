@@ -24,7 +24,9 @@ describe('Auth Integration Tests', () => {
       const userData = {
         name: 'Test User',
         email: uniqueEmail,
-        password: 'password123'
+        password: 'SenhaForte123!',
+        birthDate: '2000-01-01',
+        institution: 'Instituto Teste'
       };
 
       const response = await request(app)
@@ -45,7 +47,9 @@ describe('Auth Integration Tests', () => {
       const userData = {
         name: 'Test User',
         email: uniqueEmail,
-        password: 'password123'
+        password: 'SenhaForte123!',
+        birthDate: '2000-01-01',
+        institution: 'Instituto Teste'
       };
 
       // Registrar primeiro usuário
@@ -67,7 +71,9 @@ describe('Auth Integration Tests', () => {
       const invalidData = {
         name: '',
         email: 'invalid-email',
-        password: '123'
+        password: '123',
+        birthDate: 'invalid-date',
+        institution: ''
       };
 
       const response = await request(app)
@@ -89,14 +95,16 @@ describe('Auth Integration Tests', () => {
         .send({
           name: 'Test User',
           email: uniqueEmail,
-          password: 'password123'
+          password: 'SenhaForte123!',
+          birthDate: '2000-01-01',
+          institution: 'Instituto Teste'
         });
     });
 
     it('should login successfully with valid credentials', async () => {
       const loginData = {
         email: uniqueEmail,
-        password: 'password123'
+        password: 'SenhaForte123!'
       };
 
       const response = await request(app)
@@ -126,7 +134,7 @@ describe('Auth Integration Tests', () => {
     it('should return error for non-existent email', async () => {
       const loginData = {
         email: `nonexistent-${Date.now()}@example.com`,
-        password: 'password123'
+        password: 'SenhaForte123!'
       };
 
       const response = await request(app)
@@ -150,14 +158,16 @@ describe('Auth Integration Tests', () => {
         .send({
           name: 'Test User',
           email: uniqueEmail,
-          password: 'password123'
+          password: 'SenhaForte123!',
+          birthDate: '2000-01-01',
+          institution: 'Instituto Teste'
         });
 
       const loginResponse = await request(app)
         .post('/api/auth/login')
         .send({
           email: uniqueEmail,
-          password: 'password123'
+          password: 'SenhaForte123!'
         });
 
       authToken = loginResponse.body.token;

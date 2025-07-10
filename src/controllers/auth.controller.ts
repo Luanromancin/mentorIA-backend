@@ -17,12 +17,6 @@ export class AuthController {
 
   async register(req: Request, res: Response): Promise<void> {
     try {
-      // Log do body completo para debug
-      console.log('Body recebido:', {
-        ...req.body,
-        password: req.body.password ? '[PRESENTE]' : '[AUSENTE]',
-      });
-
       const { email, password, name, birthDate, institution } = req.body;
 
       // Validações mais detalhadas
