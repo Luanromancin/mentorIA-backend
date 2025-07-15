@@ -56,7 +56,7 @@ Você pode contribuir tanto para o backend quanto para o frontend. Faça o fork 
   ```
 
 ### 2.2. Frontend
-- Repositório: [https://github.com/gabrielalimasotero/MentorIA-Frontend](https://github.com/gabrielalimasotero/MentorIA-Frontend)
+- Repositório: [https://github.com/gabrielalimasotero/mentorIA-front.git](https://github.com/gabrielalimasotero/mentorIA-front.git)
 - Comando:
   ```bash
   git clone https://github.com/SEU_USUARIO/MentorIA-Frontend.git
