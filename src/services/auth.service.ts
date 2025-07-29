@@ -316,7 +316,9 @@ export class AuthService {
     const updateData: any = {};
 
     if (data.name) updateData.name = data.name;
-    if (data.birth_date) updateData.birth_date = new Date(data.birth_date);
+    //if (data.birth_date) updateData.birth_date = new Date(data.birth_date);
+    if (data.birth_date) updateData.birth_date = data.birth_date;
+
     if (data.institution) updateData.institution = data.institution;
 
     const profile = await this.profileRepository.updateProfile(
