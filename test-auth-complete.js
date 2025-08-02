@@ -238,7 +238,7 @@ async function testTokenValidation() {
   // Teste 2: Token expirado (simulado)
   await testEndpoint('Validação de token expirado', async () => {
     // Criar um token que sabemos que é inválido
-    const expiredToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE1MTYyMzkwMjJ9.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c';
+    const expiredToken = 'INVALID_TOKEN_FOR_TESTING_PURPOSES_ONLY';
     
     const response = await api.get('/auth/me', {
       headers: { Authorization: `Bearer ${expiredToken}` }

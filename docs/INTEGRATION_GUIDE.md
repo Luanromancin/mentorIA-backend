@@ -17,16 +17,14 @@
 ### Resposta de Sucesso (Login/Register)
 ```json
 {
-  "user": {
-    "id": "uuid-do-usuario",
-    "email": "usuario@exemplo.com",
-    "name": "Nome do Usuário",
-    "birthDate": "1990-01-01T00:00:00.000Z",
-    "institution": "Instituição",
-    "createdAt": "2024-01-01T00:00:00.000Z",
-    "updatedAt": "2024-01-01T00:00:00.000Z"
-  },
-  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+  "data": {
+    "user": {
+      "id": "user-id",
+      "email": "user@example.com",
+      "name": "User Name"
+    },
+    "token": "YOUR_JWT_TOKEN_HERE"
+  }
 }
 ```
 
