@@ -17,7 +17,7 @@ class QuestionController {
   private initRoutes() {
     this.router.get(
       `${this.prefix}/:subjectId/questions`,
-      (req: Request, res: Response) => this.getQuestions(req, res),
+      (req: Request, res: Response) => this.getQuestions(req, res)
     );
   }
 
@@ -34,4 +34,4 @@ class QuestionController {
   }
 }
 
-export default QuestionController; 
+export default QuestionController;

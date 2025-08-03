@@ -25,7 +25,9 @@ export abstract class HttpError extends Error {
   }
 
   toString() {
-    return `[${this.name}]: msg: ${this.msg}, msgCode: ${String(this.msgCode)}, status: ${this.status}, stack: ${this.stack}`;
+    return `[${this.name}]: msg: ${this.msg}, msgCode: ${String(
+      this.msgCode
+    )}, status: ${this.status}, stack: ${this.stack}`;
   }
 }
 
@@ -54,7 +56,10 @@ export class HttpNotFoundError extends HttpError {
 }
 
 export class HttpInternalServerError extends HttpError {
-  constructor({ msg, msgCode }: { msg?: string; msgCode?: ErrorMessageCode } = {}) {
+  constructor({
+    msg,
+    msgCode,
+  }: { msg?: string; msgCode?: ErrorMessageCode } = {}) {
     super({
       status: 500,
       msg: msg || 'Internal Server Error',
@@ -65,7 +70,10 @@ export class HttpInternalServerError extends HttpError {
 }
 
 export class HttpNotImplementedError extends HttpError {
-  constructor({ msg, msgCode }: { msg?: string; msgCode?: ErrorMessageCode } = {}) {
+  constructor({
+    msg,
+    msgCode,
+  }: { msg?: string; msgCode?: ErrorMessageCode } = {}) {
     super({
       status: 501,
       msg: msg || 'Not Implemented Error',

@@ -1,4 +1,4 @@
-import { createClient, SupabaseClient, User } from '@supabase/supabase-js';
+import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import env from '../env';
 
 export interface SupabaseUser {
@@ -21,6 +21,7 @@ export interface SupabaseAuthResponse {
 
 class SupabaseService {
   private client: SupabaseClient;
+  private adminClient: SupabaseClient | null = null;
 
   constructor() {
     console.log('🔧 Inicializando SupabaseService...');
@@ -32,19 +33,38 @@ class SupabaseService {
       '🔧 SUPABASE_ANON_KEY:',
       env.SUPABASE_ANON_KEY ? '✅ Definida' : '❌ Não definida'
     );
+    console.log(
+      '🔧 SUPABASE_SERVICE_ROLE_KEY:',
+      env.SUPABASE_SERVICE_ROLE_KEY ? '✅ Definida' : '❌ Não definida'
+    );
 
     if (!env.SUPABASE_URL || !env.SUPABASE_ANON_KEY) {
       throw new Error('SUPABASE_URL e SUPABASE_ANON_KEY são obrigatórios');
     }
 
+    // Cliente principal com chave anônima
     this.client = createClient(env.SUPABASE_URL, env.SUPABASE_ANON_KEY);
+
+    // Cliente admin com chave de serviço (se disponível)
+    if (env.SUPABASE_SERVICE_ROLE_KEY) {
+      this.adminClient = createClient(
+        env.SUPABASE_URL,
+        env.SUPABASE_SERVICE_ROLE_KEY
+      );
+      console.log('✅ Cliente admin inicializado com chave de serviço');
+    } else {
+      console.log(
+        '⚠️ SUPABASE_SERVICE_ROLE_KEY não definida - operações admin limitadas'
+      );
+    }
+
     console.log('✅ SupabaseService inicializado com sucesso');
   }
 
   /**
    * Converte User do Supabase para SupabaseUser
    */
-  private convertUser(user: User): SupabaseUser {
+  private convertUser(user: any): SupabaseUser {
     return {
       id: user.id,
       email: user.email || '',
@@ -106,20 +126,37 @@ class SupabaseService {
   async getUserById(userId: string): Promise<SupabaseUser | null> {
     console.log('🔧 Buscando usuário no Supabase Auth por ID:', userId);
 
-    const { data, error } = await this.client.auth.admin.getUserById(userId);
+    // Se temos cliente admin, usar ele
+    if (this.adminClient) {
+      const { data, error } = await this.adminClient.auth.admin.getUserById(
+        userId
+      );
 
-    if (error) {
-      console.error('❌ Erro ao buscar usuário:', error);
-      return null;
+      if (error) {
+        console.error('❌ Erro ao buscar usuário (admin):', error);
+        return null;
+      }
+
+      if (!data.user) {
+        console.log('❌ Usuário não encontrado no Supabase Auth');
+        return null;
+      }
+
+      console.log(
+        '✅ Usuário encontrado no Supabase Auth (admin):',
+        data.user.id
+      );
+      return this.convertUser(data.user);
     }
 
-    if (!data.user) {
-      console.log('❌ Usuário não encontrado no Supabase Auth');
-      return null;
-    }
-
-    console.log('✅ Usuário encontrado no Supabase Auth:', data.user.id);
-    return this.convertUser(data.user);
+    // Fallback: sem cliente admin, não podemos buscar dados do usuário
+    console.log(
+      '⚠️ SUPABASE_SERVICE_ROLE_KEY não configurada - não é possível buscar dados do usuário'
+    );
+    console.log(
+      '⚠️ Configure SUPABASE_SERVICE_ROLE_KEY para operações administrativas'
+    );
+    return null;
   }
 
   /**
@@ -128,22 +165,34 @@ class SupabaseService {
   async getUserByEmail(email: string): Promise<SupabaseUser | null> {
     console.log('🔧 Buscando usuário no Supabase Auth por email:', email);
 
-    const { data, error } = await this.client.auth.admin.listUsers();
+    // Se temos cliente admin, usar ele
+    if (this.adminClient) {
+      const { data, error } = await this.adminClient.auth.admin.listUsers();
 
-    if (error) {
-      console.error('❌ Erro ao listar usuários:', error);
-      return null;
+      if (error) {
+        console.error('❌ Erro ao listar usuários (admin):', error);
+        return null;
+      }
+
+      const user = data.users.find((u) => u.email === email);
+
+      if (!user) {
+        console.log('❌ Usuário não encontrado no Supabase Auth');
+        return null;
+      }
+
+      console.log('✅ Usuário encontrado no Supabase Auth (admin):', user.id);
+      return this.convertUser(user);
     }
 
-    const user = data.users.find((u) => u.email === email);
-
-    if (!user) {
-      console.log('❌ Usuário não encontrado no Supabase Auth');
-      return null;
-    }
-
-    console.log('✅ Usuário encontrado no Supabase Auth:', user.id);
-    return this.convertUser(user);
+    // Fallback: sem cliente admin, não podemos buscar dados do usuário
+    console.log(
+      '⚠️ SUPABASE_SERVICE_ROLE_KEY não configurada - não é possível buscar dados do usuário'
+    );
+    console.log(
+      '⚠️ Configure SUPABASE_SERVICE_ROLE_KEY para operações administrativas'
+    );
+    return null;
   }
 
   /**

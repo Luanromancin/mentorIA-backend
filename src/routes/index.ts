@@ -16,8 +16,5 @@ export default function setupRoutes(app: Express): void {
   );
   app.use('/api/auth', authRoutes);
   app.use('/api/supabase-auth', supabaseAuthRoutes);
-  app.use(
-    prefix,
-    new QuestionController(router).router
-  );
+  app.use(prefix, new QuestionController(router).router);
 }

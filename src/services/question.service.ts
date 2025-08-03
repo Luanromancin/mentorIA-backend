@@ -5,15 +5,12 @@ import { QuestionRepository } from '../repositories/question.repository';
 export class QuestionService {
   constructor(
     private competencyRepository: CompetencyRepository,
-    private questionRepository: QuestionRepository,
+    private questionRepository: QuestionRepository
   ) {}
 
-  public async getQuestions(
-    subjectId: string,
-    n: number,
-  ): Promise<Question[]> {
+  public async getQuestions(subjectId: string, n: number): Promise<Question[]> {
     const competencies = await this.competencyRepository.findAll(
-      c => c.subjectId === subjectId,
+      (c) => c.subjectId === subjectId
     );
     const m = competencies.length;
 
@@ -29,7 +26,7 @@ export class QuestionService {
 
       for (const competency of selectedCompetencies) {
         const question = await this.getRandomQuestionForCompetency(
-          competency.id,
+          competency.id
         );
         if (question) {
           questions.push(question);
@@ -40,7 +37,7 @@ export class QuestionService {
       // Get one question for each competency first
       for (const competency of competencies) {
         const question = await this.getRandomQuestionForCompetency(
-          competency.id,
+          competency.id
         );
         if (question) {
           questions.push(question);
@@ -57,7 +54,7 @@ export class QuestionService {
         }
         const competency = competencyPool.pop()!;
         const question = await this.getRandomQuestionForCompetency(
-          competency.id,
+          competency.id
         );
         if (question) {
           questions.push(question);
@@ -69,10 +66,10 @@ export class QuestionService {
   }
 
   private async getRandomQuestionForCompetency(
-    competencyId: string,
+    competencyId: string
   ): Promise<Question | null> {
     const questions = await this.questionRepository.findAll(
-      q => q.competencyId === competencyId,
+      (q) => q.competencyId === competencyId
     );
     if (questions.length === 0) {
       return null;
@@ -89,4 +86,4 @@ export class QuestionService {
     }
     return shuffled;
   }
-} 
+}

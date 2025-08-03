@@ -155,6 +155,23 @@ export class AuthService {
             id: profile.id,
             email: profile.email,
           });
+        } else {
+          // Se não conseguimos buscar dados do usuário, criar perfil básico
+          console.log(
+            '⚠️ Não foi possível buscar dados do usuário no Supabase, criando perfil básico...'
+          );
+          profile = await this.profileRepository.createProfile({
+            id: supabaseUser.id,
+            email: supabaseUser.email,
+            name: 'Usuário',
+            birth_date: new Date(),
+            institution: '',
+          });
+
+          console.log('Perfil básico criado:', {
+            id: profile.id,
+            email: profile.email,
+          });
         }
       }
 

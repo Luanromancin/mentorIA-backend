@@ -1,6 +1,7 @@
 export default class Injector {
   private services: Map<new (...args: any[]) => unknown, unknown> = new Map();
-  private repositories: Map<new (...args: any[]) => unknown, unknown> = new Map();
+  private repositories: Map<new (...args: any[]) => unknown, unknown> =
+    new Map();
 
   public registerService<T>(
     serviceType: new (...args: any[]) => T,

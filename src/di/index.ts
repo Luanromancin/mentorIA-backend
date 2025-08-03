@@ -30,6 +30,6 @@ di.registerService(
   QuestionService,
   new QuestionService(
     di.getRepository(CompetencyRepository),
-    di.getRepository(QuestionRepository),
-  ),
+    di.getRepository(QuestionRepository)
+  )
 );
