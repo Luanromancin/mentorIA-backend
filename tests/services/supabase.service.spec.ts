@@ -54,7 +54,7 @@ describe('SupabaseService', () => {
 
   describe('getUserById', () => {
     it('should handle non-existent user ID', async () => {
-      const userId = 'non-existent-id';
+      const userId = '00000000-0000-0000-0000-000000000000';
       
       const result = await supabaseService.getUserById(userId);
       expect(result).toBeNull();
