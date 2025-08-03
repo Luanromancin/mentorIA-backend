@@ -1,0 +1,3 @@
+[33m1515bc6[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mdevelop[m[33m)[m fix: corrige erro de autenticação Supabase com chave de serviço
+[33ma90340f[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/develop[m[33m, [m[1;31morigin/HEAD[m[33m, [m[1;32mmain[m[33m)[m feat: Remove .env from git history
+[33m19c4034[m Merge pull request #14 from Luanromancin/feature/finalizar-perfil
