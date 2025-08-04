@@ -26,7 +26,20 @@ describe('TestService', () => {
       getTests: jest.fn(),
     } as any;
 
-    service = new TestService(mockTestRepository, mockOtherRepository);
+    const mockDynamicQuestionsService = {
+      getDynamicQuestions: jest.fn(),
+    } as any;
+
+    const mockUserCompetencyRepository = {
+      findByProfileIdGroupedByLevel: jest.fn(),
+    } as any;
+
+    service = new TestService(
+      mockTestRepository, 
+      mockOtherRepository, 
+      mockDynamicQuestionsService,
+      mockUserCompetencyRepository
+    );
   });
 
   afterEach(() => {

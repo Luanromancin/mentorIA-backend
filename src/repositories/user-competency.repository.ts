@@ -5,7 +5,7 @@ import {
   UserCompetencyWithDetails,
 } from '../entities/user-competency.entity';
 import databaseService from '../services/database.service';
-import { CacheService } from '../services/cache.service';
+import competencyCacheService from '../services/competency-cache.service';
 import { PerformanceMonitor } from '../utils/performance';
 
 export class UserCompetencyRepository extends BaseRepository<UserCompetency> {
@@ -26,64 +26,30 @@ export class UserCompetencyRepository extends BaseRepository<UserCompetency> {
     try {
       console.log(`🔍 [${new Date().toISOString()}] Verificando cache...`);
       
-      // 1. Tentar cache primeiro
-      const cached = CacheService.getUserCompetencies(profileId);
-      if (cached) {
-        const cacheTime = Date.now() - startTime;
-        console.log(`✅ [${new Date().toISOString()}] Cache hit! Retornando ${cached.length} competências em ${cacheTime}ms`);
-        PerformanceMonitor.endTimer('findByProfileId');
-        return cached;
-      }
-
-      console.log(`❌ [${new Date().toISOString()}] Cache miss! Buscando no banco real...`);
+      // 1. Usar o sistema de cache corrigido (com criação automática)
+      console.log(`🔄 [${new Date().toISOString()}] Usando sistema de cache corrigido...`);
       
-      // Busca as competências do usuário (sem inicialização automática)
-      let dbCompetencies = await databaseService.getUserCompetencies(profileId);
+      const cachedCompetencies = await competencyCacheService.getUserCompetencies(profileId);
       
       const searchTime = Date.now() - startTime;
-      console.log(`📊 [${new Date().toISOString()}] Busca no banco concluída em ${searchTime}ms`);
-      
-      // Se não encontrou competências, tentar inicializar
-      if (!dbCompetencies || dbCompetencies.length === 0) {
-        console.log(`⚠️ [${new Date().toISOString()}] Nenhuma competência encontrada, tentando inicializar...`);
-        try {
-          await databaseService.initializeUserCompetencies(profileId);
-          console.log(`🔄 [${new Date().toISOString()}] Inicialização concluída, tentando buscar novamente...`);
-          
-          // Tentar buscar novamente
-          const retryCompetencies = await databaseService.getUserCompetencies(profileId);
-          if (retryCompetencies && retryCompetencies.length > 0) {
-            dbCompetencies = retryCompetencies;
-            console.log(`✅ [${new Date().toISOString()}] Busca após inicialização bem-sucedida: ${retryCompetencies.length} competências`);
-          }
-        } catch (initError) {
-          console.log(`⚠️ [${new Date().toISOString()}] Falha na inicialização, usando dados mockados:`, initError);
-          PerformanceMonitor.endTimer('findByProfileId');
-          return this.getMockCompetencies(profileId);
-        }
-      }
+      console.log(`📊 [${new Date().toISOString()}] Busca concluída em ${searchTime}ms`);
       
       console.log(`🔄 [${new Date().toISOString()}] Convertendo dados para formato esperado...`);
       
       // Converte para o formato esperado
-      const competencies: UserCompetencyWithDetails[] = (dbCompetencies || []).map((comp: any) => ({
+      const competencies: UserCompetencyWithDetails[] = (cachedCompetencies || []).map((comp: any) => ({
         id: `${comp.profile_id}-${comp.competency_id}`,
         profileId: comp.profile_id,
         competencyId: comp.competency_id,
         level: comp.level || 0,
         lastEvaluatedAt: comp.last_evaluated_at ? new Date(comp.last_evaluated_at) : new Date(),
         competency: {
-          id: comp.competencies.id,
-          code: comp.competencies.code,
-          name: comp.competencies.name,
-          description: comp.competencies.description,
+          id: comp.competencies?.id || comp.competency_id,
+          code: comp.competencies?.code || '',
+          name: comp.competencies?.name || 'Competência',
+          description: comp.competencies?.description || '',
         },
       }));
-
-      console.log(`💾 [${new Date().toISOString()}] Salvando no cache...`);
-      
-      // 2. Salvar no cache
-      CacheService.setUserCompetencies(profileId, competencies);
 
       const totalTime = Date.now() - startTime;
       console.log(`✅ [${new Date().toISOString()}] Encontradas ${competencies.length} competências para o usuário ${profileId} em ${totalTime}ms`);

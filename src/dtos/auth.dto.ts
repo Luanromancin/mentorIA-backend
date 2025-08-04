@@ -22,12 +22,12 @@ export class RegisterDto {
   name: string;
 
   @IsDateString()
-  @IsNotEmpty()
-  birthDate: string;
+  @IsOptional()
+  birthDate?: string;
 
   @IsString()
-  @IsNotEmpty()
-  institution: string;
+  @IsOptional()
+  institution?: string;
 }
 
 export class LoginDto {
