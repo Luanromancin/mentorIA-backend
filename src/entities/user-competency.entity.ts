@@ -25,4 +25,4 @@ export interface UserCompetencyWithDetails extends UserCompetency {
     name: string;
     description?: string;
   };
-} 
+}

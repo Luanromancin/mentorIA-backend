@@ -23,7 +23,7 @@
     "resolveJsonModule": true,
     "baseUrl": ".",
     "typeRoots": ["./node_modules/@types", "./src/types"],
-    "types": ["node", "express"]
+    "types": ["node", "express", "jest"]
   },
   "exclude": ["node_modules"],
   "include": ["./src/**/*.ts", "./tests/**/*.ts", "setupTests.ts", "./src/types/*.d.ts"]

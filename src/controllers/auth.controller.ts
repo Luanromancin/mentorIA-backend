@@ -170,20 +170,39 @@ export class AuthController {
     try {
       const userId = req.user?.id;
       if (!userId) {
-        res.status(401).json({ message: 'Usuário não autenticado' });
+        res.status(401).json({ 
+          success: false,
+          message: 'Usuário não autenticado',
+          code: 401
+        });
         return;
       }
 
-      console.log('🔍 Buscando perfil para userId:', userId); // ✅ ADICIONADO
+      console.log('🔍 Buscando perfil para userId:', userId);
       const profile = await this.authService.getUserProfile(userId);
-      console.log('📄 Perfil retornado:', profile?.name); // ✅ ADICIONADO
+      console.log('📄 Perfil retornado:', profile?.name);
 
-      res.json(profile);
+      res.json({
+        success: true,
+        message: 'Usuário autenticado',
+        code: 200,
+        data: {
+          user: profile
+        }
+      });
     } catch (_error) {
       if (_error instanceof HttpError) {
-        res.status(_error.statusCode).json({ message: _error.message });
+        res.status(_error.statusCode).json({ 
+          success: false,
+          message: _error.message,
+          code: _error.statusCode
+        });
       } else {
-        res.status(500).json({ message: 'Erro interno do servidor' });
+        res.status(500).json({ 
+          success: false,
+          message: 'Erro interno do servidor',
+          code: 500
+        });
       }
     }
   }

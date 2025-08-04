@@ -34,6 +34,9 @@ router.post('/answer', controller.submitAnswer.bind(controller));
  * GET /api/competencies/user
  * Busca competências do usuário com níveis
  */
-router.get('/competencies/user', controller.getUserCompetencies.bind(controller));
+router.get(
+  '/competencies/user',
+  controller.getUserCompetencies.bind(controller)
+);
 
-export default router; 
+export default router;

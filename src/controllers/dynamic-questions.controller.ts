@@ -7,7 +7,9 @@ export class DynamicQuestionsController {
 
   constructor() {
     const userCompetencyRepository = new UserCompetencyRepository();
-    this.dynamicQuestionsService = new DynamicQuestionsService(userCompetencyRepository);
+    this.dynamicQuestionsService = new DynamicQuestionsService(
+      userCompetencyRepository
+    );
   }
 
   /**
@@ -20,26 +22,26 @@ export class DynamicQuestionsController {
       if (!profileId) {
         return res.status(401).json({
           success: false,
-          message: 'Usuário não autenticado'
+          message: 'Usuário não autenticado',
         });
       }
 
       const maxQuestions = parseInt(req.query.maxQuestions as string) || 20;
-      
+
       const questions = await this.dynamicQuestionsService.getDynamicQuestions({
         profileId,
-        maxQuestions
+        maxQuestions,
       });
 
       return res.json({
         success: true,
-        data: questions
+        data: questions,
       });
     } catch (error) {
       console.error('Erro ao buscar questões dinâmicas:', error);
       return res.status(500).json({
         success: false,
-        message: 'Erro interno do servidor'
+        message: 'Erro interno do servidor',
       });
     }
   }
@@ -54,16 +56,21 @@ export class DynamicQuestionsController {
       if (!profileId) {
         return res.status(401).json({
           success: false,
-          message: 'Usuário não autenticado'
+          message: 'Usuário não autenticado',
         });
       }
 
       const { questionId, answer, isCorrect, competencyName } = req.body;
 
-      if (!questionId || answer === undefined || isCorrect === undefined || !competencyName) {
+      if (
+        !questionId ||
+        answer === undefined ||
+        isCorrect === undefined ||
+        !competencyName
+      ) {
         return res.status(400).json({
           success: false,
-          message: 'Dados incompletos para submissão da resposta'
+          message: 'Dados incompletos para submissão da resposta',
         });
       }
 
@@ -79,13 +86,13 @@ export class DynamicQuestionsController {
 
       return res.json({
         success: true,
-        message: 'Resposta processada com sucesso'
+        message: 'Resposta processada com sucesso',
       });
     } catch (error) {
       console.error('Erro ao processar resposta:', error);
       return res.status(500).json({
         success: false,
-        message: 'Erro interno do servidor'
+        message: 'Erro interno do servidor',
       });
     }
   }
@@ -100,22 +107,24 @@ export class DynamicQuestionsController {
       if (!profileId) {
         return res.status(401).json({
           success: false,
-          message: 'Usuário não autenticado'
+          message: 'Usuário não autenticado',
         });
       }
 
       const userCompetencyRepository = new UserCompetencyRepository();
-      const competencies = await userCompetencyRepository.findByProfileId(profileId);
+      const competencies = await userCompetencyRepository.findByProfileId(
+        profileId
+      );
 
       return res.json({
         success: true,
-        data: competencies
+        data: competencies,
       });
     } catch (error) {
       console.error('Erro ao buscar competências do usuário:', error);
       return res.status(500).json({
         success: false,
-        message: 'Erro interno do servidor'
+        message: 'Erro interno do servidor',
       });
     }
   }
@@ -123,15 +132,22 @@ export class DynamicQuestionsController {
   /**
    * Salva resposta do usuário na tabela user_answers
    */
-  private async saveUserAnswer(profileId: string, questionId: string, answer: string, isCorrect: boolean) {
+  private async saveUserAnswer(
+    profileId: string,
+    questionId: string,
+    answer: string,
+    isCorrect: boolean
+  ) {
     // Por enquanto, vamos apenas logar a resposta
     // TODO: Implementar salvamento real quando tivermos acesso ao banco
-    console.log(`💾 Resposta salva: questão ${questionId}, correto: ${isCorrect}`);
+    console.log(
+      `💾 Resposta salva: questão ${questionId}, correto: ${isCorrect}`
+    );
     console.log(`📊 Dados da resposta:`, {
       profileId: profileId,
       questionId: questionId,
       answer: answer,
-      isCorrect: isCorrect
+      isCorrect: isCorrect,
     });
   }
-} 
+}
