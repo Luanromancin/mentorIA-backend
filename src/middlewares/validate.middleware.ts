@@ -29,6 +29,6 @@ export const validate = (dtoClass: any) => {
     }
 
     req.body = dtoObject;
-    next();
+    return next();
   };
 };

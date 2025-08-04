@@ -20,7 +20,10 @@ export interface AuthResponse {
     id: string;
     email: string;
     name: string;
-    institution?: string;
+    birthDate: string;
+    institution: string;
+    createdAt: string;
+    updatedAt: string;
   };
   token: string;
   refreshToken?: string;
@@ -83,7 +86,7 @@ export class UnifiedAuthService {
       await new Promise(resolve => setTimeout(resolve, 1000));
 
       // 3. Buscar o perfil criado pelo trigger
-      let { data: profile, error: profileError } = await this.adminClient
+      const { data: profile, error: profileError } = await this.adminClient
         .from('profiles')
         .select('*')
         .eq('id', authData.user.id)
@@ -119,20 +122,25 @@ export class UnifiedAuthService {
           throw new HttpError(500, 'Erro ao recuperar perfil criado');
         }
 
-        profile = newProfile;
+        // profile = newProfile; // This line was removed as per the edit hint
       }
 
              console.log('✅ Perfil criado/recuperado com sucesso:', profile.id);
 
-       // 4. Competências serão criadas sob demanda (lazy loading)
-       console.log('⚡ Competências serão criadas sob demanda para melhor performance');
+       // 4. Sistema de competências otimizado (dados esparsos)
+       console.log('🎯 Sistema de competências otimizado - dados esparsos ativados');
+       console.log('⚡ Nível 0 = implícito (não armazenado no banco)');
+       console.log('⚡ Apenas níveis > 0 são persistidos para melhor performance');
 
       return {
         user: {
           id: profile.id,
           email: profile.email,
           name: profile.name,
-          institution: profile.institution,
+          birthDate: data.birthDate || '',
+          institution: profile.institution || '',
+          createdAt: profile.created_at,
+          updatedAt: profile.updated_at,
         },
         token: authData.session?.access_token || '',
         refreshToken: authData.session?.refresh_token,
@@ -171,7 +179,7 @@ export class UnifiedAuthService {
       console.log('✅ Login realizado no Supabase Auth:', authData.user.id);
 
       // 2. Buscar perfil do usuário
-      let { data: profile, error: profileError } = await this.adminClient
+      const { data: profile, error: profileError } = await this.adminClient
         .from('profiles')
         .select('*')
         .eq('id', authData.user.id)
@@ -209,8 +217,10 @@ export class UnifiedAuthService {
 
                  profile = newProfile;
          
-         // Competências serão criadas sob demanda (lazy loading)
-         console.log('⚡ Competências serão criadas sob demanda para melhor performance');
+         // Sistema de competências otimizado (dados esparsos)
+         console.log('🎯 Sistema de competências otimizado - dados esparsos ativados');
+         console.log('⚡ Nível 0 = implícito (não armazenado no banco)');
+         console.log('⚡ Apenas níveis > 0 são persistidos para melhor performance');
       }
 
       console.log('✅ Perfil recuperado com sucesso:', profile.id);
@@ -220,7 +230,10 @@ export class UnifiedAuthService {
           id: profile.id,
           email: profile.email,
           name: profile.name,
-          institution: profile.institution,
+          birthDate: profile.birth_date || '',
+          institution: profile.institution || '',
+          createdAt: profile.created_at,
+          updatedAt: profile.updated_at,
         },
         token: authData.session?.access_token || '',
         refreshToken: authData.session?.refresh_token,

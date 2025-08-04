@@ -1,7 +1,8 @@
 import { Router, Request, Response } from 'express';
-import { Result, SuccessResult } from '../utils/result';
 import TestService from '../services/test.service';
 import { TestEntity } from '../entities/test.entity';
+import { Result, SuccessResult } from '../utils/result';
+import { authMiddleware } from '../middlewares/auth.middleware';
 
 class TestController {
   private prefix = '/tests';
@@ -37,15 +38,15 @@ class TestController {
     );
 
     // Novas rotas para fluxo otimizado
-    this.router.get('/questions/session', (req: Request, res: Response) =>
+    this.router.get('/questions/session', authMiddleware, (req: Request, res: Response) =>
       this.getSessionQuestions(req, res)
     );
-    this.router.post('/questions/session/complete', (req: Request, res: Response) =>
+    this.router.post('/questions/session/complete', authMiddleware, (req: Request, res: Response) =>
       this.completeSession(req, res)
     );
     
     // Rota para pré-carregamento após login
-    this.router.post('/questions/preload', (req: Request, res: Response) =>
+    this.router.post(`${this.prefix}/questions/preload`, authMiddleware, (req: Request, res: Response) =>
       this.preloadUserData(req, res)
     );
     
@@ -122,11 +123,10 @@ class TestController {
   }
 
   // Nova rota: Carregar competências + questões de uma vez
-  private async getSessionQuestions(req: Request, res: Response) {
+  public async getSessionQuestions(req: Request, res: Response) {
     try {
       const { maxQuestions = 20 } = req.query;
-      // Por enquanto, usar um ID fixo para teste
-      const profileId = '9da00b0d-d2f7-4589-9321-8179553f2b47';
+      const profileId = (req as any).user?.id;
 
       if (!profileId) {
         return res.status(401).json({
@@ -154,11 +154,10 @@ class TestController {
   }
 
   // Nova rota: Finalizar sessão e atualizar competências
-  private async completeSession(req: Request, res: Response) {
+  public async completeSession(req: Request, res: Response) {
     try {
       const { answers } = req.body;
-      // Por enquanto, usar um ID fixo para teste
-      const profileId = '9da00b0d-d2f7-4589-9321-8179553f2b47';
+      const profileId = (req as any).user?.id;
 
       if (!profileId) {
         return res.status(401).json({
@@ -183,9 +182,16 @@ class TestController {
   }
 
   // Pré-carregar dados do usuário após login
-  private async preloadUserData(_req: Request, res: Response) {
+  public async preloadUserData(req: Request, res: Response) {
     try {
-      const profileId = '9da00b0d-d2f7-4589-9321-8179553f2b47'; // ID fixo para teste
+      const profileId = (req as any).user?.id;
+      
+      if (!profileId) {
+        return res.status(401).json({
+          success: false,
+          message: 'Usuário não autenticado'
+        });
+      }
       
       console.log('🚀 Iniciando pré-carregamento para usuário:', profileId);
       

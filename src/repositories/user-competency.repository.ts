@@ -5,7 +5,7 @@ import {
   UserCompetencyWithDetails,
 } from '../entities/user-competency.entity';
 import databaseService from '../services/database.service';
-import competencyCacheService from '../services/competency-cache.service';
+import sparseCompetencyService from '../services/sparse-competency.service';
 import { PerformanceMonitor } from '../utils/performance';
 
 export class UserCompetencyRepository extends BaseRepository<UserCompetency> {
@@ -26,30 +26,14 @@ export class UserCompetencyRepository extends BaseRepository<UserCompetency> {
     try {
       console.log(`🔍 [${new Date().toISOString()}] Verificando cache...`);
       
-      // 1. Usar o sistema de cache corrigido (com criação automática)
-      console.log(`🔄 [${new Date().toISOString()}] Usando sistema de cache corrigido...`);
+      // 1. Usar o sistema de competências otimizado (dados esparsos)
+      console.log(`🔄 [${new Date().toISOString()}] Usando sistema de competências otimizado...`);
       
-      const cachedCompetencies = await competencyCacheService.getUserCompetencies(profileId);
+      const competencies = await sparseCompetencyService.getAllUserCompetencies(profileId);
       
       const searchTime = Date.now() - startTime;
       console.log(`📊 [${new Date().toISOString()}] Busca concluída em ${searchTime}ms`);
-      
-      console.log(`🔄 [${new Date().toISOString()}] Convertendo dados para formato esperado...`);
-      
-      // Converte para o formato esperado
-      const competencies: UserCompetencyWithDetails[] = (cachedCompetencies || []).map((comp: any) => ({
-        id: `${comp.profile_id}-${comp.competency_id}`,
-        profileId: comp.profile_id,
-        competencyId: comp.competency_id,
-        level: comp.level || 0,
-        lastEvaluatedAt: comp.last_evaluated_at ? new Date(comp.last_evaluated_at) : new Date(),
-        competency: {
-          id: comp.competencies?.id || comp.competency_id,
-          code: comp.competencies?.code || '',
-          name: comp.competencies?.name || 'Competência',
-          description: comp.competencies?.description || '',
-        },
-      }));
+      console.log(`📊 [${new Date().toISOString()}] ${competencies.length} competências retornadas`);
 
       const totalTime = Date.now() - startTime;
       console.log(`✅ [${new Date().toISOString()}] Encontradas ${competencies.length} competências para o usuário ${profileId} em ${totalTime}ms`);
@@ -176,7 +160,8 @@ export class UserCompetencyRepository extends BaseRepository<UserCompetency> {
         `📈 Atualizando nível no banco real: usuário ${profileId}, competência ${competencyId}, novo nível ${level}`
       );
 
-      await databaseService.updateUserCompetencyLevel(profileId, competencyId, level);
+      // Usar o sistema de competências otimizado (dados esparsos)
+      await sparseCompetencyService.updateCompetencyLevel(profileId, competencyId, level);
 
       const userCompetency: UserCompetency = {
         id: `${profileId}-${competencyId}`,

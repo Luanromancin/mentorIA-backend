@@ -36,7 +36,7 @@ export class SupabaseAuthMiddleware {
 
       const user = await this.authService.validateToken(token);
       req.user = user;
-      next();
+      return next();
     } catch (error) {
       console.error('Erro na autenticação:', error);
 
@@ -68,11 +68,11 @@ export class SupabaseAuthMiddleware {
         req.user = user;
       }
 
-      next();
+      return next();
     } catch (error) {
       // Para autenticação opcional, apenas ignora o erro e continua
       console.warn('Token inválido na autenticação opcional:', error);
-      next();
+      return next();
     }
   }
 }

@@ -52,7 +52,12 @@ export class UnifiedAuthController {
         email: result.user.email,
       });
 
-      res.status(201).json(result);
+      // Retornar na estrutura esperada pelo frontend
+      res.status(201).json({
+        user: result.user,
+        token: result.token,
+        success: true
+      });
     } catch (error) {
       console.error('❌ Erro no registro:', error);
       if (error instanceof HttpError) {
@@ -84,7 +89,12 @@ export class UnifiedAuthController {
         email: result.user.email,
       });
 
-      res.json(result);
+      // Retornar na estrutura esperada pelo frontend
+      res.json({
+        user: result.user,
+        token: result.token,
+        success: true
+      });
     } catch (error) {
       console.error('❌ Erro no login:', error);
       if (error instanceof HttpError) {
