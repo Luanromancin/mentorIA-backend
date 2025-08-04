@@ -1,5 +1,5 @@
 import supertest from 'supertest';
-import TestEntity from '../../src/entities/test.entity';
+import { TestEntity } from '../../src/entities/test.entity';
 import app from '../../src/app';
 import { di } from '../../src/di';
 import TestRepository from '../../src/repositories/test.repository';
@@ -8,7 +8,7 @@ describe('TestController', () => {
   const request = supertest(app);
   let mockTestRepository: TestRepository;
 
-  const mockTestEntity = new TestEntity({ id: '123', name: 'test' });
+  const mockTestEntity = { id: '123', name: 'test' } as TestEntity;
 
   beforeEach(() => {
     mockTestRepository = di.getRepository<TestRepository>(TestRepository);

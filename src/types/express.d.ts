@@ -1,9 +1,11 @@
-import { User } from '../models/user.model';
-
 declare global {
   namespace Express {
     interface Request {
-      user?: User;
+      user?: {
+        id: string;
+        name: string;
+        // Adicione outros campos conforme necessário
+      };
     }
   }
 }

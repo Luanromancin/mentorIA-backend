@@ -1,7 +1,3 @@
-export default class BaseEntity {
+export interface BaseEntity {
   id: string;
-
-  constructor(id: string) {
-    this.id = id;
-  }
 }

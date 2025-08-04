@@ -1,7 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { Result, SuccessResult } from '../utils/result';
 import TestService from '../services/test.service';
-import TestEntity from '../entities/test.entity';
+import { TestEntity } from '../entities/test.entity';
 
 class TestController {
   private prefix = '/tests';
@@ -65,7 +65,7 @@ class TestController {
   }
 
   private async createTest(req: Request, res: Response) {
-    const test = await this.testService.createTest(new TestEntity(req.body));
+    const test = await this.testService.createTest(req.body as TestEntity);
 
     return new SuccessResult({
       msg: Result.transformRequestOnMsg(req),
@@ -76,7 +76,7 @@ class TestController {
   private async updateTest(req: Request, res: Response) {
     const test = await this.testService.updateTest(
       req.params.id,
-      new TestEntity(req.body)
+      req.body as TestEntity
     );
 
     return new SuccessResult({

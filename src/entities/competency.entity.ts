@@ -1,6 +1,22 @@
-import BaseEntity from './base.entity';
+import { BaseEntity } from './base.entity';
 
-export class Competency extends BaseEntity {
+export interface Competency extends BaseEntity {
+  code: string;
   name: string;
-  subjectId: string;
+  description?: string;
+  subjectId?: string;
+}
+
+export interface CreateCompetencyDto {
+  code: string;
+  name: string;
+  description?: string;
+  subjectId?: string;
+}
+
+export interface UpdateCompetencyDto {
+  code?: string;
+  name?: string;
+  description?: string;
+  subjectId?: string;
 }

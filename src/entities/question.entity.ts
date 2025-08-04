@@ -1,6 +1,6 @@
-import BaseEntity from './base.entity';
+import { BaseEntity } from './base.entity';
 
-export class Question extends BaseEntity {
+export interface Question extends BaseEntity {
   statement: string;
   options: string[];
   correctAnswer: string;

@@ -1,4 +1,4 @@
-import TestEntity from '../entities/test.entity';
+import { TestEntity } from '../entities/test.entity';
 import sequelize from '../config/database';
 import Profile from '../models/profile.model';
 
@@ -24,10 +24,10 @@ export default class Database {
   static seed() {
     Database.getInstance().data = {
       tests: [
-        new TestEntity({
+        {
           id: '89ecc32a-aec7-4b71-adfd-03287e4ca74f',
           name: 'Test Seed',
-        }),
+        } as TestEntity,
       ],
     };
   }

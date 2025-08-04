@@ -1,5 +1,5 @@
-import BaseEntity from './base.entity';
+import { BaseEntity } from './base.entity';
 
-export class Subject extends BaseEntity {
+export interface Subject extends BaseEntity {
   name: string;
 }

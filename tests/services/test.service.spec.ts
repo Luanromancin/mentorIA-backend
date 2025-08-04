@@ -1,6 +1,6 @@
 import TestService from '../../src/services/test.service';
 import TestRepository from '../../src/repositories/test.repository';
-import TestEntity from '../../src/entities/test.entity';
+import { TestEntity } from '../../src/entities/test.entity';
 import OtherRepository from '../../src/repositories/other.repository';
 import { HttpNotFoundError } from '../../src/utils/errors/http.error';
 
@@ -9,7 +9,7 @@ describe('TestService', () => {
   let mockOtherRepository: OtherRepository;
   let service: TestService;
 
-  const mockTestEntity = new TestEntity({ id: '123', name: 'test' });
+  const mockTestEntity = { id: '123', name: 'test' } as TestEntity;
 
   const mockTestModel = { id: '123', name: 'test' };
 

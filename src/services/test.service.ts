@@ -1,4 +1,4 @@
-import TestEntity from '../entities/test.entity';
+import { TestEntity } from '../entities/test.entity';
 import TestModel from '../models/test.model';
 import OtherRepository from '../repositories/other.repository';
 import TestRepository from '../repositories/test.repository';

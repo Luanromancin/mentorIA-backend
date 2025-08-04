@@ -1,6 +1,6 @@
 import { loadFeature, defineFeature } from 'jest-cucumber';
 import TestRepository from '../../src/repositories/test.repository';
-import TestEntity from '../../src/entities/test.entity';
+import { TestEntity } from '../../src/entities/test.entity';
 import TestService from '../../src/services/test.service';
 import OtherRepository from '../../src/repositories/other.repository';
 import TestModel from '../../src/models/test.model';
@@ -44,10 +44,10 @@ defineFeature(feature, (test) => {
         given(
             /^o método getTests do TestService retorna um array com o test de nome "(.*)" e id "(.*)"$/, 
             async (testName, testId) => {
-                mockTestEntity = new TestEntity({
+                mockTestEntity = {
                     id: testId,
                     name: testName,
-                });
+                } as TestEntity;
 
                 jest.spyOn(mockTestRepository, 'getTests')
                     .mockResolvedValue([mockTestEntity]);
@@ -61,7 +61,7 @@ defineFeature(feature, (test) => {
         then(/^o array retornado deve conter o test de nome "(.*)" e id "(.*)"$/, (testName, testId) => {
             
             mockTestModel = new TestModel(
-                new TestEntity({ id: testId, name: testName })
+                { id: testId, name: testName } as TestEntity
             );
 
             expect(tests).toEqual([mockTestModel]);
@@ -74,10 +74,10 @@ defineFeature(feature, (test) => {
             async (id, testName, testId) => {
                 idToCall = id;
 
-                mockTestEntity = new TestEntity({
+                mockTestEntity = {
                     id: testId,
                     name: testName,
-                });
+                } as TestEntity;
 
                 jest.spyOn(mockTestRepository, 'getTest')
                     .mockResolvedValue(mockTestEntity);
@@ -92,7 +92,7 @@ defineFeature(feature, (test) => {
 
         then(/^o test retornado deve ter o nome "(.*)" e id "(.*)"$/, (testName, testId) => {
             
-            const testEntity = new TestEntity({ id: testId, name: testName });
+            const testEntity = { id: testId, name: testName } as TestEntity;
 
             expect(testReturned).toEqual(testEntity);
             expect(mockTestRepository.getTest).toBeCalledWith(idToCall);

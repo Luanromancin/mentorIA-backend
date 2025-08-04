@@ -1,0 +1,128 @@
+create table public.alternatives (
+  id uuid not null default gen_random_uuid (),
+  question_id text not null,
+  letter character(1) not null,
+  text text not null,
+  file text null,
+  is_correct boolean not null,
+  constraint alternatives_pkey primary key (id),
+  constraint alternatives_question_id_fkey foreign KEY (question_id) references questions (id) on delete CASCADE
+) TABLESPACE pg_default;
+
+create table public.leveling_test_questions (
+  id uuid not null default gen_random_uuid (),
+  question_id text not null,
+  order_index integer not null,
+  created_at timestamp with time zone not null default CURRENT_TIMESTAMP,
+  constraint leveling_test_questions_pkey primary key (id),
+  constraint leveling_test_questions_question_id_fkey foreign KEY (question_id) references questions (id) on delete CASCADE
+) TABLESPACE pg_default;
+
+create index IF not exists leveling_test_questions_order_index_idx on public.leveling_test_questions using btree (order_index) TABLESPACE pg_default;
+
+create unique INDEX IF not exists leveling_test_questions_question_id_key on public.leveling_test_questions using btree (question_id) TABLESPACE pg_default;
+
+create table public.profiles (
+  id uuid not null,
+  email text not null,
+  name text not null,
+  institution text null,
+  has_completed_leveling_test boolean not null default false,
+  created_at timestamp with time zone null default CURRENT_TIMESTAMP,
+  updated_at timestamp with time zone null default CURRENT_TIMESTAMP,
+  constraint profiles_pkey primary key (id),
+  constraint profiles_id_fkey foreign KEY (id) references auth.users (id) on delete CASCADE
+) TABLESPACE pg_default;
+
+create unique INDEX IF not exists profiles_email_key on public.profiles using btree (email) TABLESPACE pg_default;
+
+create index IF not exists idx_profiles_email on public.profiles using btree (email) TABLESPACE pg_default;
+
+create table public.questions (
+  id text not null,
+  title text not null,
+  year integer not null,
+  question_index integer not null,
+  language text not null,
+  field text not null,
+  problem_statement text not null,
+  files jsonb null default '[]'::jsonb,
+  topic_name text null,
+  subtopic_name text null,
+  explanation text null,
+  constraint questions_pkey primary key (id)
+) TABLESPACE pg_default;
+
+create table public.study_tracks (
+  id uuid not null default gen_random_uuid (),
+  profile_id uuid not null,
+  name text not null,
+  description text null,
+  created_at timestamp with time zone null default CURRENT_TIMESTAMP,
+  is_active boolean null default true,
+  constraint study_tracks_pkey primary key (id),
+  constraint study_tracks_profile_id_fkey foreign KEY (profile_id) references profiles (id) on delete CASCADE
+) TABLESPACE pg_default;
+
+create table public.user_answers (
+  id uuid not null default gen_random_uuid (),
+  profile_id uuid not null,
+  question_id text not null,
+  selected_alternative_id uuid null,
+  is_correct boolean not null,
+  answered_at timestamp with time zone null default CURRENT_TIMESTAMP,
+  time_spent_seconds integer null,
+  constraint user_answers_pkey primary key (id),
+  constraint user_answers_profile_id_fkey foreign KEY (profile_id) references profiles (id) on delete CASCADE,
+  constraint user_answers_question_id_fkey foreign KEY (question_id) references questions (id) on delete CASCADE,
+  constraint user_answers_selected_alternative_id_fkey foreign KEY (selected_alternative_id) references alternatives (id)
+) TABLESPACE pg_default;
+
+create index IF not exists user_answers_question_id_idx on public.user_answers using btree (question_id) TABLESPACE pg_default;
+
+create index IF not exists user_answers_user_id_idx on public.user_answers using btree (profile_id) TABLESPACE pg_default;
+
+create index IF not exists idx_user_answers_profile_id on public.user_answers using btree (profile_id) TABLESPACE pg_default;
+
+create table public.user_answers (
+  id uuid not null default gen_random_uuid (),
+  profile_id uuid not null,
+  question_id text not null,
+  selected_alternative_id uuid null,
+  is_correct boolean not null,
+  answered_at timestamp with time zone null default CURRENT_TIMESTAMP,
+  time_spent_seconds integer null,
+  constraint user_answers_pkey primary key (id),
+  constraint user_answers_profile_id_fkey foreign KEY (profile_id) references profiles (id) on delete CASCADE,
+  constraint user_answers_question_id_fkey foreign KEY (question_id) references questions (id) on delete CASCADE,
+  constraint user_answers_selected_alternative_id_fkey foreign KEY (selected_alternative_id) references alternatives (id)
+) TABLESPACE pg_default;
+
+create index IF not exists user_answers_question_id_idx on public.user_answers using btree (question_id) TABLESPACE pg_default;
+
+create index IF not exists user_answers_user_id_idx on public.user_answers using btree (profile_id) TABLESPACE pg_default;
+
+create index IF not exists idx_user_answers_profile_id on public.user_answers using btree (profile_id) TABLESPACE pg_default;
+
+create table public.users_backup (
+  id uuid null,
+  name text null,
+  email text null,
+  password_hash text null,
+  created_at timestamp with time zone null,
+  profile_data jsonb null
+) TABLESPACE pg_default;
+
+create table public.user_competencies (
+  profile_id uuid not null,
+  competency_id uuid not null,
+  level integer null default 0,
+  last_evaluated_at timestamp with time zone null,
+  constraint user_competencies_pkey primary key (profile_id, competency_id),
+  constraint user_competencies_competency_id_fkey foreign KEY (competency_id) references competencies (id) on delete CASCADE,
+  constraint user_competencies_profile_id_fkey foreign KEY (profile_id) references profiles (id) on delete CASCADE
+) TABLESPACE pg_default;
+
+create index IF not exists user_competencies_user_id_idx on public.user_competencies using btree (profile_id) TABLESPACE pg_default;
+
+create index IF not exists idx_user_competencies_profile_id on public.user_competencies using btree (profile_id) TABLESPACE pg_default;
