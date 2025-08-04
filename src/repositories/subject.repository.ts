@@ -5,4 +5,4 @@ export class SubjectRepository extends BaseRepository<Subject> {
   constructor() {
     super('subject');
   }
-} 
+}

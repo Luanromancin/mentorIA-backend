@@ -5,4 +5,4 @@ export class CompetencyRepository extends BaseRepository<Competency> {
   constructor() {
     super('competency');
   }
-} 
+}

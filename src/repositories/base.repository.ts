@@ -80,7 +80,9 @@ export default class BaseRepository<T extends BaseEntity> {
         return;
       }
 
-      this.db.data[this.prefix] = (this.db.data[this.prefix] as T[]).filter(filter);
+      this.db.data[this.prefix] = (this.db.data[this.prefix] as T[]).filter(
+        filter
+      );
     } catch {
       throw new HttpInternalServerError();
     }

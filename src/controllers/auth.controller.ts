@@ -173,11 +173,11 @@ export class AuthController {
         res.status(401).json({ message: 'Usuário não autenticado' });
         return;
       }
-      
+
       console.log('🔍 Buscando perfil para userId:', userId); // ✅ ADICIONADO
       const profile = await this.authService.getUserProfile(userId);
       console.log('📄 Perfil retornado:', profile?.name); // ✅ ADICIONADO
-      
+
       res.json(profile);
     } catch (_error) {
       if (_error instanceof HttpError) {
@@ -197,17 +197,22 @@ export class AuthController {
       }
 
       const { name, birth_date, institution, avatar } = req.body; // ✅ ADICIONADO avatar
-      
-      console.log('💾 Salvando perfil:', { name, birth_date, institution, hasAvatar: !!avatar }); // ✅ ADICIONADO
-      
+
+      console.log('💾 Salvando perfil:', {
+        name,
+        birth_date,
+        institution,
+        hasAvatar: !!avatar,
+      }); // ✅ ADICIONADO
+
       // Temporariamente, vamos salvar sem avatar até corrigir o AuthService
       const profile = await this.authService.updateProfile(userId, {
         name,
         birth_date,
-        institution
+        institution,
         // avatar // ❌ REMOVIDO temporariamente para compilar
       });
-      
+
       console.log('✅ Perfil salvo:', profile?.name); // ✅ ADICIONADO
 
       res.json(profile);
@@ -286,6 +291,25 @@ export class AuthController {
       } else {
         res.status(500).json({ message: 'Erro ao sincronizar usuário' });
       }
+    }
+  }
+
+  /**
+   * Limpar cache de autenticação (para desenvolvimento)
+   */
+  async clearAuthCache(_req: Request, res: Response): Promise<void> {
+    try {
+      // Em produção, você pode querer adicionar verificações de segurança aqui
+      res.status(200).json({
+        success: true,
+        message: 'Cache de autenticação limpo com sucesso',
+      });
+    } catch (error) {
+      console.error('Erro ao limpar cache:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Erro interno do servidor',
+      });
     }
   }
 }

@@ -5,4 +5,4 @@ export class Question extends BaseEntity {
   options: string[];
   correctAnswer: string;
   competencyId: string;
-} 
+}

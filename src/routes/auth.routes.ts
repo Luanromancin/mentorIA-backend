@@ -31,6 +31,9 @@ router.post('/sync', authController.syncUser.bind(authController));
 // Rota temporária para debug - listar perfis
 router.get('/profiles', authController.listProfiles.bind(authController));
 
+// Rota para limpar cache (apenas para desenvolvimento)
+router.post('/clear-cache', authController.clearAuthCache.bind(authController));
+
 // Rotas protegidas (requerem autenticação)
 router.post(
   '/refresh',
