@@ -128,7 +128,7 @@ describe('Auth Integration Tests', () => {
         .send(loginData)
         .expect(401);
 
-      expect(response.body).toHaveProperty('message', 'Email ou senha incorretos');
+      expect(response.body).toHaveProperty('message', 'Credenciais inválidas');
     });
 
     it('should return error for non-existent email', async () => {
@@ -142,7 +142,7 @@ describe('Auth Integration Tests', () => {
         .send(loginData)
         .expect(401);
 
-      expect(response.body).toHaveProperty('message', 'Email ou senha incorretos');
+      expect(response.body).toHaveProperty('message', 'Credenciais inválidas');
     });
   });
 
