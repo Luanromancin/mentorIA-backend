@@ -9,6 +9,24 @@ const controller = new DynamicQuestionsController();
 router.use(authMiddleware);
 
 /**
+ * GET /api/questions/session
+ * Busca sessão completa com competências e questões
+ */
+router.get('/session', controller.getSessionQuestions.bind(controller));
+
+/**
+ * POST /api/questions/session/complete
+ * Finaliza sessão e atualiza competências
+ */
+router.post('/session/complete', controller.completeSession.bind(controller));
+
+/**
+ * POST /api/questions/preload
+ * Pré-carrega dados do usuário após login
+ */
+router.post('/preload', controller.preloadUserData.bind(controller));
+
+/**
  * GET /api/questions/dynamic
  * Busca questões dinâmicas baseadas no nível de competência do usuário
  * Query params:

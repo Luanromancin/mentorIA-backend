@@ -86,7 +86,7 @@ export class UnifiedAuthService {
       await new Promise(resolve => setTimeout(resolve, 1000));
 
       // 3. Buscar o perfil criado pelo trigger
-      const { data: profile, error: profileError } = await this.adminClient
+      let { data: profile, error: profileError } = await this.adminClient
         .from('profiles')
         .select('*')
         .eq('id', authData.user.id)
@@ -122,7 +122,7 @@ export class UnifiedAuthService {
           throw new HttpError(500, 'Erro ao recuperar perfil criado');
         }
 
-        // profile = newProfile; // This line was removed as per the edit hint
+        profile = newProfile;
       }
 
              console.log('✅ Perfil criado/recuperado com sucesso:', profile.id);
@@ -179,7 +179,7 @@ export class UnifiedAuthService {
       console.log('✅ Login realizado no Supabase Auth:', authData.user.id);
 
       // 2. Buscar perfil do usuário
-      const { data: profile, error: profileError } = await this.adminClient
+      let { data: profile, error: profileError } = await this.adminClient
         .from('profiles')
         .select('*')
         .eq('id', authData.user.id)
@@ -215,12 +215,12 @@ export class UnifiedAuthService {
           throw new HttpError(500, 'Erro ao recuperar perfil criado');
         }
 
-                 profile = newProfile;
-         
-         // Sistema de competências otimizado (dados esparsos)
-         console.log('🎯 Sistema de competências otimizado - dados esparsos ativados');
-         console.log('⚡ Nível 0 = implícito (não armazenado no banco)');
-         console.log('⚡ Apenas níveis > 0 são persistidos para melhor performance');
+        profile = newProfile;
+        
+        // Sistema de competências otimizado (dados esparsos)
+        console.log('🎯 Sistema de competências otimizado - dados esparsos ativados');
+        console.log('⚡ Nível 0 = implícito (não armazenado no banco)');
+        console.log('⚡ Apenas níveis > 0 são persistidos para melhor performance');
       }
 
       console.log('✅ Perfil recuperado com sucesso:', profile.id);

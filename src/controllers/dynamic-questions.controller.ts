@@ -1,15 +1,18 @@
 import { Request, Response } from 'express';
 import { DynamicQuestionsService } from '../services/dynamic-questions.service';
 import { UserCompetencyRepository } from '../repositories/user-competency.repository';
+import { SparseCompetencyService } from '../services/sparse-competency.service';
 
 export class DynamicQuestionsController {
   private dynamicQuestionsService: DynamicQuestionsService;
+  private sparseCompetencyService: SparseCompetencyService;
 
   constructor() {
     const userCompetencyRepository = new UserCompetencyRepository();
     this.dynamicQuestionsService = new DynamicQuestionsService(
       userCompetencyRepository
     );
+    this.sparseCompetencyService = new SparseCompetencyService();
   }
 
   /**
@@ -122,6 +125,141 @@ export class DynamicQuestionsController {
       });
     } catch (error) {
       console.error('Erro ao buscar competências do usuário:', error);
+      return res.status(500).json({
+        success: false,
+        message: 'Erro interno do servidor',
+      });
+    }
+  }
+
+  /**
+   * GET /api/questions/session
+   * Busca sessão completa com competências e questões
+   */
+  async getSessionQuestions(req: Request, res: Response): Promise<Response> {
+    try {
+      const profileId = (req as any).user?.id;
+      if (!profileId) {
+        return res.status(401).json({
+          success: false,
+          message: 'Usuário não autenticado',
+        });
+      }
+
+      const maxQuestions = parseInt(req.query.maxQuestions as string) || 20;
+
+      // Buscar competências do usuário
+      const userCompetencies = await this.sparseCompetencyService.getAllUserCompetencies(profileId);
+      
+      // Buscar questões baseadas nas competências
+      const questions = await this.dynamicQuestionsService.getDynamicQuestions({
+        profileId,
+        maxQuestions,
+      });
+
+      const sessionId = `session_${Date.now()}_${profileId}`;
+
+      return res.json({
+        msgCode: 'success',
+        data: {
+          userCompetencies,
+          questions,
+          sessionId,
+        },
+      });
+    } catch (error) {
+      console.error('Erro ao buscar sessão de questões:', error);
+      return res.status(500).json({
+        success: false,
+        message: 'Erro interno do servidor',
+      });
+    }
+  }
+
+  /**
+   * POST /api/questions/session/complete
+   * Finaliza sessão e atualiza competências
+   */
+  async completeSession(req: Request, res: Response): Promise<Response> {
+    try {
+      const profileId = (req as any).user?.id;
+      if (!profileId) {
+        return res.status(401).json({
+          success: false,
+          message: 'Usuário não autenticado',
+        });
+      }
+
+      const { answers } = req.body;
+
+      if (!Array.isArray(answers)) {
+        return res.status(400).json({
+          success: false,
+          message: 'Respostas devem ser um array',
+        });
+      }
+
+      // Processar cada resposta
+      for (const answer of answers) {
+        const { questionId, answer: selectedAnswer, isCorrect, competencyName } = answer;
+        
+        // Salvar resposta do usuário
+        await this.saveUserAnswer(profileId, questionId, selectedAnswer, isCorrect);
+        
+        // Atualizar nível de competência
+        await this.dynamicQuestionsService.updateCompetencyLevel(
+          profileId,
+          competencyName,
+          isCorrect
+        );
+      }
+
+      return res.json({
+        msgCode: 'success',
+        message: 'Sessão finalizada com sucesso',
+      });
+    } catch (error) {
+      console.error('Erro ao finalizar sessão:', error);
+      return res.status(500).json({
+        success: false,
+        message: 'Erro interno do servidor',
+      });
+    }
+  }
+
+  /**
+   * POST /api/questions/preload
+   * Pré-carrega dados do usuário após login
+   */
+  async preloadUserData(req: Request, res: Response): Promise<Response> {
+    try {
+      const profileId = (req as any).user?.id;
+      if (!profileId) {
+        return res.status(401).json({
+          success: false,
+          message: 'Usuário não autenticado',
+        });
+      }
+
+      // Buscar competências do usuário
+      const userCompetencies = await this.sparseCompetencyService.getAllUserCompetencies(profileId);
+      
+      // Buscar algumas questões para cache
+      const questions = await this.dynamicQuestionsService.getDynamicQuestions({
+        profileId,
+        maxQuestions: 10,
+      });
+
+      return res.json({
+        msgCode: 'success',
+        data: {
+          userCompetencies,
+          questions,
+          preloadedAt: new Date().toISOString(),
+        },
+      });
+    } catch (error) {
+      console.error('Erro no pré-carregamento:', error);
       return res.status(500).json({
         success: false,
         message: 'Erro interno do servidor',

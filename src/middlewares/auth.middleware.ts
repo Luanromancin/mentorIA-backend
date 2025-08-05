@@ -3,6 +3,7 @@ import { createClient } from '@supabase/supabase-js';
 import env from '../env';
 
 const supabase = createClient(env.SUPABASE_URL, env.SUPABASE_ANON_KEY);
+const supabaseAdmin = createClient(env.SUPABASE_URL, env.SUPABASE_SERVICE_ROLE_KEY);
 
 export const authMiddleware = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -29,8 +30,8 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
       });
     }
 
-    // Buscar perfil do usuário
-    const { data: profile, error: profileError } = await supabase
+    // Buscar perfil do usuário usando cliente admin
+    const { data: profile, error: profileError } = await supabaseAdmin
       .from('profiles')
       .select('*')
       .eq('id', user.id)

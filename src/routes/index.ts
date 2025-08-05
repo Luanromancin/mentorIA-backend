@@ -10,11 +10,15 @@ const router = Router();
 const prefix = '/api';
 
 export default function setupRoutes(app: Express): void {
-  app.use(
-    prefix,
-    new TestController(router, di.getService(TestService)).router
-  );
+  // Rotas de autenticação
   app.use('/api/auth', unifiedAuthRoutes);
-  app.use(prefix, new QuestionController(router).router);
+  
+  // Rotas de questões dinâmicas
   app.use('/api/questions', dynamicQuestionsRoutes);
+  
+  // Rotas de testes (incluindo sessão e pré-carregamento)
+  app.use(prefix, new TestController(router, di.getService(TestService)).router);
+  
+  // Rotas de questões (legado)
+  app.use(prefix, new QuestionController(router).router);
 }
