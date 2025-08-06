@@ -192,7 +192,7 @@ export class UnifiedAuthService {
       console.log('✅ Login realizado no Supabase Auth:', authData.user.id);
 
       // 2. Buscar perfil do usuário
-      const { data: profile, error: profileError } = await this.adminClient
+      let { data: profile, error: profileError } = await this.adminClient
         .from('profiles')
         .select('*')
         .eq('id', authData.user.id)
