@@ -150,7 +150,7 @@ export class DynamicQuestionsController {
 
       // Buscar competências do usuário
       const userCompetencies = await this.sparseCompetencyService.getAllUserCompetencies(profileId);
-      
+
       // Buscar questões baseadas nas competências
       const questions = await this.dynamicQuestionsService.getDynamicQuestions({
         profileId,
@@ -202,10 +202,10 @@ export class DynamicQuestionsController {
       // Processar cada resposta
       for (const answer of answers) {
         const { questionId, answer: selectedAnswer, isCorrect, competencyName } = answer;
-        
+
         // Salvar resposta do usuário
         await this.saveUserAnswer(profileId, questionId, selectedAnswer, isCorrect);
-        
+
         // Atualizar nível de competência
         await this.dynamicQuestionsService.updateCompetencyLevel(
           profileId,
@@ -243,7 +243,7 @@ export class DynamicQuestionsController {
 
       // Buscar competências do usuário
       const userCompetencies = await this.sparseCompetencyService.getAllUserCompetencies(profileId);
-      
+
       // Buscar algumas questões para cache
       const questions = await this.dynamicQuestionsService.getDynamicQuestions({
         profileId,
@@ -276,16 +276,26 @@ export class DynamicQuestionsController {
     answer: string,
     isCorrect: boolean
   ) {
-    // Por enquanto, vamos apenas logar a resposta
-    // TODO: Implementar salvamento real quando tivermos acesso ao banco
-    console.log(
-      `💾 Resposta salva: questão ${questionId}, correto: ${isCorrect}`
-    );
-    console.log(`📊 Dados da resposta:`, {
-      profileId: profileId,
-      questionId: questionId,
-      answer: answer,
-      isCorrect: isCorrect,
-    });
+    try {
+      // Importar o repository dinamicamente para evitar dependência circular
+      const { UserAnswerRepository } = await import('../repositories/user-answer.repository');
+      const userAnswerRepository = new UserAnswerRepository();
+
+      await userAnswerRepository.create({
+        profileId,
+        questionId,
+        selectedAlternativeId: answer,
+        isCorrect,
+        timeSpentSeconds: undefined // TODO: Implementar tracking de tempo
+      });
+
+      console.log(
+        `💾 Resposta salva no banco: questão ${questionId}, correto: ${isCorrect}`
+      );
+    } catch (error) {
+      console.error('❌ Erro ao salvar resposta no banco:', error);
+      // Não falhar o fluxo se o salvamento falhar
+      console.log('⚠️ Salvamento falhou, mas continuando o fluxo...');
+    }
   }
 }

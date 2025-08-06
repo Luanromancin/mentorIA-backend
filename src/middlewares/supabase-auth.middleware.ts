@@ -24,9 +24,11 @@ export class SupabaseAuthMiddleware {
     next: NextFunction
   ): Promise<void> {
     try {
+      console.log('🔐 Middleware de autenticação executado');
       const token = req.headers.authorization?.replace('Bearer ', '');
 
       if (!token) {
+        console.log('❌ Token não fornecido');
         res.status(401).json({
           success: false,
           message: 'Token não fornecido',
@@ -34,11 +36,13 @@ export class SupabaseAuthMiddleware {
         return;
       }
 
+      console.log('🔍 Validando token...');
       const user = await this.authService.validateToken(token);
+      console.log('✅ Token válido, usuário:', user?.id);
       req.user = user;
       return next();
     } catch (error) {
-      console.error('Erro na autenticação:', error);
+      console.error('❌ Erro na autenticação:', error);
 
       if (error instanceof HttpError) {
         res.status(error.statusCode).json({
