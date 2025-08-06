@@ -113,7 +113,9 @@ export class DynamicQuestionsService {
       }
     }
 
-    console.log(`✅ ${selectedQuestions.length} questões selecionadas dinamicamente`);
+    console.log(
+      `✅ ${selectedQuestions.length} questões selecionadas dinamicamente`
+    );
     return selectedQuestions;
   }
 
@@ -172,11 +174,14 @@ export class DynamicQuestionsService {
       if (level0Competencies.length > 0) {
         const additionalQuestions = maxQuestions - totalQuestions;
         const currentLevel0Questions = questionsPerLevel[0];
-        const maxAdditionalPerCompetency = Math.ceil(additionalQuestions / level0Competencies.length);
-        
+        const maxAdditionalPerCompetency = Math.ceil(
+          additionalQuestions / level0Competencies.length
+        );
+
         // Adicionar questões extras para nível 0
         questionsPerLevel[0] = Math.min(
-          currentLevel0Questions + (level0Competencies.length * maxAdditionalPerCompetency),
+          currentLevel0Questions +
+            level0Competencies.length * maxAdditionalPerCompetency,
           maxQuestions
         );
       }
@@ -199,12 +204,18 @@ export class DynamicQuestionsService {
       );
 
       // Buscar questões reais do banco
-      const dbQuestions = await databaseService.getQuestionsByCompetency(subtopicName, count);
-      
+      const dbQuestions = await databaseService.getQuestionsByCompetency(
+        subtopicName,
+        count
+      );
+
       // Debug: verificar estrutura das questões do banco
       console.log(`🔍 Estrutura da primeira questão do banco:`, dbQuestions[0]);
-      console.log(`📝 Alternativas da primeira questão:`, dbQuestions[0]?.alternatives);
-      
+      console.log(
+        `📝 Alternativas da primeira questão:`,
+        dbQuestions[0]?.alternatives
+      );
+
       // Converter para o formato esperado
       const questions = dbQuestions.map((dbQuestion: any) => ({
         id: dbQuestion.id,
@@ -224,17 +235,19 @@ export class DynamicQuestionsService {
             letter: alt.letter,
             text: alt.text,
             file: alt.file,
-            isCorrect: alt.is_correct
+            isCorrect: alt.is_correct,
           }))
           .sort((a: any, b: any) => a.letter.localeCompare(b.letter)), // Ordenar por letra (A, B, C, D, E)
-        competencyLevel: 0 // Por enquanto, todas as questões são nível 0
+        competencyLevel: 0, // Por enquanto, todas as questões são nível 0
       }));
 
-      console.log(`✅ Encontradas ${questions.length} questões para ${subtopicName}`);
+      console.log(
+        `✅ Encontradas ${questions.length} questões para ${subtopicName}`
+      );
       return questions;
     } catch (error) {
       console.error(`❌ Erro ao buscar questões para ${subtopicName}:`, error);
-      
+
       // Fallback para dados mockados
       console.log('⚠️ Usando dados mockados como fallback');
       return this.getMockQuestions(subtopicName, count);
@@ -256,11 +269,16 @@ export class DynamicQuestionsService {
       console.log(`📊 Resposta: ${isCorrect ? 'correta' : 'incorreta'}`);
 
       // Buscar competência atual do usuário
-      const userCompetencies = await this.userCompetencyRepository.findByProfileId(profileId);
-      const competency = userCompetencies.find(comp => comp.competency?.name === competencyName);
-      
+      const userCompetencies =
+        await this.userCompetencyRepository.findByProfileId(profileId);
+      const competency = userCompetencies.find(
+        (comp) => comp.competency?.name === competencyName
+      );
+
       if (!competency) {
-        console.error(`❌ Competência ${competencyName} não encontrada para o usuário ${profileId}`);
+        console.error(
+          `❌ Competência ${competencyName} não encontrada para o usuário ${profileId}`
+        );
         return;
       }
 
@@ -289,7 +307,7 @@ export class DynamicQuestionsService {
       );
     } catch (error) {
       console.error('❌ Erro ao atualizar nível da competência:', error);
-      
+
       // Fallback para mock
       console.log('⚠️ Usando lógica mockada como fallback');
       this.updateMockCompetencyLevel(competencyName, isCorrect);
@@ -320,7 +338,10 @@ export class DynamicQuestionsService {
     }));
   }
 
-  private updateMockCompetencyLevel(competencyName: string, isCorrect: boolean): void {
+  private updateMockCompetencyLevel(
+    competencyName: string,
+    isCorrect: boolean
+  ): void {
     const mockCurrentLevel = 1; // Nível mockado
     let newLevel = mockCurrentLevel;
 

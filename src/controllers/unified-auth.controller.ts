@@ -56,7 +56,7 @@ export class UnifiedAuthController {
       res.status(201).json({
         user: result.user,
         token: result.token,
-        success: true
+        success: true,
       });
     } catch (error) {
       console.error('❌ Erro no registro:', error);
@@ -93,7 +93,7 @@ export class UnifiedAuthController {
       res.json({
         user: result.user,
         token: result.token,
-        success: true
+        success: true,
       });
     } catch (error) {
       console.error('❌ Erro no login:', error);
@@ -114,7 +114,7 @@ export class UnifiedAuthController {
   async me(req: AuthenticatedRequest, res: Response): Promise<void> {
     try {
       const token = req.headers.authorization?.replace('Bearer ', '');
-      
+
       if (!token) {
         throw new HttpError(401, 'Token não fornecido');
       }
@@ -134,7 +134,7 @@ export class UnifiedAuthController {
   async updateProfile(req: AuthenticatedRequest, res: Response): Promise<void> {
     try {
       const token = req.headers.authorization?.replace('Bearer ', '');
-      
+
       if (!token) {
         throw new HttpError(401, 'Token não fornecido');
       }
@@ -145,7 +145,10 @@ export class UnifiedAuthController {
       if (name !== undefined) updates.name = name;
       if (institution !== undefined) updates.institution = institution;
 
-      const updatedProfile = await this.authService.updateProfile(token, updates);
+      const updatedProfile = await this.authService.updateProfile(
+        token,
+        updates
+      );
 
       console.log('✅ Perfil atualizado com sucesso:', {
         id: updatedProfile.id,
@@ -166,7 +169,7 @@ export class UnifiedAuthController {
   async logout(req: Request, res: Response): Promise<void> {
     try {
       const token = req.headers.authorization?.replace('Bearer ', '');
-      
+
       if (token) {
         await this.authService.logout(token);
       }
@@ -197,7 +200,9 @@ export class UnifiedAuthController {
       if (error instanceof HttpError) {
         res.status(error.statusCode).json({ message: error.message });
       } else {
-        res.status(500).json({ message: 'Erro interno ao solicitar reset de senha' });
+        res
+          .status(500)
+          .json({ message: 'Erro interno ao solicitar reset de senha' });
       }
     }
   }
@@ -219,4 +224,4 @@ export class UnifiedAuthController {
   }
 }
 
-export default new UnifiedAuthController(); 
+export default new UnifiedAuthController();

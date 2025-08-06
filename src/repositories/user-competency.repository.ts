@@ -20,33 +20,56 @@ export class UserCompetencyRepository extends BaseRepository<UserCompetency> {
     profileId: string
   ): Promise<UserCompetencyWithDetails[]> {
     const startTime = Date.now();
-    console.log(`🏁 [${new Date().toISOString()}] === INICIANDO findByProfileId ===`);
+    console.log(
+      `🏁 [${new Date().toISOString()}] === INICIANDO findByProfileId ===`
+    );
     PerformanceMonitor.startTimer('findByProfileId');
-    
+
     try {
       console.log(`🔍 [${new Date().toISOString()}] Verificando cache...`);
-      
+
       // 1. Usar o sistema de competências otimizado (dados esparsos)
-      console.log(`🔄 [${new Date().toISOString()}] Usando sistema de competências otimizado...`);
-      
-      const competencies = await sparseCompetencyService.getAllUserCompetencies(profileId);
-      
+      console.log(
+        `🔄 [${new Date().toISOString()}] Usando sistema de competências otimizado...`
+      );
+
+      const competencies = await sparseCompetencyService.getAllUserCompetencies(
+        profileId
+      );
+
       const searchTime = Date.now() - startTime;
-      console.log(`📊 [${new Date().toISOString()}] Busca concluída em ${searchTime}ms`);
-      console.log(`📊 [${new Date().toISOString()}] ${competencies.length} competências retornadas`);
+      console.log(
+        `📊 [${new Date().toISOString()}] Busca concluída em ${searchTime}ms`
+      );
+      console.log(
+        `📊 [${new Date().toISOString()}] ${
+          competencies.length
+        } competências retornadas`
+      );
 
       const totalTime = Date.now() - startTime;
-      console.log(`✅ [${new Date().toISOString()}] Encontradas ${competencies.length} competências para o usuário ${profileId} em ${totalTime}ms`);
-      console.log(`🏁 [${new Date().toISOString()}] === FINALIZANDO findByProfileId ===`);
-      
+      console.log(
+        `✅ [${new Date().toISOString()}] Encontradas ${
+          competencies.length
+        } competências para o usuário ${profileId} em ${totalTime}ms`
+      );
+      console.log(
+        `🏁 [${new Date().toISOString()}] === FINALIZANDO findByProfileId ===`
+      );
+
       PerformanceMonitor.endTimer('findByProfileId');
       return competencies;
     } catch (error) {
       const totalTime = Date.now() - startTime;
-      console.error(`❌ [${new Date().toISOString()}] Erro ao buscar competências do usuário (${totalTime}ms):`, error);
-      
+      console.error(
+        `❌ [${new Date().toISOString()}] Erro ao buscar competências do usuário (${totalTime}ms):`,
+        error
+      );
+
       // Fallback para dados mockados em caso de erro
-      console.log(`⚠️ [${new Date().toISOString()}] Usando dados mockados como fallback`);
+      console.log(
+        `⚠️ [${new Date().toISOString()}] Usando dados mockados como fallback`
+      );
       PerformanceMonitor.endTimer('findByProfileId');
       return this.getMockCompetencies(profileId);
     }
@@ -86,8 +109,11 @@ export class UserCompetencyRepository extends BaseRepository<UserCompetency> {
         `🔍 Buscando competência ${competencyId} do usuário ${profileId} no banco real`
       );
 
-      const dbCompetency = await databaseService.getUserCompetency(profileId, competencyId);
-      
+      const dbCompetency = await databaseService.getUserCompetency(
+        profileId,
+        competencyId
+      );
+
       if (!dbCompetency) {
         return null;
       }
@@ -97,13 +123,15 @@ export class UserCompetencyRepository extends BaseRepository<UserCompetency> {
         profileId: dbCompetency.profile_id,
         competencyId: dbCompetency.competency_id,
         level: dbCompetency.level || 0,
-        lastEvaluatedAt: dbCompetency.last_evaluated_at ? new Date(dbCompetency.last_evaluated_at) : new Date(),
+        lastEvaluatedAt: dbCompetency.last_evaluated_at
+          ? new Date(dbCompetency.last_evaluated_at)
+          : new Date(),
       };
 
       return competency;
     } catch (error) {
       console.error('❌ Erro ao buscar competência específica:', error);
-      
+
       // Fallback para mock
       console.log('⚠️ Usando dados mockados como fallback');
       return this.getMockCompetency(profileId, competencyId);
@@ -118,9 +146,9 @@ export class UserCompetencyRepository extends BaseRepository<UserCompetency> {
   ): Promise<UserCompetency> {
     try {
       console.log(
-        `💾 Upsert competência no banco real: usuário ${data.profileId}, competência ${
-          data.competencyId
-        }, nível ${data.level || 0}`
+        `💾 Upsert competência no banco real: usuário ${
+          data.profileId
+        }, competência ${data.competencyId}, nível ${data.level || 0}`
       );
 
       await databaseService.updateUserCompetencyLevel(
@@ -140,7 +168,7 @@ export class UserCompetencyRepository extends BaseRepository<UserCompetency> {
       return userCompetency;
     } catch (error) {
       console.error('❌ Erro ao fazer upsert da competência:', error);
-      
+
       // Fallback para mock
       console.log('⚠️ Usando dados mockados como fallback');
       return this.getMockUpsertCompetency(data);
@@ -161,7 +189,11 @@ export class UserCompetencyRepository extends BaseRepository<UserCompetency> {
       );
 
       // Usar o sistema de competências otimizado (dados esparsos)
-      await sparseCompetencyService.updateCompetencyLevel(profileId, competencyId, level);
+      await sparseCompetencyService.updateCompetencyLevel(
+        profileId,
+        competencyId,
+        level
+      );
 
       const userCompetency: UserCompetency = {
         id: `${profileId}-${competencyId}`,
@@ -174,7 +206,7 @@ export class UserCompetencyRepository extends BaseRepository<UserCompetency> {
       return userCompetency;
     } catch (error) {
       console.error('❌ Erro ao atualizar nível da competência:', error);
-      
+
       // Fallback para mock
       console.log('⚠️ Usando dados mockados como fallback');
       return this.getMockUpdateCompetency(profileId, competencyId, level);
@@ -239,7 +271,10 @@ export class UserCompetencyRepository extends BaseRepository<UserCompetency> {
     ];
   }
 
-  private getMockCompetency(profileId: string, competencyId: string): UserCompetency {
+  private getMockCompetency(
+    profileId: string,
+    competencyId: string
+  ): UserCompetency {
     return {
       id: 'uc-mock',
       profileId,
@@ -249,7 +284,9 @@ export class UserCompetencyRepository extends BaseRepository<UserCompetency> {
     };
   }
 
-  private getMockUpsertCompetency(data: CreateUserCompetencyDto & { level?: number }): UserCompetency {
+  private getMockUpsertCompetency(
+    data: CreateUserCompetencyDto & { level?: number }
+  ): UserCompetency {
     return {
       id: 'uc-upsert',
       profileId: data.profileId,
@@ -259,7 +296,11 @@ export class UserCompetencyRepository extends BaseRepository<UserCompetency> {
     };
   }
 
-  private getMockUpdateCompetency(profileId: string, competencyId: string, level: number): UserCompetency {
+  private getMockUpdateCompetency(
+    profileId: string,
+    competencyId: string,
+    level: number
+  ): UserCompetency {
     return {
       id: 'uc-update',
       profileId,

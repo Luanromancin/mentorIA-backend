@@ -149,7 +149,8 @@ export class DynamicQuestionsController {
       const maxQuestions = parseInt(req.query.maxQuestions as string) || 20;
 
       // Buscar competências do usuário
-      const userCompetencies = await this.sparseCompetencyService.getAllUserCompetencies(profileId);
+      const userCompetencies =
+        await this.sparseCompetencyService.getAllUserCompetencies(profileId);
 
       // Buscar questões baseadas nas competências
       const questions = await this.dynamicQuestionsService.getDynamicQuestions({
@@ -201,10 +202,20 @@ export class DynamicQuestionsController {
 
       // Processar cada resposta
       for (const answer of answers) {
-        const { questionId, answer: selectedAnswer, isCorrect, competencyName } = answer;
+        const {
+          questionId,
+          answer: selectedAnswer,
+          isCorrect,
+          competencyName,
+        } = answer;
 
         // Salvar resposta do usuário
-        await this.saveUserAnswer(profileId, questionId, selectedAnswer, isCorrect);
+        await this.saveUserAnswer(
+          profileId,
+          questionId,
+          selectedAnswer,
+          isCorrect
+        );
 
         // Atualizar nível de competência
         await this.dynamicQuestionsService.updateCompetencyLevel(
@@ -242,7 +253,8 @@ export class DynamicQuestionsController {
       }
 
       // Buscar competências do usuário
-      const userCompetencies = await this.sparseCompetencyService.getAllUserCompetencies(profileId);
+      const userCompetencies =
+        await this.sparseCompetencyService.getAllUserCompetencies(profileId);
 
       // Buscar algumas questões para cache
       const questions = await this.dynamicQuestionsService.getDynamicQuestions({
@@ -278,7 +290,9 @@ export class DynamicQuestionsController {
   ) {
     try {
       // Importar o repository dinamicamente para evitar dependência circular
-      const { UserAnswerRepository } = await import('../repositories/user-answer.repository');
+      const { UserAnswerRepository } = await import(
+        '../repositories/user-answer.repository'
+      );
       const userAnswerRepository = new UserAnswerRepository();
 
       await userAnswerRepository.create({
@@ -286,7 +300,7 @@ export class DynamicQuestionsController {
         questionId,
         selectedAlternativeId: answer,
         isCorrect,
-        timeSpentSeconds: undefined // TODO: Implementar tracking de tempo
+        timeSpentSeconds: undefined, // TODO: Implementar tracking de tempo
       });
 
       console.log(

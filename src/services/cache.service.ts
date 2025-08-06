@@ -14,14 +14,14 @@ export class CacheService {
     this.cache.set(key, {
       data,
       timestamp: Date.now(),
-      ttl
+      ttl,
     });
     console.log(`💾 Cache set: ${key} (TTL: ${ttl}ms)`);
   }
 
   static get<T>(key: string): T | null {
     const entry = this.cache.get(key);
-    
+
     if (!entry) {
       console.log(`❌ Cache miss: ${key}`);
       return null;
@@ -45,8 +45,8 @@ export class CacheService {
         keysToDelete.push(key);
       }
     }
-    
-    keysToDelete.forEach(key => {
+
+    keysToDelete.forEach((key) => {
       this.cache.delete(key);
       console.log(`🗑️ Cache invalidated: ${key}`);
     });
@@ -60,7 +60,7 @@ export class CacheService {
   static getStats(): { size: number; keys: string[] } {
     return {
       size: this.cache.size,
-      keys: Array.from(this.cache.keys())
+      keys: Array.from(this.cache.keys()),
     };
   }
 
@@ -69,15 +69,26 @@ export class CacheService {
     return `user_competencies_${profileId}`;
   }
 
-  static setUserCompetencies(profileId: string, competencies: UserCompetencyWithDetails[]): void {
-    this.set(this.getUserCompetenciesKey(profileId), competencies, 10 * 60 * 1000); // 10 minutos
+  static setUserCompetencies(
+    profileId: string,
+    competencies: UserCompetencyWithDetails[]
+  ): void {
+    this.set(
+      this.getUserCompetenciesKey(profileId),
+      competencies,
+      10 * 60 * 1000
+    ); // 10 minutos
   }
 
-  static getUserCompetencies(profileId: string): UserCompetencyWithDetails[] | null {
-    return this.get<UserCompetencyWithDetails[]>(this.getUserCompetenciesKey(profileId));
+  static getUserCompetencies(
+    profileId: string
+  ): UserCompetencyWithDetails[] | null {
+    return this.get<UserCompetencyWithDetails[]>(
+      this.getUserCompetenciesKey(profileId)
+    );
   }
 
   static invalidateUserCompetencies(profileId: string): void {
     this.invalidate(`user_competencies_${profileId}`);
   }
-} 
+}

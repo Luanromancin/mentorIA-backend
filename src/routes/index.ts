@@ -21,7 +21,10 @@ export default function setupRoutes(app: Express): void {
   app.use('/api/statistics', statisticsRoutes);
 
   // Rotas de testes (incluindo sessão e pré-carregamento)
-  app.use(prefix, new TestController(router, di.getService(TestService)).router);
+  app.use(
+    prefix,
+    new TestController(router, di.getService(TestService)).router
+  );
 
   // Rotas de questões (legado)
   app.use(prefix, new QuestionController(router).router);

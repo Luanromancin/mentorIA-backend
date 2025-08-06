@@ -45,7 +45,10 @@ export class SparseCompetencyService {
    * Obtém o nível de uma competência específica do usuário
    * Retorna 0 se não existir registro (nível implícito)
    */
-  async getCompetencyLevel(profileId: string, competencyId: string): Promise<number> {
+  async getCompetencyLevel(
+    profileId: string,
+    competencyId: string
+  ): Promise<number> {
     // 1. Verificar cache primeiro
     const cacheKey = `user_competencies:${profileId}`;
     if (this.isCacheValid(cacheKey)) {
@@ -55,7 +58,7 @@ export class SparseCompetencyService {
 
     // 2. Carregar do banco (apenas níveis > 0)
     await this.loadUserCompetencies(profileId);
-    
+
     // 3. Retornar do cache atualizado
     const userCache = this.cache.get(cacheKey);
     return userCache?.get(competencyId) ?? 0;
@@ -65,21 +68,25 @@ export class SparseCompetencyService {
    * Obtém todas as competências do usuário com seus níveis
    * Inclui competências com nível 0 (implícito)
    */
-  async getAllUserCompetencies(profileId: string): Promise<UserCompetencyWithDetails[]> {
+  async getAllUserCompetencies(
+    profileId: string
+  ): Promise<UserCompetencyWithDetails[]> {
     // 1. Carregar competências do usuário (níveis > 0)
-    const userCompetencies = await this.getUserCompetenciesFromDatabase(profileId);
-    
+    const userCompetencies = await this.getUserCompetenciesFromDatabase(
+      profileId
+    );
+
     // 2. Carregar todas as competências disponíveis
     const allCompetencies = await this.getAllCompetencies();
-    
+
     // 3. Criar mapa de níveis do usuário
     const userLevels = new Map<string, number>();
-    userCompetencies.forEach(comp => {
+    userCompetencies.forEach((comp) => {
       userLevels.set(comp.competency_id, comp.level);
     });
 
     // 4. Retornar todas as competências com níveis (0 = implícito)
-    return allCompetencies.map(competency => ({
+    return allCompetencies.map((competency) => ({
       id: `${profileId}-${competency.id}`,
       profileId,
       competencyId: competency.id,
@@ -100,11 +107,13 @@ export class SparseCompetencyService {
    * Se nível > 0, insere/atualiza o registro
    */
   async updateCompetencyLevel(
-    profileId: string, 
-    competencyId: string, 
+    profileId: string,
+    competencyId: string,
     newLevel: number
   ): Promise<void> {
-    console.log(`🔄 Atualizando competência ${competencyId} para nível ${newLevel}`);
+    console.log(
+      `🔄 Atualizando competência ${competencyId} para nível ${newLevel}`
+    );
 
     if (newLevel === 0) {
       // Nível 0 = remover registro (dados esparsos)
@@ -122,20 +131,26 @@ export class SparseCompetencyService {
    * Obtém competências recomendadas para o usuário
    * Prioriza competências com níveis mais baixos
    */
-  async getRecommendedCompetencies(profileId: string, limit: number = 5): Promise<CompetencyInfo[]> {
+  async getRecommendedCompetencies(
+    profileId: string,
+    limit: number = 5
+  ): Promise<CompetencyInfo[]> {
     const userCompetencies = await this.getAllUserCompetencies(profileId);
-    
+
     // Ordenar por nível (menor primeiro) e retornar as primeiras
     return userCompetencies
       .sort((a, b) => a.level - b.level)
       .slice(0, limit)
-      .map(comp => comp.competency);
+      .map((comp) => comp.competency);
   }
 
   /**
    * Obtém questões para uma competência específica
    */
-  async getQuestionsForCompetency(competencyId: string, limit: number = 10): Promise<string[]> {
+  async getQuestionsForCompetency(
+    competencyId: string,
+    limit: number = 10
+  ): Promise<string[]> {
     const { data: questions, error } = await this.client
       .from('question_competencies')
       .select('question_id')
@@ -147,7 +162,7 @@ export class SparseCompetencyService {
       return [];
     }
 
-    return questions?.map(q => q.question_id) ?? [];
+    return questions?.map((q) => q.question_id) ?? [];
   }
 
   // ===== MÉTODOS PRIVADOS =====
@@ -155,15 +170,19 @@ export class SparseCompetencyService {
   /**
    * Carrega competências do usuário do banco (apenas níveis > 0)
    */
-  private async getUserCompetenciesFromDatabase(profileId: string): Promise<UserCompetency[]> {
+  private async getUserCompetenciesFromDatabase(
+    profileId: string
+  ): Promise<UserCompetency[]> {
     const { data: competencies, error } = await this.client
       .from('user_competencies')
-      .select(`
+      .select(
+        `
         profile_id,
         competency_id,
         level,
         last_evaluated_at
-      `)
+      `
+      )
       .eq('profile_id', profileId);
 
     if (error) {
@@ -201,16 +220,16 @@ export class SparseCompetencyService {
    */
   private async loadUserCompetencies(profileId: string): Promise<void> {
     const cacheKey = `user_competencies:${profileId}`;
-    
+
     // Carregar do banco
     const competencies = await this.getUserCompetenciesFromDatabase(profileId);
-    
+
     // Popular cache
     const userCache = new Map<string, number>();
-    competencies.forEach(comp => {
+    competencies.forEach((comp) => {
       userCache.set(comp.competency_id, comp.level);
     });
-    
+
     this.cache.set(cacheKey, userCache);
     this.cacheExpiry.set(cacheKey, Date.now() + this.CACHE_TTL);
   }
@@ -218,7 +237,10 @@ export class SparseCompetencyService {
   /**
    * Remove registro de competência (nível 0)
    */
-  private async removeCompetencyRecord(profileId: string, competencyId: string): Promise<void> {
+  private async removeCompetencyRecord(
+    profileId: string,
+    competencyId: string
+  ): Promise<void> {
     const { error } = await this.client
       .from('user_competencies')
       .delete()
@@ -237,25 +259,25 @@ export class SparseCompetencyService {
    * Insere/atualiza registro de competência (nível > 0)
    */
   private async upsertCompetencyRecord(
-    profileId: string, 
-    competencyId: string, 
+    profileId: string,
+    competencyId: string,
     level: number
   ): Promise<void> {
-    const { error } = await this.client
-      .from('user_competencies')
-      .upsert({
-        profile_id: profileId,
-        competency_id: competencyId,
-        level: level,
-        last_evaluated_at: new Date().toISOString(),
-      });
+    const { error } = await this.client.from('user_competencies').upsert({
+      profile_id: profileId,
+      competency_id: competencyId,
+      level: level,
+      last_evaluated_at: new Date().toISOString(),
+    });
 
     if (error) {
       console.error('❌ Erro ao atualizar competência:', error);
       throw error;
     }
 
-    console.log(`✅ Competência ${competencyId} atualizada para nível ${level}`);
+    console.log(
+      `✅ Competência ${competencyId} atualizada para nível ${level}`
+    );
   }
 
   /**
@@ -287,4 +309,4 @@ export class SparseCompetencyService {
 
 // Instância singleton
 const sparseCompetencyService = new SparseCompetencyService();
-export default sparseCompetencyService; 
+export default sparseCompetencyService;
