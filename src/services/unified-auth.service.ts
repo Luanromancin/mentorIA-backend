@@ -44,7 +44,10 @@ export class UnifiedAuthService {
 
   constructor() {
     this.client = createClient(env.SUPABASE_URL, env.SUPABASE_ANON_KEY);
-    this.adminClient = createClient(env.SUPABASE_URL, env.SUPABASE_SERVICE_ROLE_KEY);
+    this.adminClient = createClient(
+      env.SUPABASE_URL,
+      env.SUPABASE_SERVICE_ROLE_KEY
+    );
   }
 
   /**
@@ -59,17 +62,18 @@ export class UnifiedAuthService {
       });
 
       // 1. Registrar usuário no Supabase Auth
-      const { data: authData, error: authError } = await this.client.auth.signUp({
-        email: data.email,
-        password: data.password,
-        options: {
-          data: {
-            name: data.name,
-            birth_date: data.birthDate,
-            institution: data.institution,
+      const { data: authData, error: authError } =
+        await this.client.auth.signUp({
+          email: data.email,
+          password: data.password,
+          options: {
+            data: {
+              name: data.name,
+              birth_date: data.birthDate,
+              institution: data.institution,
+            },
           },
-        },
-      });
+        });
 
       if (authError) {
         console.error('❌ Erro no registro do Supabase Auth:', authError);
@@ -83,10 +87,10 @@ export class UnifiedAuthService {
       console.log('✅ Usuário criado no Supabase Auth:', authData.user.id);
 
       // 2. Aguardar um pouco para o trigger criar o perfil
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise((resolve) => setTimeout(resolve, 1000));
 
       // 3. Buscar o perfil criado pelo trigger
-      let { data: profile, error: profileError } = await this.adminClient
+      const { data: profile, error: profileError } = await this.adminClient
         .from('profiles')
         .select('*')
         .eq('id', authData.user.id)
@@ -94,7 +98,7 @@ export class UnifiedAuthService {
 
       if (profileError || !profile) {
         console.error('❌ Erro ao buscar perfil criado:', profileError);
-        
+
         // Tentar criar o perfil manualmente se o trigger falhou
         console.log('🔄 Tentando criar perfil manualmente...');
         const { error: manualProfileError } = await this.adminClient
@@ -107,30 +111,36 @@ export class UnifiedAuthService {
           });
 
         if (manualProfileError) {
-          console.error('❌ Erro ao criar perfil manualmente:', manualProfileError);
+          console.error(
+            '❌ Erro ao criar perfil manualmente:',
+            manualProfileError
+          );
           throw new HttpError(500, 'Erro ao criar perfil do usuário');
         }
 
         // Buscar o perfil novamente
-        const { data: newProfile, error: newProfileError } = await this.adminClient
-          .from('profiles')
-          .select('*')
-          .eq('id', authData.user.id)
-          .single();
+        const { data: newProfile, error: newProfileError } =
+          await this.adminClient
+            .from('profiles')
+            .select('*')
+            .eq('id', authData.user.id)
+            .single();
 
         if (newProfileError || !newProfile) {
           throw new HttpError(500, 'Erro ao recuperar perfil criado');
         }
-
-        profile = newProfile;
       }
 
-             console.log('✅ Perfil criado/recuperado com sucesso:', profile.id);
+      console.log('✅ Perfil criado/recuperado com sucesso:', profile.id);
 
-       // 4. Sistema de competências otimizado (dados esparsos)
-       console.log('🎯 Sistema de competências otimizado - dados esparsos ativados');
-       console.log('⚡ Nível 0 = implícito (não armazenado no banco)');
-       console.log('⚡ Apenas níveis > 0 são persistidos para melhor performance');
+      // 4. Sistema de competências otimizado (dados esparsos)
+      console.log(
+        '🎯 Sistema de competências otimizado - dados esparsos ativados'
+      );
+      console.log('⚡ Nível 0 = implícito (não armazenado no banco)');
+      console.log(
+        '⚡ Apenas níveis > 0 são persistidos para melhor performance'
+      );
 
       return {
         user: {
@@ -162,10 +172,11 @@ export class UnifiedAuthService {
       console.log('🔐 Iniciando login unificado:', { email: data.email });
 
       // 1. Fazer login no Supabase Auth
-      const { data: authData, error: authError } = await this.client.auth.signInWithPassword({
-        email: data.email,
-        password: data.password,
-      });
+      const { data: authData, error: authError } =
+        await this.client.auth.signInWithPassword({
+          email: data.email,
+          password: data.password,
+        });
 
       if (authError) {
         console.error('❌ Erro no login do Supabase Auth:', authError);
@@ -179,7 +190,7 @@ export class UnifiedAuthService {
       console.log('✅ Login realizado no Supabase Auth:', authData.user.id);
 
       // 2. Buscar perfil do usuário
-      let { data: profile, error: profileError } = await this.adminClient
+      const { data: profile, error: profileError } = await this.adminClient
         .from('profiles')
         .select('*')
         .eq('id', authData.user.id)
@@ -187,7 +198,7 @@ export class UnifiedAuthService {
 
       if (profileError || !profile) {
         console.error('❌ Erro ao buscar perfil:', profileError);
-        
+
         // Se o perfil não existe, criar um básico
         console.log('🔄 Perfil não encontrado, criando perfil básico...');
         const { error: createError } = await this.adminClient
@@ -205,22 +216,25 @@ export class UnifiedAuthService {
         }
 
         // Buscar o perfil criado
-        const { data: newProfile, error: newProfileError } = await this.adminClient
-          .from('profiles')
-          .select('*')
-          .eq('id', authData.user.id)
-          .single();
+        const { data: newProfile, error: newProfileError } =
+          await this.adminClient
+            .from('profiles')
+            .select('*')
+            .eq('id', authData.user.id)
+            .single();
 
         if (newProfileError || !newProfile) {
           throw new HttpError(500, 'Erro ao recuperar perfil criado');
         }
 
-        profile = newProfile;
-        
         // Sistema de competências otimizado (dados esparsos)
-        console.log('🎯 Sistema de competências otimizado - dados esparsos ativados');
+        console.log(
+          '🎯 Sistema de competências otimizado - dados esparsos ativados'
+        );
         console.log('⚡ Nível 0 = implícito (não armazenado no banco)');
-        console.log('⚡ Apenas níveis > 0 são persistidos para melhor performance');
+        console.log(
+          '⚡ Apenas níveis > 0 são persistidos para melhor performance'
+        );
       }
 
       console.log('✅ Perfil recuperado com sucesso:', profile.id);
@@ -253,7 +267,10 @@ export class UnifiedAuthService {
   async getCurrentUser(token: string): Promise<Profile> {
     try {
       // 1. Verificar token no Supabase
-      const { data: { user }, error: authError } = await this.client.auth.getUser(token);
+      const {
+        data: { user },
+        error: authError,
+      } = await this.client.auth.getUser(token);
 
       if (authError || !user) {
         throw new HttpError(401, 'Token inválido');
@@ -282,10 +299,16 @@ export class UnifiedAuthService {
   /**
    * Atualiza o perfil do usuário
    */
-  async updateProfile(token: string, updates: Partial<Profile>): Promise<Profile> {
+  async updateProfile(
+    token: string,
+    updates: Partial<Profile>
+  ): Promise<Profile> {
     try {
       // 1. Verificar token e obter usuário
-      const { data: { user }, error: authError } = await this.client.auth.getUser(token);
+      const {
+        data: { user },
+        error: authError,
+      } = await this.client.auth.getUser(token);
 
       if (authError || !user) {
         throw new HttpError(401, 'Token inválido');
@@ -366,8 +389,6 @@ export class UnifiedAuthService {
       throw new HttpError(500, 'Erro interno ao listar perfis');
     }
   }
-
-
 }
 
-export default new UnifiedAuthService(); 
+export default new UnifiedAuthService();

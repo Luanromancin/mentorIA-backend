@@ -14,16 +14,22 @@ const prefix = '/api';
 export default function setupRoutes(app: Express): void {
   // Rotas de autenticação
   app.use('/api/auth', unifiedAuthRoutes);
-  
+
   // Rotas de questões dinâmicas
   app.use('/api/questions', dynamicQuestionsRoutes);
-  
+
   // Rotas de testes (incluindo sessão e pré-carregamento)
-  app.use(prefix, new TestController(router, di.getService(TestService)).router);
-  
+  app.use(
+    prefix,
+    new TestController(router, di.getService(TestService)).router
+  );
+
   // Rotas de questões (legado)
   app.use(prefix, new QuestionController(router).router);
-  
+
   // Rotas de teste de nivelamento
-  app.use(prefix, new LevelingTestController(router, new LevelingTestService()).router);
+  app.use(
+    prefix,
+    new LevelingTestController(router, new LevelingTestService()).router
+  );
 }

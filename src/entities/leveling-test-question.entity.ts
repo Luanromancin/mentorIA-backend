@@ -1,5 +1,3 @@
-import { BaseEntity } from './base.entity';
-
 export interface LevelingTestQuestion {
   id: string;
   questionId: string;
@@ -7,11 +5,13 @@ export interface LevelingTestQuestion {
   createdAt: Date;
 }
 
+export interface LevelingTestQuestionDetails {
+  id: string;
+  statement: string;
+  options: string[];
+  correctAnswer: string;
+}
+
 export interface LevelingTestQuestionWithDetails extends LevelingTestQuestion {
-  question?: {
-    id: string;
-    statement: string;
-    options: string[];
-    correctAnswer: string;
-  };
+  question?: LevelingTestQuestionDetails;
 }

@@ -87,10 +87,15 @@ class TestService {
 
   // Novo método: Carregar sessão completa (competências + questões)
   public async getSessionQuestions(profileId: string, maxQuestions: number) {
-    console.log(`🔧 Carregando sessão para usuário ${profileId}, máximo: ${maxQuestions}`);
-    
+    console.log(
+      `🔧 Carregando sessão para usuário ${profileId}, máximo: ${maxQuestions}`
+    );
+
     // 1. Carregar competências do usuário (uma vez só)
-    const userCompetencies = await this.userCompetencyRepository.findByProfileIdGroupedByLevel(profileId);
+    const userCompetencies =
+      await this.userCompetencyRepository.findByProfileIdGroupedByLevel(
+        profileId
+      );
     console.log('📊 Competências carregadas:', {
       nivel0: userCompetencies[0].length,
       nivel1: userCompetencies[1].length,
@@ -101,7 +106,7 @@ class TestService {
     // 2. Carregar questões baseadas nas competências
     const questions = await this.dynamicQuestionsService.getDynamicQuestions({
       profileId,
-      maxQuestions
+      maxQuestions,
     });
 
     console.log(`✅ Sessão carregada: ${questions.length} questões`);
@@ -109,18 +114,23 @@ class TestService {
     return {
       userCompetencies,
       questions,
-      sessionId: `session_${Date.now()}_${profileId}`
+      sessionId: `session_${Date.now()}_${profileId}`,
     };
   }
 
   // Novo método: Finalizar sessão e atualizar competências
-  public async completeSession(profileId: string, answers: Array<{
-    questionId: string;
-    answer: string;
-    isCorrect: boolean;
-    competencyName: string;
-  }>) {
-    console.log(`🏁 Finalizando sessão para usuário ${profileId} com ${answers.length} respostas`);
+  public async completeSession(
+    profileId: string,
+    answers: Array<{
+      questionId: string;
+      answer: string;
+      isCorrect: boolean;
+      competencyName: string;
+    }>
+  ) {
+    console.log(
+      `🏁 Finalizando sessão para usuário ${profileId} com ${answers.length} respostas`
+    );
 
     // Processar todas as respostas e atualizar competências
     for (const answer of answers) {
@@ -137,10 +147,14 @@ class TestService {
   // Pré-carregar competências do usuário
   public async preloadUserCompetencies(profileId: string) {
     console.log(`🚀 Pré-carregando competências para usuário ${profileId}`);
-    
+
     try {
-      const competencies = await this.userCompetencyRepository.findByProfileId(profileId);
-      console.log(`✅ Pré-carregamento concluído: ${competencies.length} competências`);
+      const competencies = await this.userCompetencyRepository.findByProfileId(
+        profileId
+      );
+      console.log(
+        `✅ Pré-carregamento concluído: ${competencies.length} competências`
+      );
       return competencies;
     } catch (error) {
       console.error('❌ Erro no pré-carregamento:', error);

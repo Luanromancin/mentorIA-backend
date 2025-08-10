@@ -24,9 +24,7 @@ di.registerRepository(UserCompetencyRepository, new UserCompetencyRepository());
 // Registrar DynamicQuestionsService primeiro
 di.registerService(
   DynamicQuestionsService,
-  new DynamicQuestionsService(
-    di.getRepository(UserCompetencyRepository)
-  )
+  new DynamicQuestionsService(di.getRepository(UserCompetencyRepository))
 );
 
 di.registerService(

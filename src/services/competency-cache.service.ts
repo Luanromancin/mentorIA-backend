@@ -31,38 +31,43 @@ export class CompetencyCacheService {
    */
   async getUserCompetencies(profileId: string): Promise<UserCompetency[]> {
     const cacheKey = `user_${profileId}`;
-    
+
     // 1. Verificar cache
     if (this.isCacheValid(cacheKey)) {
       console.log('📦 Cache hit para competências do usuário:', profileId);
       return this.cache.get(cacheKey)!;
     }
 
-    console.log('🔄 Cache miss, carregando competências do usuário:', profileId);
-    
+    console.log(
+      '🔄 Cache miss, carregando competências do usuário:',
+      profileId
+    );
+
     // 2. Buscar do banco
     const competencies = await this.loadFromDatabase(profileId);
-    
+
     // 3. Se não tem competências, criar automaticamente
     if (competencies.length === 0) {
       console.log('🆕 Usuário sem competências, criando automaticamente...');
       await this.initializeUserCompetencies(profileId);
-      
+
       // Buscar novamente após criar
       const newCompetencies = await this.loadFromDatabase(profileId);
-      console.log(`✅ ${newCompetencies.length} competências criadas automaticamente`);
-      
+      console.log(
+        `✅ ${newCompetencies.length} competências criadas automaticamente`
+      );
+
       // 4. Popular cache
       this.cache.set(cacheKey, newCompetencies);
       this.cacheExpiry.set(cacheKey, Date.now() + this.CACHE_TTL);
-      
+
       return newCompetencies;
     }
-    
+
     // 4. Popular cache
     this.cache.set(cacheKey, competencies);
     this.cacheExpiry.set(cacheKey, Date.now() + this.CACHE_TTL);
-    
+
     return competencies;
   }
 
@@ -72,12 +77,10 @@ export class CompetencyCacheService {
   private async initializeUserCompetencies(profileId: string): Promise<void> {
     try {
       console.log('🎯 Inicializando competências para usuário:', profileId);
-      
+
       // 1. Buscar todas as competências disponíveis
-      const { data: allCompetencies, error: competenciesError } = await this.client
-        .from('competencies')
-        .select('id, name')
-        .order('code');
+      const { data: allCompetencies, error: competenciesError } =
+        await this.client.from('competencies').select('id, name').order('code');
 
       if (competenciesError) {
         console.error('❌ Erro ao buscar competências:', competenciesError);
@@ -89,12 +92,14 @@ export class CompetencyCacheService {
         return;
       }
 
-      console.log(`📊 Encontradas ${allCompetencies.length} competências para inicializar`);
+      console.log(
+        `📊 Encontradas ${allCompetencies.length} competências para inicializar`
+      );
 
       // 2. Criar competências em lotes para melhor performance
       const batchSize = 50; // Processar 50 por vez
       const batches = [];
-      
+
       for (let i = 0; i < allCompetencies.length; i += batchSize) {
         const batch = allCompetencies.slice(i, i + batchSize);
         batches.push(batch);
@@ -104,7 +109,7 @@ export class CompetencyCacheService {
 
       for (let batchIndex = 0; batchIndex < batches.length; batchIndex++) {
         const batch = batches[batchIndex];
-        const batchData = batch.map(competency => ({
+        const batchData = batch.map((competency) => ({
           profile_id: profileId,
           competency_id: competency.id,
           level: 0,
@@ -116,13 +121,23 @@ export class CompetencyCacheService {
           .insert(batchData);
 
         if (batchError) {
-          console.error(`❌ Erro ao inserir lote ${batchIndex + 1}:`, batchError);
+          console.error(
+            `❌ Erro ao inserir lote ${batchIndex + 1}:`,
+            batchError
+          );
         } else {
-          console.log(`✅ Lote ${batchIndex + 1}/${batches.length} processado (${batch.length} competências)`);
+          console.log(
+            `✅ Lote ${batchIndex + 1}/${batches.length} processado (${
+              batch.length
+            } competências)`
+          );
         }
       }
 
-      console.log('🎉 Inicialização de competências concluída para usuário:', profileId);
+      console.log(
+        '🎉 Inicialização de competências concluída para usuário:',
+        profileId
+      );
     } catch (error) {
       console.error('❌ Erro ao inicializar competências:', error);
     }
@@ -131,7 +146,10 @@ export class CompetencyCacheService {
   /**
    * Obtém o nível de uma competência específica (cria se não existir)
    */
-  async getCompetencyLevel(profileId: string, competencyId: string): Promise<number> {
+  async getCompetencyLevel(
+    profileId: string,
+    competencyId: string
+  ): Promise<number> {
     // 1. Verificar se existe
     const { data: existing } = await this.client
       .from('user_competencies')
@@ -145,8 +163,11 @@ export class CompetencyCacheService {
     }
 
     // 2. Criar com nível 0 se não existir
-    console.log('🆕 Criando competência sob demanda:', { profileId, competencyId });
-    
+    console.log('🆕 Criando competência sob demanda:', {
+      profileId,
+      competencyId,
+    });
+
     const { error: insertError } = await this.client
       .from('user_competencies')
       .insert({
@@ -171,22 +192,27 @@ export class CompetencyCacheService {
    * Atualiza o nível de uma competência
    */
   async updateCompetencyLevel(
-    profileId: string, 
-    competencyId: string, 
+    profileId: string,
+    competencyId: string,
     newLevel: number
   ): Promise<void> {
-    console.log('📝 Atualizando competência:', { profileId, competencyId, newLevel });
+    console.log('📝 Atualizando competência:', {
+      profileId,
+      competencyId,
+      newLevel,
+    });
 
-    const { error } = await this.client
-      .from('user_competencies')
-      .upsert({
+    const { error } = await this.client.from('user_competencies').upsert(
+      {
         profile_id: profileId,
         competency_id: competencyId,
         level: newLevel,
         last_evaluated_at: new Date().toISOString(),
-      }, {
-        onConflict: 'profile_id,competency_id'
-      });
+      },
+      {
+        onConflict: 'profile_id,competency_id',
+      }
+    );
 
     if (error) {
       console.error('❌ Erro ao atualizar competência:', error);
@@ -208,7 +234,7 @@ export class CompetencyCacheService {
     }
 
     console.log('🔄 Cache miss, carregando competências do sistema');
-    
+
     // 2. Buscar do banco
     const { data: competencies, error } = await this.client
       .from('competencies')
@@ -222,7 +248,7 @@ export class CompetencyCacheService {
 
     // 3. Popular cache
     this.competenciesCache = competencies || [];
-    
+
     return this.competenciesCache;
   }
 
@@ -230,24 +256,24 @@ export class CompetencyCacheService {
    * Obtém competências por nível (para seleção de questões)
    */
   async getCompetenciesByLevel(
-    profileId: string, 
-    targetLevel: number, 
+    profileId: string,
+    targetLevel: number,
     limit: number = 10
   ): Promise<CompetencyInfo[]> {
     // 1. Obter competências do usuário
     const userCompetencies = await this.getUserCompetencies(profileId);
-    
+
     // 2. Filtrar por nível
     const matchingCompetencies = userCompetencies
-      .filter(uc => uc.level === targetLevel)
+      .filter((uc) => uc.level === targetLevel)
       .slice(0, limit);
 
     // 3. Obter informações das competências
     const allCompetencies = await this.getAllCompetencies();
-    const competencyMap = new Map(allCompetencies.map(c => [c.id, c]));
+    const competencyMap = new Map(allCompetencies.map((c) => [c.id, c]));
 
     return matchingCompetencies
-      .map(uc => competencyMap.get(uc.competency_id))
+      .map((uc) => competencyMap.get(uc.competency_id))
       .filter(Boolean) as CompetencyInfo[];
   }
 
@@ -265,9 +291,10 @@ export class CompetencyCacheService {
 
     const total = allCompetencies.length;
     const completed = userCompetencies.length;
-    const averageLevel = completed > 0 
-      ? userCompetencies.reduce((sum, uc) => sum + uc.level, 0) / completed 
-      : 0;
+    const averageLevel =
+      completed > 0
+        ? userCompetencies.reduce((sum, uc) => sum + uc.level, 0) / completed
+        : 0;
 
     const byLevel = userCompetencies.reduce((acc, uc) => {
       acc[uc.level] = (acc[uc.level] || 0) + 1;
@@ -278,7 +305,7 @@ export class CompetencyCacheService {
       total,
       completed,
       averageLevel: Math.round(averageLevel * 100) / 100,
-      byLevel
+      byLevel,
     };
   }
 
@@ -338,9 +365,9 @@ export class CompetencyCacheService {
     return {
       userCacheSize: this.cache.size,
       competenciesCacheSize: this.competenciesCache ? 1 : 0,
-      totalExpiryEntries: this.cacheExpiry.size
+      totalExpiryEntries: this.cacheExpiry.size,
     };
   }
 }
 
-export default new CompetencyCacheService(); 
+export default new CompetencyCacheService();

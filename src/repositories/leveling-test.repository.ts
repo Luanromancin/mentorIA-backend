@@ -1,13 +1,19 @@
 import { createClient } from '@supabase/supabase-js';
 import { LevelingTestQuestionWithDetails } from '../entities/leveling-test-question.entity';
-import { LevelingTestSession, LevelingTestAnswer } from '../entities/leveling-test-session.entity';
+import {
+  LevelingTestSession,
+  LevelingTestAnswer,
+} from '../entities/leveling-test-session.entity';
 import env from '../env';
 
 export class LevelingTestRepository {
   private supabase;
 
   constructor() {
-    this.supabase = createClient(env.SUPABASE_URL, env.SUPABASE_SERVICE_ROLE_KEY);
+    this.supabase = createClient(
+      env.SUPABASE_URL,
+      env.SUPABASE_SERVICE_ROLE_KEY
+    );
   }
 
   // Getter para acessar o supabase (usado pelo service)
@@ -18,13 +24,16 @@ export class LevelingTestRepository {
   // Buscar todas as questões do teste de nivelamento ordenadas
   async getLevelingTestQuestions(): Promise<LevelingTestQuestionWithDetails[]> {
     // Primeiro buscar as questões do teste de nivelamento
-    const { data: levelingQuestions, error: levelingError } = await this.supabase
-      .from('leveling_test_questions')
-      .select('*')
-      .order('order_index', { ascending: true });
+    const { data: levelingQuestions, error: levelingError } =
+      await this.supabase
+        .from('leveling_test_questions')
+        .select('*')
+        .order('order_index', { ascending: true });
 
     if (levelingError) {
-      throw new Error(`Erro ao buscar questões do teste de nivelamento: ${levelingError.message}`);
+      throw new Error(
+        `Erro ao buscar questões do teste de nivelamento: ${levelingError.message}`
+      );
     }
 
     if (!levelingQuestions || levelingQuestions.length === 0) {
@@ -32,14 +41,16 @@ export class LevelingTestRepository {
     }
 
     // Buscar os detalhes das questões
-    const questionIds = levelingQuestions.map(q => q.question_id);
+    const questionIds = levelingQuestions.map((q) => q.question_id);
     const { data: questionsDetails, error: detailsError } = await this.supabase
       .from('questions')
       .select('*')
       .in('id', questionIds);
 
     if (detailsError) {
-      throw new Error(`Erro ao buscar detalhes das questões: ${detailsError.message}`);
+      throw new Error(
+        `Erro ao buscar detalhes das questões: ${detailsError.message}`
+      );
     }
 
     // Buscar as alternativas para todas as questões
@@ -49,18 +60,20 @@ export class LevelingTestRepository {
       .in('question_id', questionIds);
 
     if (alternativesError) {
-      throw new Error(`Erro ao buscar alternativas: ${alternativesError.message}`);
+      throw new Error(
+        `Erro ao buscar alternativas: ${alternativesError.message}`
+      );
     }
 
     // Criar mapas para facilitar o lookup
     const questionsMap = new Map();
     if (questionsDetails) {
-      questionsDetails.forEach(q => questionsMap.set(q.id, q));
+      questionsDetails.forEach((q) => questionsMap.set(q.id, q));
     }
 
     const alternativesMap = new Map();
     if (alternatives) {
-      alternatives.forEach(alt => {
+      alternatives.forEach((alt) => {
         if (!alternativesMap.has(alt.question_id)) {
           alternativesMap.set(alt.question_id, []);
         }
@@ -69,21 +82,26 @@ export class LevelingTestRepository {
     }
 
     // Combinar os dados
-    return levelingQuestions.map(item => {
+    return levelingQuestions.map((item) => {
       const questionDetails = questionsMap.get(item.question_id);
       const questionAlternatives = alternativesMap.get(item.question_id) || [];
-      
+
       return {
         id: item.id,
         questionId: item.question_id,
         orderIndex: item.order_index,
         createdAt: item.created_at,
-        question: questionDetails ? {
-          id: questionDetails.id,
-          statement: questionDetails.problem_statement || questionDetails.title,
-          options: questionAlternatives.map((alt: any) => alt.text),
-          correctAnswer: questionAlternatives.find((alt: any) => alt.is_correct)?.text || '',
-        } : undefined,
+        question: questionDetails
+          ? {
+              id: questionDetails.id,
+              statement:
+                questionDetails.problem_statement || questionDetails.title,
+              options: questionAlternatives.map((alt: any) => alt.text),
+              correctAnswer:
+                questionAlternatives.find((alt: any) => alt.is_correct)?.text ||
+                '',
+            }
+          : undefined,
       };
     });
   }
@@ -153,7 +171,9 @@ export class LevelingTestRepository {
   }
 
   // Buscar sessão ativa do usuário
-  async getActiveSession(profileId: string): Promise<LevelingTestSession | null> {
+  async getActiveSession(
+    profileId: string
+  ): Promise<LevelingTestSession | null> {
     const { data, error } = await this.supabase
       .from('leveling_test_sessions')
       .select('*')
@@ -185,9 +205,9 @@ export class LevelingTestRepository {
 
   // Atualizar sessão com resposta
   async updateSessionWithAnswer(
-    sessionId: string, 
-    questionId: string, 
-    selectedAnswer: string, 
+    sessionId: string,
+    questionId: string,
+    selectedAnswer: string,
     isCorrect: boolean
   ): Promise<void> {
     const session = await this.getSession(sessionId);
@@ -246,7 +266,9 @@ export class LevelingTestRepository {
       .eq('id', profileId);
 
     if (error) {
-      throw new Error(`Erro ao marcar perfil como completado: ${error.message}`);
+      throw new Error(
+        `Erro ao marcar perfil como completado: ${error.message}`
+      );
     }
   }
 }

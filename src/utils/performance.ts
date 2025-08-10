@@ -16,7 +16,7 @@ export class PerformanceMonitor {
 
     const duration = Date.now() - startTime;
     this.timers.delete(operation);
-    
+
     // Armazenar métrica
     if (!this.metrics.has(operation)) {
       this.metrics.set(operation, []);
@@ -33,17 +33,21 @@ export class PerformanceMonitor {
     return times.reduce((a, b) => a + b, 0) / times.length;
   }
 
-  static getMetrics(): Record<string, { avg: number; count: number; last: number }> {
-    const result: Record<string, { avg: number; count: number; last: number }> = {};
-    
+  static getMetrics(): Record<
+    string,
+    { avg: number; count: number; last: number }
+  > {
+    const result: Record<string, { avg: number; count: number; last: number }> =
+      {};
+
     for (const [operation, times] of this.metrics.entries()) {
       result[operation] = {
         avg: this.getAverageTime(operation),
         count: times.length,
-        last: times[times.length - 1] || 0
+        last: times[times.length - 1] || 0,
       };
     }
-    
+
     return result;
   }
 
@@ -51,7 +55,11 @@ export class PerformanceMonitor {
     const metrics = this.getMetrics();
     console.log('📊 Métricas de Performance:');
     for (const [operation, data] of Object.entries(metrics)) {
-      console.log(`  ${operation}: ${data.avg.toFixed(2)}ms (média), ${data.count} execuções, último: ${data.last}ms`);
+      console.log(
+        `  ${operation}: ${data.avg.toFixed(2)}ms (média), ${
+          data.count
+        } execuções, último: ${data.last}ms`
+      );
     }
   }
-} 
+}

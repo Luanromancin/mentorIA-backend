@@ -38,31 +38,39 @@ class TestController {
     );
 
     // Novas rotas para fluxo otimizado
-    this.router.get('/questions/session', authMiddleware, (req: Request, res: Response) =>
-      this.getSessionQuestions(req, res)
+    this.router.get(
+      '/questions/session',
+      authMiddleware,
+      (req: Request, res: Response) => this.getSessionQuestions(req, res)
     );
-    this.router.post('/questions/session/complete', authMiddleware, (req: Request, res: Response) =>
-      this.completeSession(req, res)
+    this.router.post(
+      '/questions/session/complete',
+      authMiddleware,
+      (req: Request, res: Response) => this.completeSession(req, res)
     );
-    
+
     // Rota para pré-carregamento após login
-    this.router.post(`${this.prefix}/questions/preload`, authMiddleware, (req: Request, res: Response) =>
-      this.preloadUserData(req, res)
+    this.router.post(
+      `${this.prefix}/questions/preload`,
+      authMiddleware,
+      (req: Request, res: Response) => this.preloadUserData(req, res)
     );
-    
+
     // Rota para métricas de performance
     this.router.get('/performance/metrics', (req: Request, res: Response) =>
       this.getPerformanceMetrics(req, res)
     );
-    
+
     // Rota para verificar questões sem alternativas
-    this.router.get('/questions/check-incomplete', (req: Request, res: Response) =>
-      this.checkIncompleteQuestions(req, res)
+    this.router.get(
+      '/questions/check-incomplete',
+      (req: Request, res: Response) => this.checkIncompleteQuestions(req, res)
     );
-    
+
     // Rota para remover questões sem alternativas
-    this.router.delete('/questions/remove-incomplete', (req: Request, res: Response) =>
-      this.removeIncompleteQuestions(req, res)
+    this.router.delete(
+      '/questions/remove-incomplete',
+      (req: Request, res: Response) => this.removeIncompleteQuestions(req, res)
     );
   }
 
@@ -131,12 +139,12 @@ class TestController {
       if (!profileId) {
         return res.status(401).json({
           success: false,
-          message: 'Usuário não autenticado'
+          message: 'Usuário não autenticado',
         });
       }
 
       const sessionData = await this.testService.getSessionQuestions(
-        profileId, 
+        profileId,
         parseInt(maxQuestions as string)
       );
 
@@ -148,7 +156,7 @@ class TestController {
       console.error('Erro ao carregar sessão:', error);
       return res.status(500).json({
         success: false,
-        message: 'Erro interno do servidor'
+        message: 'Erro interno do servidor',
       });
     }
   }
@@ -162,7 +170,7 @@ class TestController {
       if (!profileId) {
         return res.status(401).json({
           success: false,
-          message: 'Usuário não autenticado'
+          message: 'Usuário não autenticado',
         });
       }
 
@@ -176,7 +184,7 @@ class TestController {
       console.error('Erro ao finalizar sessão:', error);
       return res.status(500).json({
         success: false,
-        message: 'Erro interno do servidor'
+        message: 'Erro interno do servidor',
       });
     }
   }
@@ -185,31 +193,33 @@ class TestController {
   public async preloadUserData(req: Request, res: Response) {
     try {
       const profileId = (req as any).user?.id;
-      
+
       if (!profileId) {
         return res.status(401).json({
           success: false,
-          message: 'Usuário não autenticado'
+          message: 'Usuário não autenticado',
         });
       }
-      
+
       console.log('🚀 Iniciando pré-carregamento para usuário:', profileId);
-      
+
       // Pré-carregar competências em background
-      const competencies = await this.testService.preloadUserCompetencies(profileId);
-      
+      const competencies = await this.testService.preloadUserCompetencies(
+        profileId
+      );
+
       return new SuccessResult({
         msg: 'Dados pré-carregados com sucesso',
         data: {
           competenciesLoaded: competencies.length,
-          message: 'Competências carregadas em background'
+          message: 'Competências carregadas em background',
         },
       }).handle(res);
     } catch (error: any) {
       console.error('Erro no pré-carregamento:', error);
       return res.status(500).json({
         success: false,
-        message: 'Erro no pré-carregamento'
+        message: 'Erro no pré-carregamento',
       });
     }
   }
@@ -219,22 +229,22 @@ class TestController {
     try {
       const { PerformanceMonitor } = await import('../utils/performance');
       const { CacheService } = await import('../services/cache.service');
-      
+
       const metrics = PerformanceMonitor.getMetrics();
       const cacheStats = CacheService.getStats();
-      
+
       return new SuccessResult({
         msg: 'Métricas de performance',
         data: {
           performance: metrics,
-          cache: cacheStats
+          cache: cacheStats,
         },
       }).handle(res);
     } catch (error: any) {
       console.error('Erro ao obter métricas:', error);
       return res.status(500).json({
         success: false,
-        message: 'Erro ao obter métricas'
+        message: 'Erro ao obter métricas',
       });
     }
   }
@@ -244,21 +254,22 @@ class TestController {
     try {
       const { DatabaseService } = await import('../services/database.service');
       const dbService = new DatabaseService();
-      
-      const incompleteQuestions = await dbService.checkQuestionsWithoutAlternatives();
-      
+
+      const incompleteQuestions =
+        await dbService.checkQuestionsWithoutAlternatives();
+
       return new SuccessResult({
         msg: 'Verificação de questões incompletas concluída',
         data: {
           totalIncomplete: incompleteQuestions.length,
-          questions: incompleteQuestions
+          questions: incompleteQuestions,
         },
       }).handle(res);
     } catch (error: any) {
       console.error('Erro ao verificar questões incompletas:', error);
       return res.status(500).json({
         success: false,
-        message: 'Erro ao verificar questões incompletas'
+        message: 'Erro ao verificar questões incompletas',
       });
     }
   }
@@ -268,21 +279,21 @@ class TestController {
     try {
       const { DatabaseService } = await import('../services/database.service');
       const dbService = new DatabaseService();
-      
+
       const result = await dbService.removeQuestionsWithoutAlternatives();
-      
+
       return new SuccessResult({
         msg: 'Questões sem alternativas removidas com sucesso',
         data: {
           removedCount: result.removedCount,
-          message: `Removidas ${result.removedCount} questões sem alternativas`
+          message: `Removidas ${result.removedCount} questões sem alternativas`,
         },
       }).handle(res);
     } catch (error: any) {
       console.error('Erro ao remover questões incompletas:', error);
       return res.status(500).json({
         success: false,
-        message: 'Erro ao remover questões incompletas'
+        message: 'Erro ao remover questões incompletas',
       });
     }
   }

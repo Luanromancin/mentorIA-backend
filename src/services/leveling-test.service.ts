@@ -1,11 +1,11 @@
 import { LevelingTestRepository } from '../repositories/leveling-test.repository';
 import { LevelingTestQuestionWithDetails } from '../entities/leveling-test-question.entity';
-import { 
-  AnswerLevelingTestDto, 
+import {
+  AnswerLevelingTestDto,
   LevelingTestQuestionDto,
   LevelingTestSessionDto,
   LevelingTestResultDto,
-  CompetencyResultDto
+  CompetencyResultDto,
 } from '../dtos/leveling-test.dto';
 
 export class LevelingTestService {
@@ -22,7 +22,7 @@ export class LevelingTestService {
   }> {
     // Verificar se já existe uma sessão ativa
     let session = await this.repository.getActiveSession(profileId);
-    
+
     if (!session) {
       // Criar nova sessão
       session = await this.repository.createSession(profileId);
@@ -41,8 +41,8 @@ export class LevelingTestService {
         completedAt: session.completedAt,
       },
       questions: questions
-        .filter(q => q.question) // Filtrar apenas questões com detalhes
-        .map(q => ({
+        .filter((q) => q.question) // Filtrar apenas questões com detalhes
+        .map((q) => ({
           id: q.id,
           orderIndex: q.orderIndex,
           question: {
@@ -74,8 +74,8 @@ export class LevelingTestService {
 
     // Buscar questão para verificar resposta correta
     const questions = await this.repository.getLevelingTestQuestions();
-    const question = questions.find(q => q.questionId === questionId);
-    
+    const question = questions.find((q) => q.questionId === questionId);
+
     if (!question || !question.question) {
       throw new Error('Questão não encontrada');
     }
@@ -83,7 +83,12 @@ export class LevelingTestService {
     const isCorrect = selectedAnswer === question.question.correctAnswer;
 
     // Atualizar sessão com a resposta
-    await this.repository.updateSessionWithAnswer(sessionId, questionId, selectedAnswer, isCorrect);
+    await this.repository.updateSessionWithAnswer(
+      sessionId,
+      questionId,
+      selectedAnswer,
+      isCorrect
+    );
 
     return {
       isCorrect,
@@ -106,14 +111,18 @@ export class LevelingTestService {
 
     // Buscar questões para calcular resultados
     const questions = await this.repository.getLevelingTestQuestions();
-    
+
     // Calcular resultados por competência
-    const competencyResults = await this.calculateCompetencyResults(session.answers, questions);
-    
+    const competencyResults = await this.calculateCompetencyResults(
+      session.answers,
+      questions
+    );
+
     // Calcular estatísticas gerais
     const totalQuestions = questions.length;
-    const correctAnswers = session.answers.filter(a => a.isCorrect).length;
-    const accuracy = totalQuestions > 0 ? (correctAnswers / totalQuestions) * 100 : 0;
+    const correctAnswers = session.answers.filter((a) => a.isCorrect).length;
+    const accuracy =
+      totalQuestions > 0 ? (correctAnswers / totalQuestions) * 100 : 0;
 
     // Marcar sessão como completada
     await this.repository.completeSession(sessionId);
@@ -149,10 +158,12 @@ export class LevelingTestService {
 
     // Buscar questões
     const questions = await this.repository.getLevelingTestQuestions();
-    
+
     // Buscar questão atual
-    const currentQuestion = questions.find(q => q.orderIndex === session.currentQuestionIndex);
-    
+    const currentQuestion = questions.find(
+      (q) => q.orderIndex === session.currentQuestionIndex
+    );
+
     return {
       session: {
         id: session.id,
@@ -162,15 +173,18 @@ export class LevelingTestService {
         startedAt: session.startedAt,
         completedAt: session.completedAt,
       },
-      currentQuestion: currentQuestion && currentQuestion.question ? {
-        id: currentQuestion.id,
-        orderIndex: currentQuestion.orderIndex,
-        question: {
-          id: currentQuestion.question.id,
-          statement: currentQuestion.question.statement,
-          options: currentQuestion.question.options,
-        },
-      } : null,
+      currentQuestion:
+        currentQuestion && currentQuestion.question
+          ? {
+              id: currentQuestion.id,
+              orderIndex: currentQuestion.orderIndex,
+              question: {
+                id: currentQuestion.question.id,
+                statement: currentQuestion.question.statement,
+                options: currentQuestion.question.options,
+              },
+            }
+          : null,
       answeredQuestions: session.answers.length,
       totalQuestions: questions.length,
     };
@@ -186,12 +200,13 @@ export class LevelingTestService {
 
     // Se não há sessão ativa, verificar se há alguma sessão completada
     // Buscar qualquer sessão completada para este usuário
-    const { data: completedSessions, error } = await this.repository.supabaseClient
-      .from('leveling_test_sessions')
-      .select('id, is_completed')
-      .eq('profile_id', profileId)
-      .eq('is_completed', true)
-      .limit(1);
+    const { data: completedSessions, error } =
+      await this.repository.supabaseClient
+        .from('leveling_test_sessions')
+        .select('id, is_completed')
+        .eq('profile_id', profileId)
+        .eq('is_completed', true)
+        .limit(1);
 
     if (error) {
       console.error('Erro ao verificar sessões completadas:', error);
@@ -202,14 +217,22 @@ export class LevelingTestService {
   }
 
   // Atualizar competências do usuário baseado nos resultados do teste
-  private async updateUserCompetencies(profileId: string, competencyResults: CompetencyResultDto[]): Promise<void> {
-    console.log(`🔄 Atualizando competências para usuário ${profileId}:`, competencyResults);
-    
+  private async updateUserCompetencies(
+    profileId: string,
+    competencyResults: CompetencyResultDto[]
+  ): Promise<void> {
+    console.log(
+      `🔄 Atualizando competências para usuário ${profileId}:`,
+      competencyResults
+    );
+
     for (const result of competencyResults) {
       // Só registrar se acertou (accuracy = 100%)
       if (result.accuracy === 100) {
-        console.log(`📊 Competência ${result.competencyName} (${result.competencyId}): Acertou -> Nível 1`);
-        
+        console.log(
+          `📊 Competência ${result.competencyName} (${result.competencyId}): Acertou -> Nível 1`
+        );
+
         // Registrar competência com nível 1 (só se acertou)
         const { error } = await this.repository.supabaseClient
           .from('user_competencies')
@@ -221,34 +244,47 @@ export class LevelingTestService {
           });
 
         if (error) {
-          console.error(`❌ Erro ao atualizar competência ${result.competencyId}:`, error);
+          console.error(
+            `❌ Erro ao atualizar competência ${result.competencyId}:`,
+            error
+          );
         } else {
-          console.log(`✅ Competência ${result.competencyName} registrada com nível 1`);
+          console.log(
+            `✅ Competência ${result.competencyName} registrada com nível 1`
+          );
         }
       } else {
         // Se errou, não registra nada (mantém nível 0 implicitamente)
-        console.log(`📊 Competência ${result.competencyName} (${result.competencyId}): Errou -> Mantém nível 0 (não registra)`);
+        console.log(
+          `📊 Competência ${result.competencyName} (${result.competencyId}): Errou -> Mantém nível 0 (não registra)`
+        );
       }
     }
   }
 
   // Calcular resultados por competência
   private async calculateCompetencyResults(
-    answers: any[], 
+    answers: any[],
     questions: LevelingTestQuestionWithDetails[]
   ): Promise<CompetencyResultDto[]> {
     const results: CompetencyResultDto[] = [];
 
     // Para cada resposta, buscar o subtopic da questão e mapear para competência
     for (const answer of answers) {
-      const question = questions.find(q => q.questionId === answer.questionId);
+      const question = questions.find(
+        (q) => q.questionId === answer.questionId
+      );
       if (question && question.question) {
         // Buscar subtopic da questão original
-        const originalQuestion = await this.getQuestionDetails(question.questionId);
+        const originalQuestion = await this.getQuestionDetails(
+          question.questionId
+        );
         if (originalQuestion && originalQuestion.subtopic_name) {
           // Buscar competência que corresponde ao subtopic
-          const competency = await this.findCompetencyBySubtopic(originalQuestion.subtopic_name);
-          
+          const competency = await this.findCompetencyBySubtopic(
+            originalQuestion.subtopic_name
+          );
+
           if (competency) {
             // Criar resultado para esta competência
             const result: CompetencyResultDto = {
@@ -258,13 +294,17 @@ export class LevelingTestService {
               correctAnswers: answer.isCorrect ? 1 : 0,
               accuracy: answer.isCorrect ? 100 : 0, // 100% se acertou, 0% se errou
             };
-            
+
             results.push(result);
           } else {
-            console.warn(`⚠️ Competência não encontrada para subtopic: ${originalQuestion.subtopic_name}`);
+            console.warn(
+              `⚠️ Competência não encontrada para subtopic: ${originalQuestion.subtopic_name}`
+            );
           }
         } else {
-          console.warn(`⚠️ Questão ${question.questionId} não tem subtopic_name`);
+          console.warn(
+            `⚠️ Questão ${question.questionId} não tem subtopic_name`
+          );
         }
       }
     }
@@ -281,7 +321,10 @@ export class LevelingTestService {
       .single();
 
     if (error) {
-      console.error(`Erro ao buscar competência para subtopic ${subtopicName}:`, error);
+      console.error(
+        `Erro ao buscar competência para subtopic ${subtopicName}:`,
+        error
+      );
       return null;
     }
 

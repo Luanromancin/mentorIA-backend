@@ -31,7 +31,7 @@ describe('Teste de Nivelamento - Integração Completa', () => {
 
   beforeEach(async () => {
     console.log('🧹 Limpando dados do usuário de teste...');
-    
+
     // Resetar flag has_completed_leveling_test
     await supabase
       .from('profiles')
@@ -55,7 +55,7 @@ describe('Teste de Nivelamento - Integração Completa', () => {
 
   afterAll(async () => {
     console.log('🧹 Limpeza final...');
-    
+
     // Limpar dados do usuário de teste
     await supabase
       .from('leveling_test_sessions')
@@ -74,7 +74,8 @@ describe('Teste de Nivelamento - Integração Completa', () => {
     console.log('🚀 Iniciando teste de nivelamento...');
 
     // 1. Verificar se usuário não completou o teste
-    const hasCompletedBefore = await levelingTestService.hasCompletedLevelingTest(testUserId);
+    const hasCompletedBefore =
+      await levelingTestService.hasCompletedLevelingTest(testUserId);
     expect(hasCompletedBefore).toBe(false);
     console.log('✅ Usuário não completou o teste inicialmente');
 
@@ -83,24 +84,31 @@ describe('Teste de Nivelamento - Integração Completa', () => {
     expect(startResult.session).toBeDefined();
     expect(startResult.questions).toBeDefined();
     expect(startResult.questions.length).toBe(26);
-    console.log(`✅ Teste iniciado com ${startResult.questions.length} questões`);
+    console.log(
+      `✅ Teste iniciado com ${startResult.questions.length} questões`
+    );
 
     // 3. Responder todas as questões com "b" (segunda opção)
     const sessionId = startResult.session.id;
     let currentQuestionIndex = 0;
 
     for (const question of startResult.questions) {
-      console.log(`📝 Respondendo questão ${currentQuestionIndex + 1}/26: ${question.question.statement.substring(0, 50)}...`);
-      
+      console.log(
+        `📝 Respondendo questão ${
+          currentQuestionIndex + 1
+        }/26: ${question.question.statement.substring(0, 50)}...`
+      );
+
       const answerResult = await levelingTestService.answerQuestion({
         sessionId,
         questionId: question.question.id,
-        selectedAnswer: question.question.options[1] || question.question.options[0] // "b" ou primeira opção se não houver "b"
+        selectedAnswer:
+          question.question.options[1] || question.question.options[0], // "b" ou primeira opção se não houver "b"
       });
 
       expect(answerResult).toBeDefined();
       expect(answerResult.nextQuestionIndex).toBe(currentQuestionIndex + 1);
-      
+
       currentQuestionIndex++;
     }
 
@@ -114,10 +122,13 @@ describe('Teste de Nivelamento - Integração Completa', () => {
     expect(completeResult.competencyResults).toBeDefined();
     expect(completeResult.competencyResults.length).toBe(26); // Uma competência por questão
 
-    console.log(`✅ Teste finalizado: ${completeResult.correctAnswers}/${completeResult.totalQuestions} acertos`);
+    console.log(
+      `✅ Teste finalizado: ${completeResult.correctAnswers}/${completeResult.totalQuestions} acertos`
+    );
 
     // 5. Verificar se usuário completou o teste
-    const hasCompletedAfter = await levelingTestService.hasCompletedLevelingTest(testUserId);
+    const hasCompletedAfter =
+      await levelingTestService.hasCompletedLevelingTest(testUserId);
     expect(hasCompletedAfter).toBe(true);
     console.log('✅ Usuário marcado como tendo completado o teste');
 
@@ -131,8 +142,12 @@ describe('Teste de Nivelamento - Integração Completa', () => {
     expect(userCompetencies).toBeDefined();
 
     // Contar competências com nível 1 (acertos)
-    const competenciesWithLevel1 = userCompetencies.filter(uc => uc.level === 1).length;
-    const competenciesWithLevel0 = userCompetencies.filter(uc => uc.level === 0).length;
+    const competenciesWithLevel1 = userCompetencies.filter(
+      (uc: any) => uc.level === 1
+    ).length;
+    const competenciesWithLevel0 = userCompetencies.filter(
+      (uc: any) => uc.level === 0
+    ).length;
 
     console.log(`📊 Competências registradas: ${userCompetencies.length}`);
     console.log(`📊 Competências com nível 1: ${competenciesWithLevel1}`);
@@ -153,7 +168,9 @@ describe('Teste de Nivelamento - Integração Completa', () => {
       .single();
 
     expect(profile.has_completed_leveling_test).toBe(true);
-    console.log('✅ Perfil marcado como tendo completado o teste de nivelamento');
+    console.log(
+      '✅ Perfil marcado como tendo completado o teste de nivelamento'
+    );
 
     console.log('🎉 Teste de integração concluído com sucesso!');
   }, 60000); // Timeout de 60 segundos
@@ -171,7 +188,7 @@ describe('Teste de Nivelamento - Integração Completa', () => {
       await levelingTestService.answerQuestion({
         sessionId,
         questionId: question.question.id,
-        selectedAnswer: 'RESPOSTA_INCORRETA_QUE_NAO_EXISTE'
+        selectedAnswer: 'RESPOSTA_INCORRETA_QUE_NAO_EXISTE',
       });
     }
 

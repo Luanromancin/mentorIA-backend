@@ -30,11 +30,8 @@ router.get('/profiles', authController.listProfiles.bind(authController));
 // Rotas protegidas (requerem autenticação via token)
 router.get('/me', authController.me.bind(authController));
 
-router.put(
-  '/profile',
-  authController.updateProfile.bind(authController)
-);
+router.put('/profile', authController.updateProfile.bind(authController));
 
 router.post('/logout', authController.logout.bind(authController));
 
-export default router; 
+export default router;

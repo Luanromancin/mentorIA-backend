@@ -24,28 +24,39 @@ class LevelingTestController {
 
   private initRoutes() {
     // Iniciar teste de nivelamento
-    this.router.post(`${this.prefix}/start`, authMiddleware, (req: AuthenticatedRequest, res: Response) =>
-      this.startTest(req, res)
+    this.router.post(
+      `${this.prefix}/start`,
+      authMiddleware,
+      (req: AuthenticatedRequest, res: Response) => this.startTest(req, res)
     );
 
     // Responder questão
-    this.router.post(`${this.prefix}/answer`, authMiddleware, (req: AuthenticatedRequest, res: Response) =>
-      this.answerQuestion(req, res)
+    this.router.post(
+      `${this.prefix}/answer`,
+      authMiddleware,
+      (req: AuthenticatedRequest, res: Response) =>
+        this.answerQuestion(req, res)
     );
 
     // Finalizar teste
-    this.router.post(`${this.prefix}/complete`, authMiddleware, (req: AuthenticatedRequest, res: Response) =>
-      this.completeTest(req, res)
+    this.router.post(
+      `${this.prefix}/complete`,
+      authMiddleware,
+      (req: AuthenticatedRequest, res: Response) => this.completeTest(req, res)
     );
 
     // Buscar progresso
-    this.router.get(`${this.prefix}/progress/:sessionId`, authMiddleware, (req: AuthenticatedRequest, res: Response) =>
-      this.getProgress(req, res)
+    this.router.get(
+      `${this.prefix}/progress/:sessionId`,
+      authMiddleware,
+      (req: AuthenticatedRequest, res: Response) => this.getProgress(req, res)
     );
 
     // Verificar se completou o teste
-    this.router.get(`${this.prefix}/status`, authMiddleware, (req: AuthenticatedRequest, res: Response) =>
-      this.getStatus(req, res)
+    this.router.get(
+      `${this.prefix}/status`,
+      authMiddleware,
+      (req: AuthenticatedRequest, res: Response) => this.getStatus(req, res)
     );
   }
 
@@ -64,9 +75,9 @@ class LevelingTestController {
       }).handle(res);
     } catch (error) {
       console.error('Erro ao iniciar teste de nivelamento:', error);
-      return res.status(500).json({ 
+      return res.status(500).json({
         error: 'Erro interno do servidor',
-        details: error instanceof Error ? error.message : 'Erro desconhecido'
+        details: error instanceof Error ? error.message : 'Erro desconhecido',
       });
     }
   }
@@ -76,8 +87,9 @@ class LevelingTestController {
       const { sessionId, questionId, selectedAnswer } = req.body;
 
       if (!sessionId || !questionId || !selectedAnswer) {
-        return res.status(400).json({ 
-          error: 'Dados obrigatórios não fornecidos: sessionId, questionId, selectedAnswer' 
+        return res.status(400).json({
+          error:
+            'Dados obrigatórios não fornecidos: sessionId, questionId, selectedAnswer',
         });
       }
 
@@ -93,9 +105,9 @@ class LevelingTestController {
       }).handle(res);
     } catch (error) {
       console.error('Erro ao responder questão:', error);
-      return res.status(500).json({ 
+      return res.status(500).json({
         error: 'Erro interno do servidor',
-        details: error instanceof Error ? error.message : 'Erro desconhecido'
+        details: error instanceof Error ? error.message : 'Erro desconhecido',
       });
     }
   }
@@ -105,8 +117,8 @@ class LevelingTestController {
       const { sessionId } = req.body;
 
       if (!sessionId) {
-        return res.status(400).json({ 
-          error: 'sessionId é obrigatório' 
+        return res.status(400).json({
+          error: 'sessionId é obrigatório',
         });
       }
 
@@ -118,9 +130,9 @@ class LevelingTestController {
       }).handle(res);
     } catch (error) {
       console.error('Erro ao finalizar teste:', error);
-      return res.status(500).json({ 
+      return res.status(500).json({
         error: 'Erro interno do servidor',
-        details: error instanceof Error ? error.message : 'Erro desconhecido'
+        details: error instanceof Error ? error.message : 'Erro desconhecido',
       });
     }
   }
@@ -130,8 +142,8 @@ class LevelingTestController {
       const { sessionId } = req.params;
 
       if (!sessionId) {
-        return res.status(400).json({ 
-          error: 'sessionId é obrigatório' 
+        return res.status(400).json({
+          error: 'sessionId é obrigatório',
         });
       }
 
@@ -143,9 +155,9 @@ class LevelingTestController {
       }).handle(res);
     } catch (error) {
       console.error('Erro ao buscar progresso:', error);
-      return res.status(500).json({ 
+      return res.status(500).json({
         error: 'Erro interno do servidor',
-        details: error instanceof Error ? error.message : 'Erro desconhecido'
+        details: error instanceof Error ? error.message : 'Erro desconhecido',
       });
     }
   }
@@ -157,7 +169,8 @@ class LevelingTestController {
         return res.status(401).json({ error: 'Usuário não autenticado' });
       }
 
-      const hasCompleted = await this.levelingTestService.hasCompletedLevelingTest(profileId);
+      const hasCompleted =
+        await this.levelingTestService.hasCompletedLevelingTest(profileId);
 
       return new SuccessResult({
         msg: 'Status do teste de nivelamento recuperado',
@@ -165,9 +178,9 @@ class LevelingTestController {
       }).handle(res);
     } catch (error) {
       console.error('Erro ao buscar status:', error);
-      return res.status(500).json({ 
+      return res.status(500).json({
         error: 'Erro interno do servidor',
-        details: error instanceof Error ? error.message : 'Erro desconhecido'
+        details: error instanceof Error ? error.message : 'Erro desconhecido',
       });
     }
   }
