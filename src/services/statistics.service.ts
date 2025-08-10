@@ -39,7 +39,15 @@ export class StatisticsService {
       );
     }
 
-    this.supabase = createClient(env.SUPABASE_URL, env.SUPABASE_ANON_KEY);
+    // Usar a chave de serviço se disponível, senão usar a anônima
+    const supabaseKey = env.SUPABASE_SERVICE_ROLE_KEY || env.SUPABASE_ANON_KEY;
+
+    console.log(
+      '🔧 StatisticsService: Usando chave de serviço:',
+      !!env.SUPABASE_SERVICE_ROLE_KEY
+    );
+
+    this.supabase = createClient(env.SUPABASE_URL, supabaseKey);
   }
 
   /**
