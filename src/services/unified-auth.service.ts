@@ -90,13 +90,11 @@ export class UnifiedAuthService {
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
       // 3. Buscar o perfil criado pelo trigger
-      const { data: profile, error: profileError } = await this.adminClient
+      let { data: profile, error: profileError } = await this.adminClient
         .from('profiles')
         .select('*')
         .eq('id', authData.user.id)
         .single();
-
-      let finalProfile = profile;
 
       if (profileError || !profile) {
         console.error('❌ Erro ao buscar perfil criado:', profileError);
@@ -132,10 +130,15 @@ export class UnifiedAuthService {
           throw new HttpError(500, 'Erro ao recuperar perfil criado');
         }
 
-        finalProfile = newProfile;
+        profile = newProfile;
+        profileError = null; // Reset error since we successfully created the profile
       }
 
-      console.log('✅ Perfil criado/recuperado com sucesso:', finalProfile.id);
+      if (!profile || !profile.id) {
+        throw new HttpError(500, 'Erro: perfil não encontrado ou inválido');
+      }
+
+      console.log('✅ Perfil criado/recuperado com sucesso:', profile.id);
 
       // 4. Sistema de competências otimizado (dados esparsos)
       console.log(
@@ -148,13 +151,13 @@ export class UnifiedAuthService {
 
       return {
         user: {
-          id: finalProfile.id,
-          email: finalProfile.email,
-          name: finalProfile.name,
+          id: profile.id,
+          email: profile.email,
+          name: profile.name,
           birthDate: data.birthDate || '',
-          institution: finalProfile.institution || '',
-          createdAt: finalProfile.created_at,
-          updatedAt: finalProfile.updated_at,
+          institution: profile.institution || '',
+          createdAt: profile.created_at,
+          updatedAt: profile.updated_at,
         },
         token: authData.session?.access_token || '',
         refreshToken: authData.session?.refresh_token,

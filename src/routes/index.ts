@@ -6,6 +6,8 @@ import unifiedAuthRoutes from './unified-auth.routes';
 import QuestionController from '../controllers/question.controller';
 import dynamicQuestionsRoutes from './dynamic-questions.routes';
 import statisticsRoutes from './statistics.routes';
+import LevelingTestController from '../controllers/leveling-test.controller';
+import { LevelingTestService } from '../services/leveling-test.service';
 
 const router = Router();
 const prefix = '/api';
@@ -28,4 +30,10 @@ export default function setupRoutes(app: Express): void {
 
   // Rotas de estatísticas
   app.use('/api/statistics', statisticsRoutes);
+
+  // Rotas de teste de nivelamento
+  app.use(
+    prefix,
+    new LevelingTestController(router, new LevelingTestService()).router
+  );
 }
