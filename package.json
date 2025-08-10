@@ -3,12 +3,13 @@
   "version": "0.1.0",
   "description": "",
   "scripts": {
-    "start": "nodemon --watch \"src/**/*.ts\" --exec \"ts-node\" src/index.ts",
-    "build": "tsc -p .",
+    "start": "nodemon src/index.ts",
+    "build": "tsc",
     "prod": "node dist/src/index.js",
-    "test": "env-cmd -f .env.test jest --verbose --coverage  --config ./jest.config.js --detectOpenHandles",
-    "test:watch": "env-cmd -f .env.test jest --watch --config ./jest.config.js",
-    "test:coverage": "env-cmd -f .env.test jest --coverage --config ./jest.config.js",
+    "test": "vitest",
+    "test:leveling": "vitest run src/tests/leveling-test-integration.spec.ts",
+    "test:leveling:watch": "vitest src/tests/leveling-test-integration.spec.ts --watch",
+    "test:coverage": "vitest --coverage",
     "test:integration": "env-cmd -f .env.test jest --testPathPattern=integration --config ./jest.config.js",
     "test:supabase": "node test-supabase.js",
     "test:auth-complete": "node test-auth-complete.js",
@@ -63,6 +64,7 @@
     "@types/uuid": "^9.0.0",
     "@typescript-eslint/eslint-plugin": "^8.36.0",
     "@typescript-eslint/parser": "^8.36.0",
+    "@vitest/ui": "^3.2.4",
     "eslint": "^8.43.0",
     "eslint-plugin-no-unused-expressions": "^0.1.0",
     "husky": "^8.0.3",
@@ -75,6 +77,7 @@
     "supabase": "^2.30.4",
     "supertest": "^6.3.3",
     "ts-jest": "^29.1.0",
-    "ts-node": "^10.9.1"
+    "ts-node": "^10.9.1",
+    "vitest": "^3.2.4"
   }
 }

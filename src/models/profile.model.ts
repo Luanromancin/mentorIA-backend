@@ -7,6 +7,7 @@ interface ProfileAttributes {
   name: string;
   birth_date?: Date;
   institution?: string;
+  has_completed_leveling_test?: boolean;
   created_at?: Date;
   updated_at?: Date;
 }
@@ -25,6 +26,7 @@ class Profile
   public name!: string;
   public birth_date?: Date;
   public institution?: string;
+  public has_completed_leveling_test?: boolean;
   public created_at?: Date;
   public updated_at?: Date;
 
@@ -56,6 +58,11 @@ Profile.init(
     institution: {
       type: DataTypes.TEXT,
       allowNull: true,
+    },
+    has_completed_leveling_test: {
+      type: DataTypes.BOOLEAN,
+      allowNull: true,
+      defaultValue: false,
     },
     created_at: {
       type: DataTypes.DATE,
