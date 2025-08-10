@@ -174,6 +174,4 @@ describe('Teste de Nivelamento - Integração Completa', () => {
 
     console.log('🎉 Teste de integração concluído com sucesso!');
   }, 60000); // Timeout de 60 segundos
-
-
 });
