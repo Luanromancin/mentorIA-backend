@@ -2,10 +2,12 @@ import { Request, Response } from 'express';
 import { DynamicQuestionsService } from '../services/dynamic-questions.service';
 import { UserCompetencyRepository } from '../repositories/user-competency.repository';
 import { SparseCompetencyService } from '../services/sparse-competency.service';
+import { StatisticsService } from '../services/statistics.service';
 
 export class DynamicQuestionsController {
   private dynamicQuestionsService: DynamicQuestionsService;
   private sparseCompetencyService: SparseCompetencyService;
+  private statisticsService: StatisticsService;
 
   constructor() {
     const userCompetencyRepository = new UserCompetencyRepository();
@@ -13,6 +15,7 @@ export class DynamicQuestionsController {
       userCompetencyRepository
     );
     this.sparseCompetencyService = new SparseCompetencyService();
+    this.statisticsService = new StatisticsService();
   }
 
   /**
@@ -63,7 +66,7 @@ export class DynamicQuestionsController {
         });
       }
 
-      const { questionId, answer, isCorrect, competencyName } = req.body;
+      const { questionId, answer, isCorrect, competencyName, topicName } = req.body;
 
       if (
         !questionId ||
@@ -78,7 +81,7 @@ export class DynamicQuestionsController {
       }
 
       // Salvar resposta do usuário
-      await this.saveUserAnswer(profileId, questionId, answer, isCorrect);
+      await this.saveUserAnswer(profileId, questionId, answer, isCorrect, competencyName, topicName || competencyName);
 
       // Atualizar nível de competência
       await this.dynamicQuestionsService.updateCompetencyLevel(
@@ -207,6 +210,7 @@ export class DynamicQuestionsController {
           answer: selectedAnswer,
           isCorrect,
           competencyName,
+          topicName,
         } = answer;
 
         // Salvar resposta do usuário
@@ -214,7 +218,9 @@ export class DynamicQuestionsController {
           profileId,
           questionId,
           selectedAnswer,
-          isCorrect
+          isCorrect,
+          competencyName,
+          topicName
         );
 
         // Atualizar nível de competência
@@ -280,24 +286,45 @@ export class DynamicQuestionsController {
   }
 
   /**
-   * Salva resposta do usuário na tabela user_answers
+   * Salva resposta do usuário e registra estatísticas
    */
   private async saveUserAnswer(
     profileId: string,
     questionId: string,
     answer: string,
-    isCorrect: boolean
+    isCorrect: boolean,
+    competencyName?: string,
+    topicName?: string
   ) {
-    // Por enquanto, vamos apenas logar a resposta
-    // TODO: Implementar salvamento real quando tivermos acesso ao banco
-    console.log(
-      `💾 Resposta salva: questão ${questionId}, correto: ${isCorrect}`
-    );
-    console.log(`📊 Dados da resposta:`, {
-      profileId: profileId,
-      questionId: questionId,
-      answer: answer,
-      isCorrect: isCorrect,
-    });
+    try {
+      // Log da resposta
+      console.log(
+        `💾 Resposta salva: questão ${questionId}, correto: ${isCorrect}`
+      );
+      console.log(`📊 Dados da resposta:`, {
+        profileId: profileId,
+        questionId: questionId,
+        answer: answer,
+        isCorrect: isCorrect,
+        competencyName: competencyName,
+        topicName: topicName
+      });
+
+      // Registrar estatísticas se tivermos as informações de competência
+      if (competencyName && topicName) {
+        await this.statisticsService.recordAnswer(profileId, {
+          questionId,
+          subtopicName: competencyName,
+          topicName,
+          isCorrect,
+        });
+        console.log(`📈 Estatísticas registradas para competência: ${competencyName}`);
+      } else {
+        console.log(`⚠️ Não foi possível registrar estatísticas - dados de competência ausentes`);
+      }
+    } catch (error) {
+      console.error('❌ Erro ao salvar resposta ou registrar estatísticas:', error);
+      // Não vamos falhar o processo principal por erro nas estatísticas
+    }
   }
 }
