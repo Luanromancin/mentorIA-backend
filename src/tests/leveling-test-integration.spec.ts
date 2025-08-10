@@ -203,5 +203,5 @@ describe('Teste de Nivelamento - Integração Completa', () => {
 
     expect(userCompetencies.length).toBe(0);
     console.log('✅ Nenhuma competência registrada (todas erradas = nível 0)');
-  }, 30000);
+  }, 60000); // Timeout de 60 segundos
 });

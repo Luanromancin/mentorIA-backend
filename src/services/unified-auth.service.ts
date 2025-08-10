@@ -90,7 +90,7 @@ export class UnifiedAuthService {
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
       // 3. Buscar o perfil criado pelo trigger
-      const { data: profile, error: profileError } = await this.adminClient
+      let { data: profile, error: profileError } = await this.adminClient
         .from('profiles')
         .select('*')
         .eq('id', authData.user.id)
@@ -129,6 +129,13 @@ export class UnifiedAuthService {
         if (newProfileError || !newProfile) {
           throw new HttpError(500, 'Erro ao recuperar perfil criado');
         }
+
+        profile = newProfile;
+        profileError = null; // Reset error since we successfully created the profile
+      }
+
+      if (!profile || !profile.id) {
+        throw new HttpError(500, 'Erro: perfil não encontrado ou inválido');
       }
 
       console.log('✅ Perfil criado/recuperado com sucesso:', profile.id);
