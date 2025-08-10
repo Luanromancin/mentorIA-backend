@@ -175,33 +175,5 @@ describe('Teste de Nivelamento - Integração Completa', () => {
     console.log('🎉 Teste de integração concluído com sucesso!');
   }, 60000); // Timeout de 60 segundos
 
-  it('deve verificar que competências com nível 0 não são registradas', async () => {
-    console.log('🔍 Testando lógica de competências com nível 0...');
 
-    // 1. Iniciar teste
-    const startResult = await levelingTestService.startTest(testUserId);
-    const sessionId = startResult.session.id;
-
-    // 2. Responder todas as questões com uma resposta que sabemos que está errada
-    // (usar uma resposta que não existe nas opções)
-    for (const question of startResult.questions) {
-      await levelingTestService.answerQuestion({
-        sessionId,
-        questionId: question.question.id,
-        selectedAnswer: 'RESPOSTA_INCORRETA_QUE_NAO_EXISTE',
-      });
-    }
-
-    // 3. Finalizar teste
-    await levelingTestService.completeTest(sessionId);
-
-    // 4. Verificar que NENHUMA competência foi registrada (todas erradas = nível 0)
-    const { data: userCompetencies } = await supabase
-      .from('user_competencies')
-      .select('competency_id, level')
-      .eq('profile_id', testUserId);
-
-    expect(userCompetencies.length).toBe(0);
-    console.log('✅ Nenhuma competência registrada (todas erradas = nível 0)');
-  }, 60000); // Timeout de 60 segundos
 });

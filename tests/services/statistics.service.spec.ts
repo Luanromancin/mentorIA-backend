@@ -1,8 +1,9 @@
+import { describe, it, beforeEach, afterEach, expect, vi } from 'vitest';
 import { StatisticsService } from '../../src/services/statistics.service';
 import { createClient } from '@supabase/supabase-js';
 
 // Mock do Supabase
-jest.mock('@supabase/supabase-js');
+vi.mock('@supabase/supabase-js');
 
 describe('StatisticsService', () => {
   let statisticsService: StatisticsService;
@@ -15,19 +16,22 @@ describe('StatisticsService', () => {
 
     // Mock do cliente Supabase
     mockSupabase = {
-      rpc: jest.fn(),
-      from: jest.fn().mockReturnThis(),
-      select: jest.fn().mockReturnThis(),
-      eq: jest.fn().mockReturnThis(),
-      single: jest.fn(),
+      rpc: vi.fn(),
+      from: vi.fn().mockReturnThis(),
+      select: vi.fn().mockReturnThis(),
+      eq: vi.fn().mockReturnThis(),
+      single: vi.fn(),
+      order: vi.fn().mockReturnThis(),
     };
 
-    (createClient as jest.Mock).mockReturnValue(mockSupabase);
+
+
+    (createClient as any).mockReturnValue(mockSupabase);
     statisticsService = new StatisticsService();
   });
 
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('recordAnswer', () => {
@@ -184,7 +188,18 @@ describe('StatisticsService', () => {
         { questions_answered: 15, correct_answers: 12 },
       ];
 
-      mockSupabase.eq.mockResolvedValue({ data: mockData, error: null });
+      // Configurar mock para retornar dados na segunda chamada .eq()
+      let eqCallCount = 0;
+      mockSupabase.eq.mockImplementation(() => {
+        eqCallCount++;
+        if (eqCallCount === 2) {
+          return Promise.resolve({
+            data: mockData,
+            error: null,
+          });
+        }
+        return mockSupabase;
+      });
 
       const result = await statisticsService.getTopicStatistics(userId, topicName);
 
@@ -199,7 +214,18 @@ describe('StatisticsService', () => {
       const userId = 'user-123';
       const topicName = 'Programming';
 
-      mockSupabase.eq.mockResolvedValue({ data: [], error: null });
+      // Configurar mock para retornar array vazio na segunda chamada .eq()
+      let eqCallCount = 0;
+      mockSupabase.eq.mockImplementation(() => {
+        eqCallCount++;
+        if (eqCallCount === 2) {
+          return Promise.resolve({
+            data: [],
+            error: null,
+          });
+        }
+        return mockSupabase;
+      });
 
       const result = await statisticsService.getTopicStatistics(userId, topicName);
 
@@ -210,9 +236,17 @@ describe('StatisticsService', () => {
       const userId = 'user-123';
       const topicName = 'Programming';
 
-      mockSupabase.eq.mockResolvedValue({
-        data: null,
-        error: { message: 'Database error' },
+      // Configurar mock para retornar erro na segunda chamada .eq()
+      let eqCallCount = 0;
+      mockSupabase.eq.mockImplementation(() => {
+        eqCallCount++;
+        if (eqCallCount === 2) {
+          return Promise.resolve({
+            data: null,
+            error: { message: 'Database error' },
+          });
+        }
+        return mockSupabase;
       });
 
       await expect(statisticsService.getTopicStatistics(userId, topicName)).rejects.toThrow(

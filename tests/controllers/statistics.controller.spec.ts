@@ -1,36 +1,37 @@
+import { describe, it, beforeEach, afterEach, expect, vi } from 'vitest';
 import { Request, Response } from 'express';
 import { StatisticsController } from '../../src/controllers/statistics.controller';
 import { StatisticsService } from '../../src/services/statistics.service';
 import { HttpError } from '../../src/utils/http-error';
 
 // Mock do StatisticsService
-jest.mock('../../src/services/statistics.service');
+vi.mock('../../src/services/statistics.service');
 
 describe('StatisticsController', () => {
   let statisticsController: StatisticsController;
-  let mockStatisticsService: jest.Mocked<StatisticsService>;
+  let mockStatisticsService: any;
   let mockRequest: Partial<Request>;
   let mockResponse: Partial<Response>;
-  let mockJson: jest.Mock;
-  let mockStatus: jest.Mock;
+  let mockJson: any;
+  let mockStatus: any;
 
   beforeEach(() => {
-    mockJson = jest.fn().mockReturnThis();
-    mockStatus = jest.fn().mockReturnThis();
+    mockJson = vi.fn().mockReturnThis();
+    mockStatus = vi.fn().mockReturnThis();
 
     mockResponse = {
       json: mockJson,
       status: mockStatus,
     };
 
-    mockStatisticsService = jest.mocked(new StatisticsService());
-    (StatisticsService as jest.Mock).mockImplementation(() => mockStatisticsService);
+    mockStatisticsService = vi.mocked(new StatisticsService());
+    (StatisticsService as any).mockImplementation(() => mockStatisticsService);
 
     statisticsController = new StatisticsController();
   });
 
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('recordAnswer', () => {
@@ -48,7 +49,7 @@ describe('StatisticsController', () => {
         body: requestBody,
       };
 
-      mockStatisticsService.recordAnswer = jest.fn().mockResolvedValue(undefined);
+      mockStatisticsService.recordAnswer = vi.fn().mockResolvedValue(undefined);
 
       await statisticsController.recordAnswer(
         mockRequest as any,
@@ -142,7 +143,7 @@ describe('StatisticsController', () => {
       };
 
       const error = new HttpError(500, 'Service error');
-      mockStatisticsService.recordAnswer = jest.fn().mockRejectedValue(error);
+      mockStatisticsService.recordAnswer = vi.fn().mockRejectedValue(error);
 
       await statisticsController.recordAnswer(
         mockRequest as any,
@@ -174,7 +175,7 @@ describe('StatisticsController', () => {
         user: { id: userId },
       };
 
-      mockStatisticsService.getUserStatistics = jest.fn().mockResolvedValue(mockStatistics);
+      mockStatisticsService.getUserStatistics = vi.fn().mockResolvedValue(mockStatistics);
 
       await statisticsController.getUserStatistics(
         mockRequest as any,
@@ -213,7 +214,7 @@ describe('StatisticsController', () => {
       };
 
       const error = new HttpError(500, 'Service error');
-      mockStatisticsService.getUserStatistics = jest.fn().mockRejectedValue(error);
+      mockStatisticsService.getUserStatistics = vi.fn().mockRejectedValue(error);
 
       await statisticsController.getUserStatistics(
         mockRequest as any,
@@ -243,7 +244,7 @@ describe('StatisticsController', () => {
         params: { subtopicName },
       };
 
-      mockStatisticsService.getCompetencyStatistics = jest.fn().mockResolvedValue(mockStatistics);
+      mockStatisticsService.getCompetencyStatistics = vi.fn().mockResolvedValue(mockStatistics);
 
       await statisticsController.getCompetencyStatistics(
         mockRequest as any,
@@ -304,7 +305,7 @@ describe('StatisticsController', () => {
       };
 
       const error = new HttpError(500, 'Service error');
-      mockStatisticsService.getCompetencyStatistics = jest.fn().mockRejectedValue(error);
+      mockStatisticsService.getCompetencyStatistics = vi.fn().mockRejectedValue(error);
 
       await statisticsController.getCompetencyStatistics(
         mockRequest as any,
@@ -334,7 +335,7 @@ describe('StatisticsController', () => {
         params: { topicName },
       };
 
-      mockStatisticsService.getTopicStatistics = jest.fn().mockResolvedValue(mockStatistics);
+      mockStatisticsService.getTopicStatistics = vi.fn().mockResolvedValue(mockStatistics);
 
       await statisticsController.getTopicStatistics(
         mockRequest as any,
@@ -395,7 +396,7 @@ describe('StatisticsController', () => {
       };
 
       const error = new HttpError(500, 'Service error');
-      mockStatisticsService.getTopicStatistics = jest.fn().mockRejectedValue(error);
+      mockStatisticsService.getTopicStatistics = vi.fn().mockRejectedValue(error);
 
       await statisticsController.getTopicStatistics(
         mockRequest as any,
