@@ -149,8 +149,9 @@ export class DynamicQuestionsController {
       const maxQuestions = parseInt(req.query.maxQuestions as string) || 20;
 
       // Buscar competências do usuário
-      const userCompetencies = await this.sparseCompetencyService.getAllUserCompetencies(profileId);
-      
+      const userCompetencies =
+        await this.sparseCompetencyService.getAllUserCompetencies(profileId);
+
       // Buscar questões baseadas nas competências
       const questions = await this.dynamicQuestionsService.getDynamicQuestions({
         profileId,
@@ -201,11 +202,21 @@ export class DynamicQuestionsController {
 
       // Processar cada resposta
       for (const answer of answers) {
-        const { questionId, answer: selectedAnswer, isCorrect, competencyName } = answer;
-        
+        const {
+          questionId,
+          answer: selectedAnswer,
+          isCorrect,
+          competencyName,
+        } = answer;
+
         // Salvar resposta do usuário
-        await this.saveUserAnswer(profileId, questionId, selectedAnswer, isCorrect);
-        
+        await this.saveUserAnswer(
+          profileId,
+          questionId,
+          selectedAnswer,
+          isCorrect
+        );
+
         // Atualizar nível de competência
         await this.dynamicQuestionsService.updateCompetencyLevel(
           profileId,
@@ -242,8 +253,9 @@ export class DynamicQuestionsController {
       }
 
       // Buscar competências do usuário
-      const userCompetencies = await this.sparseCompetencyService.getAllUserCompetencies(profileId);
-      
+      const userCompetencies =
+        await this.sparseCompetencyService.getAllUserCompetencies(profileId);
+
       // Buscar algumas questões para cache
       const questions = await this.dynamicQuestionsService.getDynamicQuestions({
         profileId,

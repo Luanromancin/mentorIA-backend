@@ -5,6 +5,7 @@ import TestService from '../services/test.service';
 import unifiedAuthRoutes from './unified-auth.routes';
 import QuestionController from '../controllers/question.controller';
 import dynamicQuestionsRoutes from './dynamic-questions.routes';
+import statisticsRoutes from './statistics.routes';
 
 const router = Router();
 const prefix = '/api';
@@ -12,13 +13,19 @@ const prefix = '/api';
 export default function setupRoutes(app: Express): void {
   // Rotas de autenticação
   app.use('/api/auth', unifiedAuthRoutes);
-  
+
   // Rotas de questões dinâmicas
   app.use('/api/questions', dynamicQuestionsRoutes);
-  
+
   // Rotas de testes (incluindo sessão e pré-carregamento)
-  app.use(prefix, new TestController(router, di.getService(TestService)).router);
-  
+  app.use(
+    prefix,
+    new TestController(router, di.getService(TestService)).router
+  );
+
   // Rotas de questões (legado)
   app.use(prefix, new QuestionController(router).router);
+
+  // Rotas de estatísticas
+  app.use('/api/statistics', statisticsRoutes);
 }

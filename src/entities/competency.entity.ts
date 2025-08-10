@@ -4,14 +4,14 @@ export interface Competency extends BaseEntity {
   code: string;
   name: string;
   description?: string;
-  subjectId?: string;
+  subjectId: string;
 }
 
 export interface CreateCompetencyDto {
   code: string;
   name: string;
   description?: string;
-  subjectId?: string;
+  subjectId: string;
 }
 
 export interface UpdateCompetencyDto {

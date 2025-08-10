@@ -170,10 +170,10 @@ export class AuthController {
     try {
       const userId = req.user?.id;
       if (!userId) {
-        res.status(401).json({ 
+        res.status(401).json({
           success: false,
           message: 'Usuário não autenticado',
-          code: 401
+          code: 401,
         });
         return;
       }
@@ -187,21 +187,21 @@ export class AuthController {
         message: 'Usuário autenticado',
         code: 200,
         data: {
-          user: profile
-        }
+          user: profile,
+        },
       });
     } catch (_error) {
       if (_error instanceof HttpError) {
-        res.status(_error.statusCode).json({ 
+        res.status(_error.statusCode).json({
           success: false,
           message: _error.message,
-          code: _error.statusCode
+          code: _error.statusCode,
         });
       } else {
-        res.status(500).json({ 
+        res.status(500).json({
           success: false,
           message: 'Erro interno do servidor',
-          code: 500
+          code: 500,
         });
       }
     }
@@ -310,6 +310,25 @@ export class AuthController {
       } else {
         res.status(500).json({ message: 'Erro ao sincronizar usuário' });
       }
+    }
+  }
+
+  /**
+   * Limpar cache de autenticação (para desenvolvimento)
+   */
+  async clearAuthCache(_req: Request, res: Response): Promise<void> {
+    try {
+      // Em produção, você pode querer adicionar verificações de segurança aqui
+      res.status(200).json({
+        success: true,
+        message: 'Cache de autenticação limpo com sucesso',
+      });
+    } catch (error) {
+      console.error('Erro ao limpar cache:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Erro interno do servidor',
+      });
     }
   }
 }

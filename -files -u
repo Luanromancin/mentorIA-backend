@@ -1,0 +1,4 @@
+dev.sqlite
+src/controllers/auth.controller.ts
+src/entities/competency.entity.ts
+src/routes/index.ts
