@@ -6,6 +6,8 @@ interface UserStatistics {
     total_questions: number;
     total_correct: number;
     overall_accuracy: number;
+    study_streak: number;
+    completed_tests: number;
   };
   by_topic: Array<{
     topic_name: string;
@@ -77,7 +79,7 @@ export class StatisticsService {
   async getUserStatistics(userId: string): Promise<UserStatistics> {
     try {
       const { data, error } = await this.supabase.rpc('get_user_statistics', {
-        p_user_id: userId,
+        user_profile_id: userId,
       });
 
       if (error) {
@@ -91,6 +93,8 @@ export class StatisticsService {
             total_questions: 0,
             total_correct: 0,
             overall_accuracy: 0,
+            study_streak: 0,
+            completed_tests: 0,
           },
           by_topic: [],
           by_competency: [],
@@ -245,7 +249,7 @@ export class StatisticsService {
   }
 
   /**
-   * Obtém competências que precisam de mais atenção (baixa acurácia)
+   * Obtém competências que precisam de mais atenção
    */
   async getWeakCompetencies(
     userId: string,
@@ -259,14 +263,135 @@ export class StatisticsService {
     }>
   > {
     try {
-      const statistics = await this.getUserStatistics(userId);
+      const { data, error } = await this.supabase
+        .from('user_statistics')
+        .select('subtopic_name, questions_answered, correct_answers')
+        .eq('user_id', userId)
+        .order('accuracy_percentage', { ascending: true });
 
-      return statistics.by_competency
+      if (error) {
+        throw new Error(
+          `Erro ao obter competências fracas: ${error.message}`
+        );
+      }
+
+      if (!data) {
+        return [];
+      }
+
+      return data
+        .map((row) => {
+          const accuracy =
+            row.questions_answered > 0
+              ? Math.round((row.correct_answers / row.questions_answered) * 100 * 100) / 100
+              : 0;
+
+          return {
+            subtopic_name: row.subtopic_name,
+            questions_answered: row.questions_answered,
+            correct_answers: row.correct_answers,
+            accuracy_percentage: accuracy,
+          };
+        })
         .filter((comp) => comp.accuracy_percentage < threshold)
         .sort((a, b) => a.accuracy_percentage - b.accuracy_percentage);
     } catch (error) {
       console.error('Erro ao obter competências fracas:', error);
       throw error;
+    }
+  }
+
+  /**
+   * Obtém todos os tópicos e subtópicos disponíveis na tabela questions
+   */
+  async getAvailableTopics(): Promise<{ [topicName: string]: string[] }> {
+    try {
+      // Usar a função que está funcionando
+      const { data, error } = await this.supabase.rpc('get_available_topics_simple');
+
+      if (error) {
+        throw new Error(
+          `Erro ao obter tópicos disponíveis: ${error.message}`
+        );
+      }
+
+      console.log('🔍 Debug - Tipo de data:', typeof data);
+      console.log('🔍 Debug - É array?', Array.isArray(data));
+      console.log('🔍 Debug - É objeto?', typeof data === 'object' && data !== null);
+      console.log('🔍 Debug - Data:', JSON.stringify(data, null, 2).substring(0, 500) + '...');
+
+      if (!data) {
+        return {};
+      }
+
+      // Lidar com diferentes formatos de retorno
+      let topicsData: { [topicName: string]: string[] };
+
+      if (Array.isArray(data) && data.length > 0 && data[0].get_available_topics_simple) {
+        // Formato: [{ "get_available_topics_simple": { "topic1": ["sub1", "sub2"], ... } }]
+        topicsData = data[0].get_available_topics_simple;
+      } else if (data.topics) {
+        // Formato: { "topics": { "topic1": ["sub1", "sub2"], ... } }
+        topicsData = data.topics;
+      } else if (typeof data === 'object' && !Array.isArray(data)) {
+        // Formato: { "topic1": ["sub1", "sub2"], ... }
+        topicsData = data;
+      } else {
+        console.error('❌ Formato de dados inesperado:', data);
+        return {};
+      }
+
+      console.log('✅ Tópicos carregados com sucesso:', Object.keys(topicsData).length);
+      return topicsData;
+    } catch (error) {
+      console.error('Erro ao obter tópicos disponíveis:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Registra estudo diário e atualiza sequência
+   */
+  async registerDailyStudy(userId: string, questionsCount: number = 0): Promise<{
+    current_streak: number;
+    questions_completed: number;
+    completed_daily_goal: boolean;
+    date: string;
+  }> {
+    try {
+      const { data, error } = await this.supabase.rpc('register_daily_study', {
+        user_profile_id: userId,
+        questions_count: questionsCount,
+      });
+
+      if (error) {
+        throw new Error(`Erro ao registrar estudo diário: ${error.message}`);
+      }
+
+      return data;
+    } catch (error) {
+      console.error('Erro ao registrar estudo diário:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Obtém sequência atual de estudos
+   */
+  async getCurrentStudyStreak(userId: string): Promise<number> {
+    try {
+      const { data, error } = await this.supabase.rpc('get_user_study_streak', {
+        user_profile_id: userId,
+      });
+
+      if (error) {
+        throw new Error(`Erro ao obter sequência de estudos: ${error.message}`);
+      }
+
+      return data || 0;
+    } catch (error) {
+      console.error('Erro ao obter sequência de estudos:', error);
+      return 0;
     }
   }
 }

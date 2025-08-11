@@ -265,4 +265,39 @@ export class StatisticsController {
       }
     }
   }
+
+  /**
+   * Obtém todos os tópicos e subtópicos disponíveis na tabela questions
+   */
+  async getAvailableTopics(
+    req: AuthenticatedRequest,
+    res: Response
+  ): Promise<void> {
+    try {
+      const userId = req.user?.id;
+      if (!userId) {
+        throw new HttpError(401, 'Usuário não autenticado');
+      }
+
+      const topics = await this.statisticsService.getAvailableTopics();
+
+      res.status(200).json({
+        success: true,
+        data: topics,
+      });
+    } catch (error) {
+      console.error('Erro ao obter tópicos disponíveis:', error);
+      if (error instanceof HttpError) {
+        res.status(error.statusCode).json({
+          success: false,
+          error: error.message,
+        });
+      } else {
+        res.status(500).json({
+          success: false,
+          error: 'Erro interno do servidor',
+        });
+      }
+    }
+  }
 }

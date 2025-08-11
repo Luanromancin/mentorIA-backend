@@ -50,4 +50,11 @@ router.get(
   statisticsController.getWeakCompetencies.bind(statisticsController)
 );
 
+// GET /api/statistics/available-topics
+// Obtém todos os tópicos e subtópicos disponíveis na tabela questions
+router.get(
+  '/available-topics',
+  statisticsController.getAvailableTopics.bind(statisticsController)
+);
+
 export default router;
