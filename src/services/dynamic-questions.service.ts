@@ -30,7 +30,7 @@ export interface QuestionWithCompetency {
 }
 
 export class DynamicQuestionsService {
-  constructor(private userCompetencyRepository: UserCompetencyRepository) { }
+  constructor(private userCompetencyRepository: UserCompetencyRepository) {}
 
   /**
    * Busca questões dinâmicas baseadas no nível de competência do usuário
@@ -181,7 +181,7 @@ export class DynamicQuestionsService {
         // Adicionar questões extras para nível 0
         questionsPerLevel[0] = Math.min(
           currentLevel0Questions +
-          level0Competencies.length * maxAdditionalPerCompetency,
+            level0Competencies.length * maxAdditionalPerCompetency,
           maxQuestions
         );
       }
@@ -307,7 +307,8 @@ export class DynamicQuestionsService {
       );
 
       console.log(
-        `📈 Competência ${competencyName}: ${currentLevel} → ${newLevel} (${isCorrect ? 'acerto' : 'erro'
+        `📈 Competência ${competencyName}: ${currentLevel} → ${newLevel} (${
+          isCorrect ? 'acerto' : 'erro'
         })`
       );
     } catch (error) {
@@ -357,7 +358,8 @@ export class DynamicQuestionsService {
     }
 
     console.log(
-      `📈 Competência ${competencyName}: ${mockCurrentLevel} → ${newLevel} (${isCorrect ? 'acerto' : 'erro'
+      `📈 Competência ${competencyName}: ${mockCurrentLevel} → ${newLevel} (${
+        isCorrect ? 'acerto' : 'erro'
       })`
     );
   }

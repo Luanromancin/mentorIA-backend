@@ -270,9 +270,7 @@ export class StatisticsService {
         .order('accuracy_percentage', { ascending: true });
 
       if (error) {
-        throw new Error(
-          `Erro ao obter competências fracas: ${error.message}`
-        );
+        throw new Error(`Erro ao obter competências fracas: ${error.message}`);
       }
 
       if (!data) {
@@ -283,7 +281,9 @@ export class StatisticsService {
         .map((row) => {
           const accuracy =
             row.questions_answered > 0
-              ? Math.round((row.correct_answers / row.questions_answered) * 100 * 100) / 100
+              ? Math.round(
+                  (row.correct_answers / row.questions_answered) * 100 * 100
+                ) / 100
               : 0;
 
           return {
@@ -307,18 +307,24 @@ export class StatisticsService {
   async getAvailableTopics(): Promise<{ [topicName: string]: string[] }> {
     try {
       // Usar a função que está funcionando
-      const { data, error } = await this.supabase.rpc('get_available_topics_simple');
+      const { data, error } = await this.supabase.rpc(
+        'get_available_topics_simple'
+      );
 
       if (error) {
-        throw new Error(
-          `Erro ao obter tópicos disponíveis: ${error.message}`
-        );
+        throw new Error(`Erro ao obter tópicos disponíveis: ${error.message}`);
       }
 
       console.log('🔍 Debug - Tipo de data:', typeof data);
       console.log('🔍 Debug - É array?', Array.isArray(data));
-      console.log('🔍 Debug - É objeto?', typeof data === 'object' && data !== null);
-      console.log('🔍 Debug - Data:', JSON.stringify(data, null, 2).substring(0, 500) + '...');
+      console.log(
+        '🔍 Debug - É objeto?',
+        typeof data === 'object' && data !== null
+      );
+      console.log(
+        '🔍 Debug - Data:',
+        JSON.stringify(data, null, 2).substring(0, 500) + '...'
+      );
 
       if (!data) {
         return {};
@@ -327,7 +333,11 @@ export class StatisticsService {
       // Lidar com diferentes formatos de retorno
       let topicsData: { [topicName: string]: string[] };
 
-      if (Array.isArray(data) && data.length > 0 && data[0].get_available_topics_simple) {
+      if (
+        Array.isArray(data) &&
+        data.length > 0 &&
+        data[0].get_available_topics_simple
+      ) {
         // Formato: [{ "get_available_topics_simple": { "topic1": ["sub1", "sub2"], ... } }]
         topicsData = data[0].get_available_topics_simple;
       } else if (data.topics) {
@@ -341,7 +351,10 @@ export class StatisticsService {
         return {};
       }
 
-      console.log('✅ Tópicos carregados com sucesso:', Object.keys(topicsData).length);
+      console.log(
+        '✅ Tópicos carregados com sucesso:',
+        Object.keys(topicsData).length
+      );
       return topicsData;
     } catch (error) {
       console.error('Erro ao obter tópicos disponíveis:', error);
@@ -352,7 +365,10 @@ export class StatisticsService {
   /**
    * Registra estudo diário e atualiza sequência
    */
-  async registerDailyStudy(userId: string, questionsCount: number = 0): Promise<{
+  async registerDailyStudy(
+    userId: string,
+    questionsCount: number = 0
+  ): Promise<{
     current_streak: number;
     questions_completed: number;
     completed_daily_goal: boolean;

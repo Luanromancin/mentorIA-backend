@@ -66,7 +66,8 @@ export class DynamicQuestionsController {
         });
       }
 
-      const { questionId, answer, isCorrect, competencyName, topicName } = req.body;
+      const { questionId, answer, isCorrect, competencyName, topicName } =
+        req.body;
 
       if (
         !questionId ||
@@ -81,7 +82,14 @@ export class DynamicQuestionsController {
       }
 
       // Salvar resposta do usuário
-      await this.saveUserAnswer(profileId, questionId, answer, isCorrect, competencyName, topicName || competencyName);
+      await this.saveUserAnswer(
+        profileId,
+        questionId,
+        answer,
+        isCorrect,
+        competencyName,
+        topicName || competencyName
+      );
 
       // Atualizar nível de competência
       await this.dynamicQuestionsService.updateCompetencyLevel(
@@ -307,7 +315,7 @@ export class DynamicQuestionsController {
         answer: answer,
         isCorrect: isCorrect,
         competencyName: competencyName,
-        topicName: topicName
+        topicName: topicName,
       });
 
       // Registrar estatísticas se tivermos as informações de competência
@@ -318,12 +326,19 @@ export class DynamicQuestionsController {
           topicName,
           isCorrect,
         });
-        console.log(`📈 Estatísticas registradas para competência: ${competencyName}`);
+        console.log(
+          `📈 Estatísticas registradas para competência: ${competencyName}`
+        );
       } else {
-        console.log(`⚠️ Não foi possível registrar estatísticas - dados de competência ausentes`);
+        console.log(
+          `⚠️ Não foi possível registrar estatísticas - dados de competência ausentes`
+        );
       }
     } catch (error) {
-      console.error('❌ Erro ao salvar resposta ou registrar estatísticas:', error);
+      console.error(
+        '❌ Erro ao salvar resposta ou registrar estatísticas:',
+        error
+      );
       // Não vamos falhar o processo principal por erro nas estatísticas
     }
   }

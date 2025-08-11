@@ -267,37 +267,52 @@ export class StatisticsController {
   }
 
   /**
-   * Obtém todos os tópicos e subtópicos disponíveis na tabela questions
+   * Obtém tópicos e subtópicos disponíveis
    */
-  async getAvailableTopics(
-    req: AuthenticatedRequest,
-    res: Response
-  ): Promise<void> {
+  async getAvailableTopics(_req: Request, res: Response): Promise<void> {
     try {
-      const userId = req.user?.id;
-      if (!userId) {
-        throw new HttpError(401, 'Usuário não autenticado');
-      }
-
       const topics = await this.statisticsService.getAvailableTopics();
-
-      res.status(200).json({
+      res.json({
         success: true,
-        data: topics,
+        data: topics
       });
     } catch (error) {
       console.error('Erro ao obter tópicos disponíveis:', error);
-      if (error instanceof HttpError) {
-        res.status(error.statusCode).json({
+      res.status(500).json({
+        success: false,
+        message: 'Erro interno do servidor'
+      });
+    }
+  }
+
+  /**
+   * Registra estudo diário do usuário
+   */
+  async registerDailyStudy(req: AuthenticatedRequest, res: Response): Promise<void> {
+    try {
+      const userId = req.user?.id;
+      if (!userId) {
+        res.status(401).json({
           success: false,
-          error: error.message,
+          message: 'Usuário não autenticado'
         });
-      } else {
-        res.status(500).json({
-          success: false,
-          error: 'Erro interno do servidor',
-        });
+        return;
       }
+
+      const { questionsCount = 0 } = req.body;
+
+      const result = await this.statisticsService.registerDailyStudy(userId, questionsCount);
+
+      res.json({
+        success: true,
+        data: result
+      });
+    } catch (error) {
+      console.error('Erro ao registrar estudo diário:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Erro interno do servidor'
+      });
     }
   }
 }
