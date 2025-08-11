@@ -1,0 +1,5 @@
+[33mb58f9cc[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mdevelop[m[33m)[m Merge: feature/estatistica-apostila-dinamica into develop - resolved jest.config.js conflict by removing obsolete file
+[33mbad7c59[m[33m ([m[1;31morigin/develop[m[33m)[m fix: finalizar correções de formatação nos serviços de autenticação
+[33m7ee5fa1[m fix: melhorar tratamento de erro de email duplicado nos serviços de autenticação
+[33m2b5eb3d[m fix: corrige formatação do arquivo de teste de nivelamento
+[33m122aa02[m test: corrige mocks do StatisticsService para suportar múltiplas chamadas .eq() e remove teste redundante de nivelamento
