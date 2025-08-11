@@ -74,7 +74,7 @@ npm install
 
 ### Frontend
 ```bash
-cd MentorIA-Frontend
+cd MentorIA-frontend
 npm install
 ```
 
@@ -84,7 +84,7 @@ npm install
 
 ### Backend
 ```bash
-npm run dev
+npm start
 ```
 
 ### Frontend
