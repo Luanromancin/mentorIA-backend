@@ -37,6 +37,17 @@ export class SupabaseAuthService {
       });
 
       if (authError) {
+        console.error('❌ Erro no registro do Supabase Auth:', authError);
+        
+        // Tratar erro de email duplicado especificamente
+        if (
+          authError.message.includes('User already registered') ||
+          authError.message.includes('user_already_exists') ||
+          authError.code === 'user_already_exists'
+        ) {
+          throw new HttpError(400, 'Usuário já cadastrado, use um email diferente');
+        }
+        
         throw new HttpError(400, authError.message);
       }
 

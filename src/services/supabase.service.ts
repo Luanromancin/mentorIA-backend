@@ -107,7 +107,7 @@ class SupabaseService {
         error.message.includes('user_already_exists') ||
         error.code === 'user_already_exists'
       ) {
-        throw new Error('Email já está em uso');
+        throw new Error('Usuário já cadastrado, use um email diferente');
       }
       throw new Error(`Erro ao criar usuário no Supabase: ${error.message}`);
     }
