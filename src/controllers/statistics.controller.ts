@@ -274,13 +274,13 @@ export class StatisticsController {
       const topics = await this.statisticsService.getAvailableTopics();
       res.json({
         success: true,
-        data: topics
+        data: topics,
       });
     } catch (error) {
       console.error('Erro ao obter tópicos disponíveis:', error);
       res.status(500).json({
         success: false,
-        message: 'Erro interno do servidor'
+        message: 'Erro interno do servidor',
       });
     }
   }
@@ -288,30 +288,36 @@ export class StatisticsController {
   /**
    * Registra estudo diário do usuário
    */
-  async registerDailyStudy(req: AuthenticatedRequest, res: Response): Promise<void> {
+  async registerDailyStudy(
+    req: AuthenticatedRequest,
+    res: Response
+  ): Promise<void> {
     try {
       const userId = req.user?.id;
       if (!userId) {
         res.status(401).json({
           success: false,
-          message: 'Usuário não autenticado'
+          message: 'Usuário não autenticado',
         });
         return;
       }
 
       const { questionsCount = 0 } = req.body;
 
-      const result = await this.statisticsService.registerDailyStudy(userId, questionsCount);
+      const result = await this.statisticsService.registerDailyStudy(
+        userId,
+        questionsCount
+      );
 
       res.json({
         success: true,
-        data: result
+        data: result,
       });
     } catch (error) {
       console.error('Erro ao registrar estudo diário:', error);
       res.status(500).json({
         success: false,
-        message: 'Erro interno do servidor'
+        message: 'Erro interno do servidor',
       });
     }
   }

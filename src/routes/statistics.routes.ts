@@ -58,6 +58,10 @@ router.get(
 );
 
 // Rota para registrar estudo diário
-router.post('/register-daily-study', authMiddleware, statisticsController.registerDailyStudy.bind(statisticsController));
+router.post(
+  '/register-daily-study',
+  authMiddleware,
+  statisticsController.registerDailyStudy.bind(statisticsController)
+);
 
 export default router;

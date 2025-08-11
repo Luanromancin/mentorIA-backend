@@ -25,6 +25,19 @@
     "typeRoots": ["./node_modules/@types", "./src/types"],
     "types": ["node", "express"]
   },
-  "exclude": ["node_modules", "tests/**/*", "setupTests.ts"],
-  "include": ["./src/**/*.ts", "./src/types/*.d.ts", "vitest.config.ts"]
+  "exclude": [
+    "node_modules", 
+    "dist", 
+    "coverage",
+    "tests/controllers/test.steps.ts",
+    "tests/services/test.service.steps.ts",
+    "tests/services/supabase.service.spec.ts"
+  ],
+  "include": [
+    "./src/**/*.ts", 
+    "./src/types/*.d.ts", 
+    "./tests/**/*.ts",
+    "./setupTests.ts",
+    "./vitest.config.ts"
+  ]
 }

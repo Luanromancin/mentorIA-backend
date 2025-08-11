@@ -52,8 +52,4 @@ export default [
       'no-undef': 'off', // Desabilitado porque o TypeScript já faz essa verificação
     },
   },
-  {
-    files: ['**/*.test.ts', '**/*.spec.ts', '**/*.steps.ts', 'setupTests.ts', 'tests/**/*'],
-    ignores: ['tests/**/*', 'setupTests.ts'],
-  },
 ]; 

@@ -2,4 +2,7 @@ node_modules/
 dist/
 coverage/
 *.js
-!jest.config.js 
+!jest.config.js
+tests/controllers/test.steps.ts
+tests/services/test.service.steps.ts
+tests/services/supabase.service.spec.ts 
