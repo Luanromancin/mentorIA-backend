@@ -94,7 +94,7 @@ describe('StatisticsService', () => {
 
       expect(result).toEqual(mockData);
       expect(mockSupabase.rpc).toHaveBeenCalledWith('get_user_statistics', {
-        p_user_id: userId,
+        user_profile_id: userId,
       });
     });
 
@@ -110,6 +110,8 @@ describe('StatisticsService', () => {
           total_questions: 0,
           total_correct: 0,
           overall_accuracy: 0,
+          completed_tests: 0,
+          study_streak: 0,
         },
         by_topic: [],
         by_competency: [],
