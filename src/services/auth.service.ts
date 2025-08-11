@@ -100,10 +100,15 @@ export class AuthService {
         throw error;
       }
       // Verificar se é um erro de email já em uso
-      if (error.message.includes('Email já está em uso') || 
-          error.message.includes('User already registered') ||
-          error.message.includes('user_already_exists')) {
-        throw new HttpError(400, 'Usuário já cadastrado, use um email diferente');
+      if (
+        error.message.includes('Email já está em uso') ||
+        error.message.includes('User already registered') ||
+        error.message.includes('user_already_exists')
+      ) {
+        throw new HttpError(
+          400,
+          'Usuário já cadastrado, use um email diferente'
+        );
       }
       if (error.message.includes('Supabase')) {
         throw new HttpError(400, error.message);
