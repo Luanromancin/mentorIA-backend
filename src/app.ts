@@ -6,16 +6,20 @@ import setupRoutes from './routes/index';
 import { HttpError } from './utils/errors/http.error';
 import { FailureResult } from './utils/result';
 import { initDatabase } from './database';
+import env from './env';
 
 const app: express.Express = express();
 app.use(express.json());
 
-app.use(
-  cors({
-    origin: 'http://localhost:5173', // Frontend
-    credentials: true, // Permite envio de cookies
-  })
-);
+// Configuração do CORS para desenvolvimento e produção
+const corsOptions = {
+  origin: env.NODE_ENV === 'production' 
+    ? [env.FRONTEND_URL, 'https://mentoria-frontend.vercel.app']
+    : ['http://localhost:5173', 'http://localhost:3000'],
+  credentials: true,
+};
+
+app.use(cors(corsOptions));
 
 // Inicializa o banco de dados
 initDatabase().catch((error) => {

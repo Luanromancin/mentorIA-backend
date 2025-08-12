@@ -34,3 +34,13 @@ lib/
 
 # Deploy
 .vercel
+
+# Database files
+*.sqlite
+*.sqlite3
+*.db
+dev.sqlite
+
+# Test files
+test-*.js
+qlite

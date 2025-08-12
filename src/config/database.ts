@@ -3,9 +3,9 @@ import env from '../env';
 
 // Função para criar configuração do banco
 const createDatabaseConfig = () => {
-  // Usar SQLite em memória para testes
-  if (env.NODE_ENV === 'test') {
-    console.log('🔧 Usando SQLite em memória para testes');
+  // Usar SQLite em memória para testes e produção (Render)
+  if (env.NODE_ENV === 'test' || env.NODE_ENV === 'production') {
+    console.log(`🔧 Usando SQLite em memória para ${env.NODE_ENV}`);
     return {
       dialect: 'sqlite' as const,
       storage: ':memory:',
@@ -17,9 +17,8 @@ const createDatabaseConfig = () => {
     };
   }
 
-  // Para desenvolvimento e produção, usar SQLite local
-  // O Supabase será usado apenas via API para autenticação e operações específicas
-  console.log('🔧 Usando SQLite local para dados da aplicação');
+  // Para desenvolvimento local, usar SQLite local
+  console.log('🔧 Usando SQLite local para desenvolvimento');
   console.log('🔧 Supabase será usado apenas via API para autenticação');
 
   return {
