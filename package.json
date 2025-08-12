@@ -24,8 +24,7 @@
     "lint:check": "eslint \"**/*.ts\" --report-unused-disable-directives",
     "type-check": "tsc --noEmit",
     "validate": "npm run lint:check && npm run prettier:check && npm run type-check && npm run test:run",
-    "validate:fix": "npm run lint && npm run prettier",
-    "prepare": "if [ -d \".git\" ]; then husky install; fi"
+    "validate:fix": "npm run lint && npm run prettier"
   },
   "keywords": [],
   "author": "",
