@@ -29,15 +29,12 @@
     "node_modules", 
     "dist", 
     "coverage",
-    "tests/controllers/test.steps.ts",
-    "tests/services/test.service.steps.ts",
-    "tests/services/supabase.service.spec.ts"
+    "tests/**/*",
+    "setupTests.ts",
+    "vitest.config.ts"
   ],
   "include": [
     "./src/**/*.ts", 
-    "./src/types/*.d.ts", 
-    "./tests/**/*.ts",
-    "./setupTests.ts",
-    "./vitest.config.ts"
+    "./src/types/*.d.ts"
   ]
 }
