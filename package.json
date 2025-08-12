@@ -25,7 +25,7 @@
     "type-check": "tsc --noEmit",
     "validate": "npm run lint:check && npm run prettier:check && npm run type-check && npm run test:run",
     "validate:fix": "npm run lint && npm run prettier",
-    "prepare": "husky install"
+    "prepare": "if [ -d \".git\" ]; then husky install; fi"
   },
   "keywords": [],
   "author": "",
