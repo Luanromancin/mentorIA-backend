@@ -22,7 +22,7 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 // Rota de teste para validar o backend
-app.get('/', (req, res) => {
+app.get('/', (_req, res) => {
   res.json({
     message: 'Backend MentorIA funcionando! 🚀',
     status: 'online',
@@ -33,7 +33,7 @@ app.get('/', (req, res) => {
 });
 
 // Rota de health check
-app.get('/health', (req, res) => {
+app.get('/health', (_req, res) => {
   res.json({
     status: 'healthy',
     timestamp: new Date().toISOString(),
