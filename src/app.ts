@@ -13,9 +13,10 @@ app.use(express.json());
 
 // Configuração do CORS para desenvolvimento e produção
 const corsOptions = {
-  origin: env.NODE_ENV === 'production' 
-    ? [env.FRONTEND_URL, 'https://mentoria-frontend.vercel.app']
-    : ['http://localhost:5173', 'http://localhost:3000'],
+  origin:
+    env.NODE_ENV === 'production'
+      ? [env.FRONTEND_URL, 'https://mentoria-frontend.vercel.app']
+      : ['http://localhost:5173', 'http://localhost:3000'],
   credentials: true,
 };
 
@@ -28,7 +29,7 @@ app.get('/', (_req, res) => {
     status: 'online',
     timestamp: new Date().toISOString(),
     environment: env.NODE_ENV,
-    port: env.PORT
+    port: env.PORT,
   });
 });
 
@@ -37,7 +38,7 @@ app.get('/health', (_req, res) => {
   res.json({
     status: 'healthy',
     timestamp: new Date().toISOString(),
-    uptime: process.uptime()
+    uptime: process.uptime(),
   });
 });
 

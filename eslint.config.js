@@ -7,6 +7,15 @@ export default [
   js.configs.recommended,
   {
     files: ['**/*.ts', '**/*.tsx'],
+    ignores: [
+      'tests/**/*',
+      'src/tests/**/*',
+      'setupTests.ts',
+      'vitest.config.ts',
+      '*.spec.ts',
+      '*.test.ts',
+      '*.steps.ts'
+    ],
     languageOptions: {
       parser: tsParser,
       parserOptions: {
