@@ -21,6 +21,26 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
+// Rota de teste para validar o backend
+app.get('/', (req, res) => {
+  res.json({
+    message: 'Backend MentorIA funcionando! 🚀',
+    status: 'online',
+    timestamp: new Date().toISOString(),
+    environment: env.NODE_ENV,
+    port: env.PORT
+  });
+});
+
+// Rota de health check
+app.get('/health', (req, res) => {
+  res.json({
+    status: 'healthy',
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime()
+  });
+});
+
 // Inicializa o banco de dados
 initDatabase().catch((error) => {
   logger.error('Erro ao inicializar o banco de dados:', error);
