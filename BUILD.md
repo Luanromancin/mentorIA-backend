@@ -25,9 +25,26 @@ Antes de começar, certifique-se de ter instalado em sua máquina:
 
 3. Configure as variáveis de ambiente:
    - Crie os seguintes arquivos na raiz do projeto:
-     - `.env.development` para ambiente de desenvolvimento
+     - `.env` para ambiente de desenvolvimento
      - `.env.test` para ambiente de testes
-     - `.env.production` para ambiente de produção
+  Você pode usar o arquivo .env.example e env.test.example como um template para saber quais variáveis são necessárias.
+
+As credenciais para o banco de dados e outros serviços não estão incluídas no repositório por questões de segurança. Para obtê-las, por favor, entre em contato com Luan Romancin via e-mail: [lorl@cin.ufpe.com].
+
+## 🚀 Como Rodar o Projeto Rapidamente
+Para configurar e rodar o projeto em sua máquina local para fins de desenvolvimento, siga estes dois passos essenciais:
+
+Abra um terminal na pasta do projeto
+
+Instale as dependências:
+```bash
+  npm install
+```
+
+Inicie o servidor de desenvolvimento:
+```bash
+  npm start
+```
 
 ## Scripts Disponíveis
 
@@ -35,7 +52,7 @@ O projeto inclui os seguintes scripts npm:
 
 - **Iniciar em modo desenvolvimento:**
   ```bash
-  npm start
+    npm start
   ```
   Este comando inicia o servidor em modo de desenvolvimento com hot-reload.
 
